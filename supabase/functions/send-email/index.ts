@@ -2,12 +2,22 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import nodemailer from "npm:nodemailer@6.9.8";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+const ALLOWED_ORIGINS = [
+  "https://dev.housesmart.cz",
+  "http://localhost:5173",
+];
+
+function corsHeadersFor(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  return {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGINS.includes(origin)
+      ? origin
+      : ALLOWED_ORIGINS[0],
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers":
+      "Content-Type, Authorization, X-Client-Info, Apikey",
+  };
+}
 
 interface SendEmailPayload {
   smtp_account_id: string;
@@ -24,6 +34,7 @@ interface SendEmailPayload {
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
@@ -77,6 +88,27 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // Authorization: the SMTP account must belong to the caller's organization,
+    // or be the shared platform account. Prevents using foreign orgs' SMTP as a relay.
+    if (!smtpAccount.is_platform_default) {
+      const { data: membership } = await supabase
+        .from("organization_members")
+        .select("organization_id")
+        .eq("user_id", user.id)
+        .eq("organization_id", smtpAccount.organization_id ?? "00000000-0000-0000-0000-000000000000")
+        .maybeSingle();
+
+      if (!smtpAccount.organization_id || !membership) {
+        return new Response(
+          JSON.stringify({ error: "SMTP account does not belong to your organization" }),
+          {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+    }
+
     const logEntry = {
       smtp_account_id: payload.smtp_account_id,
       template_id: payload.template_id || null,
@@ -120,7 +152,7 @@ Deno.serve(async (req: Request) => {
           user: smtpAccount.username,
           pass: smtpAccount.password_encrypted,
         },
-        tls: smtpAccount.use_tls ? { rejectUnauthorized: false } : undefined,
+        requireTLS: smtpAccount.use_tls === true,
       });
 
       await transporter.sendMail({

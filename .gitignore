@@ -22,7 +22,7 @@ dist-ssr
 *.sw?
 .env
 
-# pomocne soubory Claude
+# pomocne soubory
 _to_delete/
 *.tar.gz
 push_to_github.sh

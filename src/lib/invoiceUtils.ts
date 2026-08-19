@@ -149,13 +149,17 @@ export function generateInvoiceNumber(settings: InvoiceSettings, invoiceType?: s
     .replace('{NN}', String(nextNum).padStart(2, '0'));
 }
 
-export async function incrementInvoiceNumber(settingsId: string, currentNext: number, invoiceType?: string) {
-  const type = invoiceType || INVOICE_TYPES.STANDARD;
-  const nextField = TYPE_NEXT_FIELD[type] || 'next_number';
-  await supabase
-    .from('invoice_settings')
-    .update({ [nextField]: currentNext + 1, updated_at: new Date().toISOString() })
-    .eq('id', settingsId);
+/**
+ * Atomicky přidělí další číslo dokladu (DB funkce s row lockem).
+ * Řeší souběh dvou uživatelů i roční reset čítačů (reset_yearly).
+ * Vrací null při chybě — volající pak ponechá číslo z formuláře.
+ */
+export async function allocateInvoiceNumber(invoiceType?: string): Promise<string | null> {
+  const { data, error } = await supabase.rpc('allocate_invoice_number', {
+    p_type: invoiceType || INVOICE_TYPES.STANDARD,
+  });
+  if (error || !data) return null;
+  return data as string;
 }
 
 export function convertCzAccountToIban(accountNumber: string): string {

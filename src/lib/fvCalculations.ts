@@ -569,6 +569,7 @@ export function calculatePayback(
   totalInvestmentCzk: number,
   annualBenefitCzk: number,
   annualDegradationPct = 0.5,
+  discountRatePct = 4,
 ): { years: number; npv10: number; npv20: number } {
   if (annualBenefitCzk <= 0) return { years: 99, npv10: -totalInvestmentCzk, npv20: -totalInvestmentCzk };
 
@@ -582,12 +583,15 @@ export function calculatePayback(
     if (cumulative >= 0 && years === 0) years = y;
   }
 
+  // B5: skutečné NPV — roční přínos diskontovaný sazbou discountRatePct
   let npv10 = -totalInvestmentCzk;
   let npv20 = -totalInvestmentCzk;
   benefit = annualBenefitCzk;
+  const r = discountRatePct / 100;
   for (let y = 1; y <= 20; y++) {
-    if (y <= 10) npv10 += benefit;
-    npv20 += benefit;
+    const discounted = benefit / Math.pow(1 + r, y);
+    if (y <= 10) npv10 += discounted;
+    npv20 += discounted;
     benefit *= (1 - annualDegradationPct / 100);
   }
 

@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Tests (vitest)
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+
+      - name: Security audit (high+)
+        run: npm audit --audit-level=high
+
+  typecheck:
+    # Typecheck zatím neblokuje (postupné umazávání ~400 chyb),
+    # ale výsledek je vidět u každého commitu.
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: TypeScript check (informativní)
+        run: npm run typecheck

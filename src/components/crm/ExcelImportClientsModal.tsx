@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import * as XLSX from 'xlsx';
+import { readSheetRows, downloadXlsx } from '../../lib/excelCompat';
 import { Upload, FileText, AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, X, Download, TableProperties } from 'lucide-react';
 import Modal from '../ui/Modal';
 import { supabase } from '../../lib/supabase';
@@ -116,10 +116,8 @@ function buildColumnIndex(headerRow: string[]): Map<keyof ParsedClient, number> 
   return index;
 }
 
-function parseExcel(buffer: ArrayBuffer): ParsedClient[] {
-  const wb = XLSX.read(buffer, { type: 'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' }) as string[][];
+async function parseExcel(buffer: ArrayBuffer, fileName: string): Promise<ParsedClient[]> {
+  const rows: string[][] = (await readSheetRows(buffer, fileName)).map(r => r.map(c => String(c ?? '')));
 
   if (rows.length < 2) return [];
 
@@ -183,10 +181,7 @@ const EXAMPLE_ROWS = [
 ];
 
 function downloadExample() {
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet([EXAMPLE_HEADERS, ...EXAMPLE_ROWS]);
-  XLSX.utils.book_append_sheet(wb, ws, 'Klienti');
-  XLSX.writeFile(wb, 'klienti_vzor.xlsx');
+  void downloadXlsx([EXAMPLE_HEADERS, ...EXAMPLE_ROWS], 'Klienti', 'klienti_vzor.xlsx');
 }
 
 export default function ExcelImportClientsModal({ open, onClose, onImported }: Props) {
@@ -215,18 +210,18 @@ export default function ExcelImportClientsModal({ open, onClose, onImported }: P
   };
 
   const processFile = (file: File) => {
-    const allowed = ['.xlsx', '.xls', '.csv', '.ods'];
+    const allowed = ['.xlsx', '.csv'];
     const ok = allowed.some(ext => file.name.toLowerCase().endsWith(ext));
     if (!ok) {
-      toast('Vyberte soubor Excel (.xlsx, .xls) nebo CSV', 'error');
+      toast('Vyberte soubor .xlsx nebo .csv (starý .xls/.ods uložte v Excelu jako .xlsx)', 'error');
       return;
     }
     setFileName(file.name);
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const buffer = e.target?.result as ArrayBuffer;
-        const clients = parseExcel(buffer);
+        const clients = await parseExcel(buffer, file.name);
         if (clients.length === 0) {
           toast('Soubor neobsahuje žádné klienty nebo se nepodařilo rozpoznat sloupce', 'error');
           return;
@@ -365,11 +360,11 @@ export default function ExcelImportClientsModal({ open, onClose, onImported }: P
               dragOver ? 'border-blue-400 bg-blue-500/10' : 'border-white/10 hover:border-white/[0.12] hover:bg-white/[0.04]'
             }`}
           >
-            <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv,.ods" onChange={handleFileChange} className="hidden" />
+            <input ref={fileRef} type="file" accept=".xlsx,.csv" onChange={handleFileChange} className="hidden" />
             <TableProperties className={`w-10 h-10 mx-auto mb-3 transition-colors ${dragOver ? 'text-blue-500' : 'text-slate-300'}`} />
             <p className="text-sm font-semibold text-slate-300 mb-1">Přetáhněte Excel soubor sem</p>
             <p className="text-xs text-slate-400">nebo klikněte pro výběr souboru</p>
-            <p className="text-xs text-slate-300 mt-2">Podporované formáty: .xlsx, .xls, .csv, .ods</p>
+            <p className="text-xs text-slate-300 mt-2">Podporované formáty: .xlsx, .csv</p>
           </div>
 
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-4">

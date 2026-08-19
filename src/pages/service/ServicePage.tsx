@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Wrench, Calendar, AlertTriangle, MapPin, Clock,
   ChevronRight, Filter, Search, Cpu, Shield, Ticket,
@@ -29,6 +30,7 @@ const tabs = [
 
 export default function ServicePage() {
   const { setConfig } = useHeader();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState<DashboardStats>({
     totalSchedules: 0, overdueSchedules: 0, upcomingSchedules: 0,

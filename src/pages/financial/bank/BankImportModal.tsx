@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { X, Upload, FileSpreadsheet, AlertCircle, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
-import * as XLSX from 'xlsx';
+import { readSheetRows, excelSerialToIso, dateToIso } from '../../../lib/excelCompat';
 import { supabase } from '../../../lib/supabase';
 import { useToast } from '../../../components/ui/Toast';
 import type { BankAccount, ParsedBankRow } from '../../../types/bank';
@@ -45,13 +45,12 @@ function parseAmount(val: unknown): number {
 
 function parseDate(val: unknown): string {
   if (!val) return '';
+  if (val instanceof Date) {
+    return dateToIso(val);
+  }
   if (typeof val === 'number') {
-    const d = XLSX.SSF.parse_date_code(val);
-    if (d) {
-      const m = String(d.m).padStart(2, '0');
-      const day = String(d.d).padStart(2, '0');
-      return `${d.y}-${m}-${day}`;
-    }
+    const iso = excelSerialToIso(val);
+    if (iso) return iso;
   }
   if (typeof val === 'string') {
     const parts = val.match(/(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{2,4})/);
@@ -82,11 +81,15 @@ export default function BankImportModal({ accounts, onClose, onImported }: Props
   const handleFile = (file: File) => {
     setFileName(file.name);
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = e.target?.result;
-      const wb = XLSX.read(data, { type: 'array', cellDates: false });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1, defval: '' });
+    reader.onload = async (e) => {
+      const data = e.target?.result as ArrayBuffer;
+      let json: unknown[][];
+      try {
+        json = await readSheetRows(data, file.name);
+      } catch {
+        toast('Nepodporovaný formát. Nahrajte .xlsx nebo .csv (starý .xls uložte v Excelu jako .xlsx).', 'error');
+        return;
+      }
       if (!json.length) return;
       const hdrs = (json[0] as unknown[]).map(h => String(h));
       setHeaders(hdrs);
@@ -191,9 +194,9 @@ export default function BankImportModal({ accounts, onClose, onImported }: Props
                 onClick={() => fileRef.current?.click()}
                 className="border-2 border-dashed border-white/15 rounded-xl p-10 text-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/[0.04] transition-all group">
                 <FileSpreadsheet className="w-10 h-10 text-slate-500 group-hover:text-blue-400 mx-auto mb-3 transition-colors" />
-                <p className="text-slate-300 font-medium text-sm">Vyberte soubor Excel (.xlsx, .xls, .csv)</p>
+                <p className="text-slate-300 font-medium text-sm">Vyberte soubor Excel (.xlsx) nebo CSV</p>
                 <p className="text-slate-500 text-xs mt-1">nebo přetáhněte soubor sem</p>
-                <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" className="hidden"
+                <input ref={fileRef} type="file" accept=".xlsx,.csv" className="hidden"
                   onChange={e => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }} />
               </div>
 

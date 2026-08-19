@@ -261,7 +261,8 @@ export function useCashflowData() {
 
     const monthRows: MonthRow[] = [];
     const bankCorrection = settingsRes.data ? Number((settingsRes.data as CashflowSettings).bank_balance_correction) || 0 : 0;
-    let cumulative = bankCorrection + computedCashBalance;
+    // B3: výchozí zůstatek projekce = korekce + pokladna + skutečný bankovní zůstatek
+    let cumulative = bankCorrection + computedCashBalance + computedBankBalance;
     const keys = Array.from(monthMap.keys()).sort();
     keys.forEach(key => {
       const [yr, mo] = key.split('-').map(Number);

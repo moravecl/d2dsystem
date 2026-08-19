@@ -54,7 +54,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: profile, error: profileError } = await adminClient
       .from("profiles")
-      .select("role")
+      .select("role, organization_id")
       .eq("id", caller.id)
       .maybeSingle();
 
@@ -75,7 +75,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: client, error: clientError } = await adminClient
       .from("clients")
-      .select("portal_user_id")
+      .select("portal_user_id, organization_id")
       .eq("id", clientId)
       .maybeSingle();
 
@@ -91,6 +91,14 @@ Deno.serve(async (req: Request) => {
       return new Response(
         JSON.stringify({ error: "Klient nemá vytvořený portálový účet" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Org kontrola: klient musí patřit do stejné organizace jako volající
+    if (!profile.organization_id || client.organization_id !== profile.organization_id) {
+      return new Response(
+        JSON.stringify({ error: "Klient nepatří do vaší organizace" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
