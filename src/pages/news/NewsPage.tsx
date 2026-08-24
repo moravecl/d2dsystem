@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Newspaper, Plus, Search, Pin, Pencil, Trash2, MessageCircle,
-  Send, ChevronDown, Filter, FileText, Download, Image as ImageIcon, Maximize2, X,
-} from 'lucide-react';
+import { Newspaper, Plus, Search, Pin, Pencil, Trash2, MessageCircle, Send, ChevronDown, Filter, FileText, Download, Maximize2, X } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../contexts/OrganizationContext';

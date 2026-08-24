@@ -214,7 +214,6 @@ export default function ReceivedInvoicesPage() {
 
   const totalAll = invoices.reduce((s, i) => s + i.total_amount, 0);
   const totalPending = invoices.filter(i => i.status === 'pending').reduce((s, i) => s + i.total_amount, 0);
-  const totalApproved = invoices.filter(i => i.status === 'approved').reduce((s, i) => s + i.total_amount, 0);
   const totalPaid = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.total_amount, 0);
 
   const overdue = invoices.filter(i => {

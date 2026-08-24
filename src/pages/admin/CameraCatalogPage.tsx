@@ -34,7 +34,7 @@ const CAMERA_TYPE_LABELS: Record<string, string> = { dome: 'Dome', bullet: 'Bull
 const CABLE_TYPE_LABELS: Record<string, string> = { utp_cat5e: 'UTP Cat5e', utp_cat6: 'UTP Cat6', coax: 'Koaxial', fiber: 'Optika' };
 const ACC_TYPE_LABELS: Record<string, string> = { bracket: 'Konzole', junction_box: 'Junction box', hdd: 'HDD disk', power_supply: 'Napajeci zdroj', other: 'Jine' };
 
-const TABLE_NAME: Record<Tab, string> = {
+const TABLE_NAME: Partial<Record<Tab, string>> = {
  cameras: 'camera_models', nvrs: 'camera_nvrs', cables: 'camera_cables',
  switches: 'camera_poe_switches', accessories: 'camera_accessories',
 };
@@ -250,11 +250,11 @@ export default function CameraCatalogPage() {
  setSaving(true);
  try {
  if (id) {
- const { error } = await supabase.from(TABLE_NAME[tab]).update(data).eq('id', id);
+ const { error } = await supabase.from(TABLE_NAME[tab]!).update(data).eq('id', id);
  if (error) throw error;
  toast('Ulozeno', 'success');
  } else {
- const { error } = await supabase.from(TABLE_NAME[tab]).insert({ ...data, org_id: organizationId });
+ const { error } = await supabase.from(TABLE_NAME[tab]!).insert({ ...data, org_id: organizationId });
  if (error) throw error;
  toast('Pridano', 'success');
  }
@@ -268,7 +268,7 @@ export default function CameraCatalogPage() {
 
  const handleDelete = async (id: string) => {
  if (!confirm('Opravdu smazat?')) return;
- const { error } = await supabase.from(TABLE_NAME[tab]).delete().eq('id', id);
+ const { error } = await supabase.from(TABLE_NAME[tab]!).delete().eq('id', id);
  if (error) toast(error.message, 'error');
  else { toast('Smazano', 'success'); catalog.reload(); }
  };

@@ -1,5 +1,4 @@
 import { supabase } from './supabase';
-import type { CompanyInfo } from './invoiceUtils';
 
 export interface QuoteClientInfo {
   name: string;

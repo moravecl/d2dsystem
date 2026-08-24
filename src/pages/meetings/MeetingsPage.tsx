@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react';
-import {
-  Plus, Search, Filter, ChevronDown, MapPin, Clock, Users as UsersIcon,
-  FolderKanban, MessageSquare, CalendarDays, User,
-} from 'lucide-react';
+import { Plus, Search, Filter, ChevronDown, MapPin, Users as UsersIcon, FolderKanban, MessageSquare, CalendarDays, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useHeader } from '../../contexts/HeaderContext';
-import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
-import { useToast } from '../../components/ui/Toast';
 import MeetingFormModal from './MeetingFormModal';
 
 interface MeetingRow {
@@ -40,12 +35,10 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 
 export default function MeetingsPage() {
   const { setConfig } = useHeader();
-  const { user } = useAuth();
-  const { toast } = useToast();
   const [meetings, setMeetings] = useState<MeetingRow[]>([]);
   const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
   const [actionCounts, setActionCounts] = useState<Record<string, { total: number; done: number }>>({});
-  const [profiles, setProfiles] = useState<ProfileRef[]>([]);
+  const [, setProfiles] = useState<ProfileRef[]>([]);
   const [projects, setProjects] = useState<ProjectRef[]>([]);
   const [clients, setClients] = useState<ClientRef[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,24 +116,6 @@ export default function MeetingsPage() {
   const formatDate = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const isToday = (d: string) => d === new Date().toISOString().split('T')[0];
 
-  const handleEdit = async (m: MeetingRow) => {
-    const { data: atts } = await supabase.from('meeting_attendees').select('user_id').eq('meeting_id', m.id);
-    setEditData({
-      id: m.id,
-      title: m.title,
-      type: m.type,
-      description: m.description,
-      location: m.location,
-      start_date: m.start_date,
-      start_time: m.start_time || '09:00',
-      end_date: m.end_date,
-      end_time: m.end_time || '10:00',
-      project_id: m.project_id || '',
-      client_id: m.client_id || '',
-      attendees: (atts?.data || atts || []).map((a: any) => a.user_id),
-    });
-    setShowModal(true);
-  };
 
   if (loading) {
     return (

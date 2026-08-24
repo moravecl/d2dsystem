@@ -42,7 +42,7 @@ function getJobStartColumn(job: InstallationJob, weekDays: string[]): number {
 
 function getJobSpan(job: InstallationJob, weekDays: string[], startCol: number): number {
   if (!job.end_date && !job.start_date) return 1;
-  const end = job.end_date || job.start_date;
+  const end = (job.end_date || job.start_date)!;
   const endIdx = weekDays.lastIndexOf(end);
   if (endIdx < 0) {
     if (end > weekDays[weekDays.length - 1]) return weekDays.length - startCol;

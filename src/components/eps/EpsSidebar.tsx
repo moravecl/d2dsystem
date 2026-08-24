@@ -5,7 +5,7 @@ import {
   AlertTriangle, Info, ChevronDown, ChevronRight,
   Move, Keyboard, Radio, Pencil, Check, X as XIcon,
 } from 'lucide-react';
-import type { EpsCatalogData, EpsDetectorModel, EpsMotionSensor } from '../../hooks/useEpsCatalog';
+import type { EpsCatalogData } from '../../hooks/useEpsCatalog';
 import type { EpsDesignData, EpsDesignLayer } from '../../hooks/useEpsDesign';
 import { calcTotalPrice, calcCableLengthM, calcZoneUtilization, validateDesign } from '../../lib/epsCalculations';
 

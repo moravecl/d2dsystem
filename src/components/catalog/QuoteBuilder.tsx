@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, FileDown, ChevronDown, ChevronUp, Calculator, DollarSign, Search, Package, Zap, Droplets, Flame, Wind, Lightbulb, Cable, Save, Wrench, Percent, Thermometer, Fan, Sun, Shield, Wifi, Tv, Home, Camera, RefreshCw, GripVertical, ArrowUp, ArrowDown, CreditCard as Edit3, Check } from 'lucide-react';
+import { X, Plus, Trash2, FileDown, ChevronDown, ChevronUp, Calculator, DollarSign, Search, Package, Zap, Droplets, Flame, Wind, Lightbulb, Cable, Save, Wrench, Percent, Thermometer, Fan, Sun, Shield, Wifi, Tv, Home, Camera, RefreshCw, ArrowUp, ArrowDown, CreditCard as Edit3, Check } from 'lucide-react';
 import type { Product, Category, Material } from '../../types/database';
 import type { SelectionState, ProjectMeta, Floor } from '../../hooks/useProjectState';
 import type { HeatingSystemFull } from '../../hooks/useHeatingSystems';
@@ -736,7 +736,6 @@ export default function QuoteBuilder({ open, onClose, products, categories, sele
       });
     });
     const totalBeforeDiscount = totalSelling;
-    const vatBeforeDiscount = totalVat;
     const gd = quoteData.globalDiscount || 0;
     if (gd > 0) {
       totalSelling = totalSelling * (1 - gd / 100);

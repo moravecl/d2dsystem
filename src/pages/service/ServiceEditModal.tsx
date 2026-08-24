@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, User, MapPin, Phone, Mail, Banknote, Building2, Clock, Package, Plus, Trash2, Save, Search, X } from 'lucide-react';
+import { User, MapPin, Phone, Mail, Banknote, Building2, Clock, Package, Plus, Trash2, Save, Search, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';

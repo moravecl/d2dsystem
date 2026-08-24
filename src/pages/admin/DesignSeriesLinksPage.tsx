@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { Search, Plus, X, Check, Star, Trash2, AlertTriangle, ChevronRight, Package, Grid2x2 as Grid, Layers } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import { useCatalogData } from '../../hooks/useCatalogData';
 import { useDesignSeriesLinks } from '../../hooks/useDesignSeriesLinks';
@@ -34,7 +33,7 @@ const COMMON_MODULE_ROLES = [
 export default function DesignSeriesLinksPage() {
   const { toast } = useToast();
   const { products, loading: productsLoading } = useCatalogData();
-  const { links, loading: linksLoading, addLink, updateLink, removeLink, refetch } = useDesignSeriesLinks();
+  const { links, loading: linksLoading, addLink, updateLink, removeLink } = useDesignSeriesLinks();
 
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null);
   const [seriesSearch, setSeriesSearch] = useState('');

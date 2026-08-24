@@ -95,7 +95,7 @@ export default function ProjectDesignTab({ projectId, onViewVersion }: Props) {
   const [fvVersions, setFvVersions] = useState<FvVersion[]>([]);
   const [cameraVersions, setCameraVersions] = useState<CameraVersion[]>([]);
   const [epsVersions, setEpsVersions] = useState<EpsVersion[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [versionLabel, setVersionLabel] = useState('');
@@ -782,7 +782,6 @@ function DesignerCard({
   variant,
   onClick,
   versions,
-  versionType,
   onSaveVersion,
   renderVersionItem,
 }: DesignerCardProps) {

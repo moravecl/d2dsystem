@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Shield, Plus, Trash2 } from 'lucide-react';
+import { X, Shield, Plus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
 import { logAudit } from '../../lib/auditLog';

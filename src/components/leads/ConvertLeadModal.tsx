@@ -28,7 +28,6 @@ export default function ConvertLeadModal({ lead, onClose, onConverted }: Props) 
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
 
-  const nameParts = lead.name.split(' ');
   const suggestedProjectName = lead.name ? `Projekt - ${lead.name}` : '';
 
   const [clientName, setClientName] = useState(lead.name);

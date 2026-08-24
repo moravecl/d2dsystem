@@ -8,12 +8,7 @@ import type {
   DesignSeriesProductLink,
 } from '../types/designElements';
 import type { Room, Floor } from '../hooks/useProjectState';
-import {
-  resolveAssignmentForElement,
-  type ResolvedAssignment,
-  type AssignmentItemType,
-  type AssignmentSourceLevel,
-} from './assignmentResolver';
+import { resolveAssignmentForElement, type AssignmentItemType, type AssignmentSourceLevel } from './assignmentResolver';
 import type { QuoteSection, QuoteItem, QuoteWarning } from '../components/catalog/quoteHelpers';
 
 export interface MountingGroupWithSlots extends MountingGroup {

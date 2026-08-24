@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Clock, Download, Filter, User, Calendar, FileText, Plus, X, ChevronDown } from 'lucide-react';
+import { Download, Filter, User, Calendar, FileText, Plus, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/Toast';

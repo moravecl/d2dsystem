@@ -17,7 +17,6 @@ import {
 import SortControl, { sortItems, type SortDir } from '../../components/ui/SortControl';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useToast } from '../../components/ui/Toast';
-import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../contexts/OrganizationContext';
 import { supabase } from '../../lib/supabase';
 import LeadDetailModal from '../../components/leads/LeadDetailModal';
@@ -49,7 +48,6 @@ interface InquiryForm {
 export default function LeadsPage() {
   const { setConfig } = useHeader();
   const { toast } = useToast();
-  const { user } = useAuth();
   const { isAdmin } = useOrganization();
   const navigate = useNavigate();
 
@@ -132,8 +130,6 @@ export default function LeadsPage() {
   const isLoading = loading || colsLoading;
 
   const renderLeadCard = (lead: Lead) => {
-    const colDef = columns.find((c) => c.key === lead.status);
-    const colColor = colDef ? getColorConfig(colDef.color) : getColorConfig('slate');
 
     return (
       <div className="bg-navy-800/60 backdrop-blur-sm rounded-lg border border-white/[0.08] p-3  transition-shadow group">

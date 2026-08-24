@@ -2,18 +2,14 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, LayoutGrid, LayoutList, Package, Maximize2, Minimize2, Warehouse } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
-import { useToast } from '../../components/ui/Toast';
 import { useAuth } from '../../contexts/AuthContext';
-import Modal from '../../components/ui/Modal';
 import { supabase } from '../../lib/supabase';
 import type { Product, Category, Subcategory } from '../../types/database';
 import ProductDetailModal from '../../components/catalog/ProductDetailModal';
 
-const inputClasses = 'w-full px-3.5 py-2.5 text-sm border border-white/10 rounded-xl bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition';
 
 export default function CatalogListPage() {
   const { setConfig } = useHeader();
-  const { toast } = useToast();
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
 

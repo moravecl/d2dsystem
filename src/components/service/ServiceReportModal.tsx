@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { X, Save, Plus, Trash2, Lock, FileText, Clock, Car, Package, Wrench, Calculator, AlertTriangle, User } from 'lucide-react';
+import { X, Save, Plus, Trash2, Lock, FileText, Car, Package, Wrench, Calculator, AlertTriangle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../contexts/OrganizationContext';
@@ -442,7 +442,7 @@ export default function ServiceReportModal({ scheduleId, reportId, onClose, onSa
                 </div>
               ) : (
                 items.map((item) => {
-                  const { icon: Icon, label } = ITEM_TYPE_LABELS[item.item_type];
+                  const { icon: Icon } = ITEM_TYPE_LABELS[item.item_type];
                   return (
                     <div key={item.id} className="bg-white/5 rounded-xl p-3 border border-white/10">
                       <div className="flex items-start gap-3">

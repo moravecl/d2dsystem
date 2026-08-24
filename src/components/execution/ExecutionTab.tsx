@@ -1,9 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Wrench, Plus, Loader2, Calendar, CheckCircle2,
-  FileText, Hammer, ArrowRight, DollarSign, Check, Eye,
-  RotateCcw, ShieldAlert,
-} from 'lucide-react';
+import { Wrench, Plus, Loader2, Calendar, CheckCircle2, FileText, ArrowRight, DollarSign, Check, Eye, RotateCcw, ShieldAlert } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../ui/Toast';

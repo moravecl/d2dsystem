@@ -1,17 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
- Plus,
- Pencil,
- Trash2,
- Copy,
- Check,
- X,
- Eye,
- EyeOff,
- Code,
- GripVertical,
- FileText,
-} from 'lucide-react';
+import { Plus, Pencil, Trash2, Eye, EyeOff, Code, FileText } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import InquiryFormEditor from '../../components/inquiries/InquiryFormEditor';

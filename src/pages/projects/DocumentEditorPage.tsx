@@ -320,8 +320,8 @@ export default function DocumentEditorPage() {
                   <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Pripojeny kontext</div>
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-xs"><span className="text-slate-500">Projekt</span><span className="font-medium text-slate-300">{projectName}</span></div>
-                    {contextData.quote_id && <div className="flex justify-between text-xs"><span className="text-slate-500">Nabídka</span><span className="font-medium text-blue-400">{String(contextData.quote_id).substring(0, 8)}...</span></div>}
-                    {contextData.job_id && <div className="flex justify-between text-xs"><span className="text-slate-500">Zakázka</span><span className="font-medium text-blue-400">{String(contextData.job_id).substring(0, 8)}...</span></div>}
+                    {contextData.quote_id ? <div className="flex justify-between text-xs"><span className="text-slate-500">Nabídka</span><span className="font-medium text-blue-400">{String(contextData.quote_id).substring(0, 8)}...</span></div> : null}
+                    {contextData.job_id ? <div className="flex justify-between text-xs"><span className="text-slate-500">Zakázka</span><span className="font-medium text-blue-400">{String(contextData.job_id).substring(0, 8)}...</span></div> : null}
                   </div>
                 </div>
               </div>

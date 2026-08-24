@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calendar, Search, ChevronRight, AlertTriangle, CheckCircle2, Plus, Clock, CalendarCheck, X, User, RefreshCw, ClipboardList, CheckCheck, FileText, MapPin, ChevronDown, Banknote, Receipt, FileCheck, CreditCard as Edit3, Phone, Mail, Building2, UserSearch, FileSpreadsheet, Lock, Trash2 } from 'lucide-react';
+import { Calendar, Search, ChevronRight, AlertTriangle, CheckCircle2, Plus, Clock, CalendarCheck, X, User, RefreshCw, ClipboardList, CheckCheck, FileText, MapPin, ChevronDown, Banknote, CreditCard as Edit3, Phone, Mail, Building2, UserSearch, FileSpreadsheet, Lock, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';

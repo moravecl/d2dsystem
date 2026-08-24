@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Package, MapPin, Layers, DollarSign, FileDown, FileSpreadsheet, GitBranch, Wind, Lightbulb, SlidersHorizontal, Eye, EyeOff, Sun, Camera, GripVertical, ArrowUp, ArrowDown, Check, Info, AlertTriangle, Grid2x2 as Grid, ChevronDown, ChevronRight } from 'lucide-react';
+import { Package, MapPin, Layers, DollarSign, FileDown, FileSpreadsheet, GitBranch, Wind, Lightbulb, SlidersHorizontal, Eye, EyeOff, Sun, Camera, GripVertical, ArrowUp, ArrowDown, Check, Info, AlertTriangle, Grid2x2 as Grid } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { renderPinIcon } from '../catalog/floorplan/iconLibrary';
 import type { Product, Category, Material, DesignModule, ProductDesignModule } from '../../types/database';
@@ -9,7 +9,7 @@ import type { FvSummaryData, CameraSummaryData, EpsSummaryData } from '../../pag
 import type { ProjectDesignElement, ProductAssignment, DesignSeriesProductLink, DesignElementType } from '../../types/designElements';
 import type { MountingGroupWithSlots } from '../../hooks/useMountingGroups';
 import type { ResolvedAssignment, ProjectAssignmentStats } from '../../lib/assignmentResolver';
-import { getCategoryColor, getCategoryName } from '../../types/designElements';
+import { getCategoryColor } from '../../types/designElements';
 import { useCategoryColors } from '../../hooks/useCategoryColors';
 import { buildSchematicSummary, type SchematicSummaryOutput } from '../../lib/schematicSummaryBuilder';
 import { listAllPinsGlobal, listAllPins } from '../catalog/floorplan/pinUtils';
@@ -22,7 +22,7 @@ import SummaryHeatingPrint from '../catalog/summary/SummaryHeatingPrint';
 import { exportSelectionPdf } from './selectionPdfExport';
 import { calculateRequiredLumens } from '../../hooks/useLightingNorms';
 import { exportSupplierQuoteXLS } from './supplierQuoteExport';
-import { aggregateFramePreview, type MountingGroupQuoteInput } from '../catalog/quoteHelpers';
+import { buildSectionsFromCatalog } from '../catalog/quoteHelpers';
 import Modal from '../ui/Modal';
 
 interface PdmEntry extends ProductDesignModule {
@@ -279,7 +279,7 @@ const SECTION_LABELS: Record<SectionKey, string> = {
 
 const DEFAULT_SECTIONS: SectionKey[] = ['schematic', 'products', 'rooms', 'ventilation', 'lighting', 'cables', 'materials', 'fittings', 'breakers', 'floorplans', 'trades', 'heating', 'fv_system', 'camera_system'];
 
-export default function ProjectSelectionTab({ selected, products, categories, floors, materials, heatingSystems, designModules, loading, projectName, clientName, projectId, selectedVersionId, onVersionChange, pinSize, fvVersions = [], cameraVersions = [], selectedFvVersionId, selectedCameraVersionId, onFvVersionChange, onCameraVersionChange, fvIncluded = true, cameraIncluded = true, fvSummary, cameraSummary, fvSummaryLoading, cameraSummaryLoading, epsVersions = [], selectedEpsVersionId, onEpsVersionChange, epsIncluded = true, epsSummary, epsSummaryLoading, designElements = [], productAssignments = [], mountingGroups = [], designSeriesLinks = [], elementTypes = [], resolvedAssignments, assignmentStats, productKindMap, schematicDataLoading = false, schematicSymbolScale = 24 }: Props) {
+export default function ProjectSelectionTab({ selected, products, categories, floors, materials, heatingSystems, designModules, loading, projectName, clientName, projectId, selectedVersionId, onVersionChange, pinSize, fvVersions = [], cameraVersions = [], selectedFvVersionId, selectedCameraVersionId, onFvVersionChange, onCameraVersionChange, fvIncluded = true, cameraIncluded = true, fvSummary, cameraSummary, fvSummaryLoading, cameraSummaryLoading, epsVersions = [], selectedEpsVersionId, onEpsVersionChange, epsIncluded = true, epsSummary, designElements = [], productAssignments = [], mountingGroups = [], designSeriesLinks = [], elementTypes = [], resolvedAssignments, assignmentStats, productKindMap, schematicDataLoading = false, schematicSymbolScale = 24 }: Props) {
   const [wastePercents, setWastePercents] = useState<Record<string, number>>({});
   const { colorMap: categoryColorMap } = useCategoryColors();
   const [pdmMap, setPdmMap] = useState<PdmMap>({});
@@ -469,22 +469,6 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
     return map;
   }, [designElements, elementTypes, allRooms, resolvedAssignments, products]);
 
-  const framePreview = useMemo(() => {
-    if (mountingGroups.length === 0) return { frames: [], warnings: [] };
-
-    const mountingGroupsInput: MountingGroupQuoteInput[] = mountingGroups.map((group) => ({
-      id: group.id,
-      frameSize: group.frame_size,
-      orientation: group.orientation ?? 'horizontal',
-      designSeriesId: group.design_series_id,
-      colorName: group.color_name,
-      label: group.label,
-      roomName: group.room_id ? allRooms.find(r => r.id === group.room_id)?.name ?? null : null,
-      modules: group.slots.map((slot) => slot.module_name ?? ''),
-    }));
-
-    return aggregateFramePreview(mountingGroupsInput, products, designSeriesLinks);
-  }, [mountingGroups, products, designSeriesLinks, allRooms]);
 
   const schematicSummary = useMemo<SchematicSummaryOutput | null>(() => {
     if (designElements.length === 0 && mountingGroups.length === 0) return null;
@@ -496,7 +480,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
       designSeriesLinks,
       products,
       productKindMap: productKindMap ?? new Map(),
-      rooms: allRooms.map(r => ({ id: r.id, name: r.name, points: [], requiredLux: null })),
+      rooms: allRooms.map(r => ({ id: r.id, name: r.name, points: [] })),
       floors,
     });
   }, [designElements, elementTypes, productAssignments, mountingGroups, designSeriesLinks, products, productKindMap, allRooms, floors]);
@@ -738,16 +722,18 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
     );
   };
 
-  const handleSupplierExport = () => {
+  const handleSupplierExport = async () => {
     if (selectedTrades.length === 0) return;
+    // exportSupplierQuoteXLS pracuje nad sekcemi nabidky - je potreba je
+    // nejdriv postavit z aktualniho vyberu (drive se predaval spatny tvar
+    // dat a export padal)
+    const sections = await buildSectionsFromCatalog(selected, products, categories, materials, floors, heatingSystems);
     exportSupplierQuoteXLS({
-      selected,
-      products,
-      categories,
-      floors,
+      sections,
       trades: selectedTrades,
       projectName: projectName || 'projekt',
       clientName: clientName || '',
+      quoteNumber: '',
     });
     setShowSupplierModal(false);
     setSelectedTrades([]);
@@ -785,7 +771,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
           <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Verze konfigurátorů</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {(versions.length > 0 || true) && onVersionChange && (
+          {onVersionChange && (
             <div>
               <label className="block text-[10px] font-bold text-blue-400 mb-1">Půdorysný návrhář</label>
               <select
@@ -1136,7 +1122,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
               </div>
             )) : null;
 
-          case 'rooms':
+          case 'rooms': {
             const hasRoomProducts = Object.keys(roomProductMap).length > 0;
             const hasRoomSchematic = Object.keys(schematicByRoom).length > 0;
             return (hasRoomProducts || hasRoomSchematic) ? (
@@ -1187,7 +1173,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
                           ))}
                           {Object.values(schematicGrouped).map((group) => {
                             const typeName = group.type?.name ?? 'Neznámý typ';
-                            const typeIcon = group.type?.icon_url;
+                            const typeIcon = group.type?.icon ?? undefined;
                             const catColor = getCategoryColor(group.type?.category ?? 'other');
                             const productCounts: Record<string, { product: Product; count: number; inherited: number }> = {};
                             for (const item of group.items) {
@@ -1205,7 +1191,9 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2">
                                     {typeIcon ? (
-                                      <img src={typeIcon} alt="" className="w-5 h-5 object-contain" />
+                                      <span className="w-5 h-5 rounded flex items-center justify-center" style={{ backgroundColor: catColor }}>
+                                        {renderPinIcon(typeIcon, 12, 'text-white')}
+                                      </span>
                                     ) : (
                                       <span className="w-5 h-5 rounded flex items-center justify-center text-[8px] font-extrabold text-white" style={{ backgroundColor: catColor }}>
                                         {typeName.charAt(0)}
@@ -1242,6 +1230,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
               </div>
             ) : null;
 
+          }
           case 'ventilation':
             return ventilationData.rows.length > 0 ? (
               <div key="ventilation">
@@ -1630,7 +1619,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
               </div>
             );
 
-          case 'schematic':
+          case 'schematic': {
             if (!hasSchematicData || !schematicSummary) return null;
             const getProduct = (productId: string | null) => productId ? products.find(p => p.id === productId) : null;
             const getRoomName = (roomId: string | null) => {
@@ -1933,6 +1922,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
               </div>
             );
 
+          }
           default:
             return null;
         }

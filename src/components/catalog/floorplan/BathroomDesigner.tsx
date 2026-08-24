@@ -314,7 +314,6 @@ export default function BathroomDesigner({ room, scale, onSave, onClose }: Props
                     const w = mmToNormalized(sym.width_mm, scale);
                     const h = mmToNormalized(sym.height_mm, scale);
                     const rot = ((pl.rotation % 360) + 360) % 360;
-                    const rw = (rot === 90 || rot === 270) ? h : w;
                     const rh = (rot === 90 || rot === 270) ? w : h;
                     const ox = pl.x - w / 2;
                     const oy = pl.y - h / 2;

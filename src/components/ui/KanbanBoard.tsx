@@ -1,5 +1,5 @@
 import { useState, useRef, type ReactNode, type DragEvent } from 'react';
-import { Plus, GripVertical, X, Pencil, Check } from 'lucide-react';
+import { Plus, X, Pencil, Check } from 'lucide-react';
 import type { KanbanColumn } from '../../hooks/useKanbanColumns';
 
 const COLOR_OPTIONS = [

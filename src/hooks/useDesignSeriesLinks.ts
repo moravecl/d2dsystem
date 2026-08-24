@@ -58,7 +58,7 @@ export function useDesignSeriesLinks(designSeriesId?: string) {
     }
 
     for (const roleMap of bySeriesAndRole.values()) {
-      for (const [roleKey, roleLinks] of roleMap) {
+      for (const [, roleLinks] of roleMap) {
         roleLinks.sort((a, b) => {
           if (a.is_default && !b.is_default) return -1;
           if (!a.is_default && b.is_default) return 1;

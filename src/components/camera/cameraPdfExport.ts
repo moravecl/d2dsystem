@@ -444,15 +444,16 @@ ${priceLines.map(l => `<div class="price-row"><span>${esc(l.label)}</span><span 
   wrapper.appendChild(container);
 
   setTimeout(() => {
-    html2pdf()
-      .set({
-        margin: [10, 10, 10, 10],
+    const pdfOptions = {
+        margin: [10, 10, 10, 10] as [number, number, number, number],
         filename: `kamerovy-system-${p.projectName.replace(/[^a-zA-Z0-9]/g, '-')}.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
+        image: { type: 'jpeg' as const, quality: 0.95 },
         html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 794 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-      })
+    };
+    html2pdf()
+      .set(pdfOptions)
       .from(container)
       .save()
       .then(() => {

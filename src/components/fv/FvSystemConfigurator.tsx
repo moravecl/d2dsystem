@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Zap, Battery, Car, Plus, Minus, Package, Check, Info, Sun, Wrench } from 'lucide-react';
-import type { FvCatalogData, FvInverter, FvBattery, FvWallbox, FvAccessory } from '../../hooks/useFvCatalog';
+import { Zap, Battery, Car, Plus, Minus, Package, Check, Info, Sun } from 'lucide-react';
+import type { FvCatalogData, FvInverter, FvBattery, FvAccessory } from '../../hooks/useFvCatalog';
 import type { FvSystemConfig } from '../../hooks/useFvDesign';
 import type { FvCalculationResult, RoofSurface } from '../../lib/fvCalculations';
 import { calcConstructionCostBreakdown } from './fvQuoteBuilder';

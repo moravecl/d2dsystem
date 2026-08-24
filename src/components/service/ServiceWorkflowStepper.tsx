@@ -65,7 +65,6 @@ interface Props {
 export default function ServiceWorkflowStepper({
   currentStatus,
   hasScheduledDate,
-  hasReport,
   hasLockedReport,
   hasProtocol,
   isBilled,
@@ -98,7 +97,6 @@ export default function ServiceWorkflowStepper({
           const Icon = step.icon;
           const isComplete = idx < currentIdx;
           const isCurrent = idx === currentIdx;
-          const isPending = idx > currentIdx;
 
           let statusColor = 'bg-slate-700 text-slate-500';
           let lineColor = 'bg-slate-700';

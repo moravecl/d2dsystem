@@ -115,7 +115,7 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
   const loadData = useCallback(async () => {
     try {
       const ids = quoteIdsKey.split(',').filter(v => v && v !== 'null' && v !== 'undefined');
-      const queries: Promise<any>[] = [
+      const queries: PromiseLike<{ data: unknown; error: unknown }>[] = [
         supabase.from('job_material_entries').select('*').eq('job_id', jobId).order('created_at', { ascending: false }),
         supabase.from('products').select('id, name, code, brand, price, purchase_price').eq('is_active', true).order('name'),
         supabase.from('warehouse_items').select('id, name, unit, quantity, product_id').eq('is_active', true),
@@ -136,12 +136,13 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
       }
       setProductPriceMap(priceMap);
 
-      const quotesRes = ids.length > 0 ? results[3] : { data: [] };
+      const quotesRes = ids.length > 0 ? results[3] : { data: [], error: null };
+      const quoteRows = (quotesRes.data || []) as any[];
       if (quotesRes?.error) {
         console.error('Failed to load quote sections:', quotesRes.error);
       }
       const items: QuoteItem[] = [];
-      for (const quote of (quotesRes.data || [])) {
+      for (const quote of quoteRows) {
         const quoteId = (quote as any)?.id;
         const raw = (quote as any)?.sections_data;
         if (!raw) continue;

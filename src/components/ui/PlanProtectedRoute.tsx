@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom';
 import { Lock, Zap } from 'lucide-react';
 import { useOrganization } from '../../contexts/OrganizationContext';
 import { Link } from 'react-router-dom';

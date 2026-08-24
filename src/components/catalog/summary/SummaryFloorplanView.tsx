@@ -34,7 +34,7 @@ interface Props {
 }
 
 export default function SummaryFloorplanView({ floor, floors, floorPins, products, categories, heatingSystems, roomIdToName, pinSize = 28, schematicSymbolScale = 24, bathroomSymbols = [], designElements = [], elementTypes = [], mountingGroups = [] }: Props) {
-  const [canvasAR, setCanvasAR] = useState(1);
+  const [, setCanvasAR] = useState(1);
   const { colorMap: categoryColorMap } = useCategoryColors();
   const rooms = floor.rooms ?? [];
   const cables = floor.cables ?? [];

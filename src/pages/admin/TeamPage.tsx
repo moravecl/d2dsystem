@@ -334,7 +334,7 @@ export default function TeamPage() {
       .maybeSingle();
 
     const profile = selectedMember.profile;
-    let content = template.content
+    const content = template.content
       .replace(/\{\{company_name\}\}/g, companyInfo?.name || organization.name)
       .replace(/\{\{company_ico\}\}/g, companyInfo?.ico || '')
       .replace(/\{\{company_address\}\}/g, companyInfo?.address || '')

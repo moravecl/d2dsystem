@@ -1,10 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
-import {
-  Search, LogIn, LogOut, Monitor, Clock, Users, Activity,
-  Building2, ChevronDown, ChevronUp, RefreshCw, Trash2, Filter,
-  Calendar, ArrowUpRight, User
-} from 'lucide-react';
+import { Search, LogIn, LogOut, Monitor, Clock, Users, Building2, ChevronDown, ChevronUp, RefreshCw, Filter, Calendar, ArrowUpRight, User } from 'lucide-react';
 
 interface ActivityRow {
   id: string;

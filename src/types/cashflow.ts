@@ -47,7 +47,8 @@ export interface CashflowManualEntry {
   id: string;
   org_id: string;
   date: string;
-  type: 'inflow' | 'outflow';
+  /** Starsi zaznamy v DB maji 'in'/'out', nove 'inflow'/'outflow'. */
+  type: 'inflow' | 'outflow' | 'in' | 'out';
   amount_gross: number;
   title: string;
   note?: string;

@@ -18,7 +18,7 @@ import type { PipePattern } from '../catalog/floorplan/heatingPipeGenerator';
 import type { ProjectDesignElement, DesignElementType, ProductAssignment, DesignSeriesProductLink } from '../../types/designElements';
 import type { MountingGroupWithSlots } from '../../hooks/useMountingGroups';
 import type { ResolvedAssignment } from '../../lib/assignmentResolver';
-import { buildSchematicSummary, type SchematicSummaryOutput } from '../../lib/schematicSummaryBuilder';
+import { buildSchematicSummary } from '../../lib/schematicSummaryBuilder';
 
 interface PdmEntry extends ProductDesignModule {
   module: DesignModule;
@@ -222,7 +222,7 @@ function getCachedImageAspectRatio(url: string): number {
   return 1;
 }
 
-function buildObjectSvg(obj: FloorplanObjectData, product: Product, scale: Floor['scale'], canvasAR = 1): string {
+function buildObjectSvg(obj: FloorplanObjectData, product: Product, scale: Floor['scale'], _canvasAR = 1): string {
   if (!scale || !product.floorplan_symbol) return '';
   const symbol = product.floorplan_symbol as FloorplanSymbol;
   if (symbol.type === 'pin') return '';
@@ -606,7 +606,7 @@ function buildHeatingCalcHtml(floors: Floor[], heatingSystems: HeatingSystemFull
 }
 
 export function exportSelectionPdf(data: ExportData) {
-  const { selected, products, categories, floors, materials, heatingSystems, wastePercents, designModules, productModulesMap, projectName, clientName, hiddenSections, pinSize, fvSummary, cameraSummary, fvIncluded = true, cameraIncluded = true, showPrices = true, floorplanLabel, epsSummary, epsIncluded = true, designElements = [], elementTypes = [], mountingGroups = [], resolvedAssignments, productAssignments = [], productKindMap = new Map(), designSeriesLinks = [], schematicSymbolScale = 24, categoryColorMap = {} } = data;
+  const { selected, products, categories, floors, materials, heatingSystems, wastePercents, designModules, productModulesMap, projectName, clientName, hiddenSections, pinSize, fvSummary, cameraSummary, fvIncluded = true, cameraIncluded = true, showPrices = true, floorplanLabel, epsSummary, epsIncluded = true, designElements = [], elementTypes = [], mountingGroups = [], productAssignments = [], productKindMap = new Map(), designSeriesLinks = [], schematicSymbolScale = 24, categoryColorMap = {} } = data;
   const show = (key: SectionKey) => !hiddenSections?.has(key);
   const dateStr = new Date().toLocaleDateString('cs-CZ');
 
@@ -1122,7 +1122,7 @@ export function exportSelectionPdf(data: ExportData) {
       designSeriesLinks,
       products,
       productKindMap,
-      rooms: allRooms.map(r => ({ id: r.id, name: r.name, points: [], requiredLux: null })),
+      rooms: allRooms.map(r => ({ id: r.id, name: r.name, points: [] })),
       floors,
     });
 

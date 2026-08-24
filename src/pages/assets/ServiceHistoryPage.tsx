@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { EVENT_TYPE_LABELS, ASSET_TYPE_LABELS } from '../../types/assets';
 import EventFormModal from '../../components/assets/EventFormModal';
 import { useToast } from '../../components/ui/Toast';
-import type { AssetEvent, Asset, EventType } from '../../types/assets';
+import type { AssetEvent, Asset } from '../../types/assets';
 
 interface EventWithAsset extends AssetEvent {
   asset?: Asset;

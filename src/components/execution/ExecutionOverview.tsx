@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Clock, Package, BookOpen, AlertTriangle, Users, ArrowRight,
-  FileText, Plus, X, TrendingUp, CheckCircle2, Eye, RotateCcw,
-  Lock, Info,
-} from 'lucide-react';
+import { Clock, Package, BookOpen, AlertTriangle, Users, FileText, Plus, X, TrendingUp, CheckCircle2, Eye, RotateCcw, Lock } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 interface ProjectQuote {
@@ -38,11 +34,6 @@ interface TodayWorker {
   type: 'employee' | 'temp';
 }
 
-interface QuotePlannedItem {
-  name: string;
-  unit: string;
-  quantity: number;
-}
 
 interface Props {
   jobId: string;
@@ -140,7 +131,7 @@ export default function ExecutionOverview({
     (async () => {
       const quoteIdsToFetch = includedIdsKey.split(',').filter(Boolean);
 
-      const queries: Promise<any>[] = [
+      const queries: PromiseLike<{ data: unknown; error: unknown }>[] = [
         supabase.from('job_worklogs').select('duration_minutes, started_at, workers').eq('job_id', jobId),
         supabase.from('job_material_entries').select('id, material_name, actual_qty').eq('job_id', jobId),
         supabase.from('job_diary_entries').select('id, entry_date, people_on_site').eq('job_id', jobId).order('entry_date', { ascending: false }),
@@ -164,7 +155,8 @@ export default function ExecutionOverview({
       let totalPlannedCount = 0;
       const plannedNamesSet = new Set<string>();
       const quotesRes = quoteIdsToFetch.length > 0 ? results[7] : { data: [] };
-      for (const quote of (quotesRes.data || [])) {
+      const quoteRows = (quotesRes.data || []) as any[];
+      for (const quote of quoteRows) {
         const raw = (quote as any)?.sections_data;
         const sections = Array.isArray(raw) ? raw : (Array.isArray(raw?.sections) ? raw.sections : []);
         for (const sec of sections) {
@@ -182,7 +174,7 @@ export default function ExecutionOverview({
         allMat.filter((m: any) => m.actual_qty > 0).map((m: any) => m.material_name)
       );
       let plannedWithActual = 0;
-      for (const quote of (quotesRes.data || [])) {
+      for (const quote of quoteRows) {
         const raw = (quote as any)?.sections_data;
         const sections = Array.isArray(raw) ? raw : (Array.isArray(raw?.sections) ? raw.sections : []);
         for (const sec of sections) {

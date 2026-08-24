@@ -4,12 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import { useOrganization } from '../../contexts/OrganizationContext';
 import AutomationFormModal from './AutomationFormModal';
-import {
- TRIGGER_ENTITIES, TRIGGER_EVENTS, ACTION_TYPES,
- getEntityLabel, getEntityColor, getEventLabel, getActionLabel,
- buildTriggerSummary,
- type AutomationRule, type AutomationAction,
-} from './automationDefinitions';
+import { getEntityLabel, getEntityColor, getActionLabel, buildTriggerSummary, type AutomationRule, type AutomationAction } from './automationDefinitions';
 
 interface AutomationRow {
  id: string;

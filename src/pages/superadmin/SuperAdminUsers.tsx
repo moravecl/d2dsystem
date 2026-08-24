@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import {
-  Search, Users, Building2, Shield, User,
-  SlidersHorizontal, CheckCircle, AlertTriangle
-} from 'lucide-react';
+import { Search, Users, Building2, Shield, User, SlidersHorizontal, CheckCircle } from 'lucide-react';
 
 interface UserRow {
   id: string;

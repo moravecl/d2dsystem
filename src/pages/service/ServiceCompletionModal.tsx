@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
-import ServiceWorkflowStepper, { WorkflowStatus, WORKFLOW_STATUS_LABELS } from '../../components/service/ServiceWorkflowStepper';
+import ServiceWorkflowStepper, { WorkflowStatus } from '../../components/service/ServiceWorkflowStepper';
 
 interface Schedule {
   id: string;
@@ -46,7 +46,7 @@ export default function ServiceCompletionModal({ open, schedule, onClose, onComp
   const [priceChangeNote, setPriceChangeNote] = useState('');
   const [markForInvoicing, setMarkForInvoicing] = useState(true);
   const [report, setReport] = useState<Report | null>(null);
-  const [loadingReport, setLoadingReport] = useState(false);
+  const [, setLoadingReport] = useState(false);
 
   useEffect(() => {
     if (!open) return;

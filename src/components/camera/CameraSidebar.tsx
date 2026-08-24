@@ -50,7 +50,7 @@ export default function CameraSidebar({
   catalog, designData, selectedCameraModelId,
   selectedPlacedCameraId,
   onSelectCameraModel, onSelectNvr, onSelectSwitch,
-  onDeletePlacedCamera, onDeleteRoute, onDeleteNvr, onDeleteSwitch,
+  onDeletePlacedCamera, onDeleteRoute,
   onUpdateStorageConfig, onAddLayer, onDeleteLayer, onToggleLayerVisibility, onSelectLayer, onRenameLayer, activeLayerId,
   onUpdateAccessory, onImageLayerNeedsScale, mapScale, catalogFilter,
   projectAddress, projectLat, projectLon,

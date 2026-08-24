@@ -1172,7 +1172,7 @@ export function buildSchematicQuoteSections(params: BuildSchematicQuoteParams): 
     designSeriesLinks,
     products,
     productKindMap,
-    rooms: rooms.map(r => ({ id: r.id, name: r.name, points: [], requiredLux: null })),
+    rooms: rooms.map(r => ({ id: r.id, name: r.name, points: [] })),
     floors,
   });
 

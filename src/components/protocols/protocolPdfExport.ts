@@ -20,7 +20,7 @@ interface ExportParams {
     protocol_type: string;
     title: string;
     protocol_date: string;
-    valid_until: string;
+    valid_until: string | null;
     inspector_name: string;
     inspector_company: string;
     result: string;

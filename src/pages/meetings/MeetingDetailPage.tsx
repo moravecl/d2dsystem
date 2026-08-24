@@ -1,9 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import {
-  Play, Square, Pencil, Trash2, FileDown, MapPin, Clock,
-  FolderKanban, User, Users as UsersIcon, ArrowLeft,
-} from 'lucide-react';
+import { Play, Square, Pencil, Trash2, FileDown, MapPin, Clock, FolderKanban, User, ArrowLeft } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../components/ui/Toast';

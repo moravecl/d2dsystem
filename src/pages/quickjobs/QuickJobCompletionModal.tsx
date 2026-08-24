@@ -214,7 +214,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
   };
 
   const syncToAttendanceOrProject = async (
-    rows: WorkRow[],
+    _rows: WorkRow[],
     inserts: { quick_job_id: string; worker_name: string; worker_id: string | null; hours: number; hourly_rate: number; description: string; work_date: string }[]
   ) => {
     if (job.project_id) {

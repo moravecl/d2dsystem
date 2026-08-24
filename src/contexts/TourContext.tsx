@@ -48,7 +48,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
     if (organization) {
       setToursEnabled(organization.onboarding_tours_enabled !== false);
     }
-  }, [organization?.id, (organization as any)?.onboarding_tours_enabled]);
+  }, [organization?.id, organization?.onboarding_tours_enabled]);
 
   useEffect(() => {
     if (!user) {

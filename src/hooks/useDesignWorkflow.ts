@@ -1,19 +1,8 @@
 import { useMemo } from 'react';
 import type { WorkflowStep } from '../components/editor/DesignWorkflowStepper';
-import type { ProjectDesignElement } from '../types/designElements';
+import type { ProjectDesignElement, ProductAssignment } from '../types/designElements';
 import type { Floor, Room } from './useProjectState';
-import {
-  resolveAssignmentForElement,
-  type ResolvedAssignment,
-} from '../lib/assignmentResolver';
-
-interface ProductAssignment {
-  id: string;
-  scope: 'project' | 'room' | 'element';
-  scope_ref_id: string | null;
-  element_type_id: string | null;
-  product_id: string | null;
-}
+import { resolveAssignmentForElement } from '../lib/assignmentResolver';
 
 export interface WorkflowStepStatus {
   isComplete: boolean;

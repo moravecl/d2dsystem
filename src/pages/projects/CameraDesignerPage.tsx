@@ -433,29 +433,6 @@ export default function CameraDesignerPage() {
     return () => window.removeEventListener('keydown', handler);
   }, [selectedPlacedCameraId, handleDeletePlacedCamera, safeModeChange, imageLayerNeedsScale, toast, selectedNvrId, selectedSwitchId, handleSelectNvr, handleSelectSwitch]);
 
-  const computeCameraSummary = useCallback(() => {
-    const dd2 = design?.design_data;
-    if (!dd2) return { count: 0, price: 0 };
-    const count = dd2.cameras.length;
-    let price = 0;
-    dd2.cameras.forEach(cam => {
-      const m = catalog.cameras.find(c => c.id === cam.modelId);
-      if (m) price += m.price;
-    });
-    dd2.nvrs.forEach(n => {
-      const nv = catalog.nvrs.find(c => c.id === n.nvrId);
-      if (nv) price += nv.price;
-    });
-    dd2.switches.forEach(s => {
-      const sw = catalog.poeSwitches.find(c => c.id === s.switchId);
-      if (sw) price += sw.price;
-    });
-    dd2.accessoryItems.forEach(ai => {
-      const acc = catalog.accessories.find(a => a.id === ai.accessoryId);
-      if (acc) price += acc.price * ai.quantity;
-    });
-    return { count, price: Math.round(price) };
-  }, [design?.design_data, catalog]);
 
   const handleSaveVersion = useCallback(async (note: string) => {
     if (!design) {

@@ -1,13 +1,5 @@
 import { useState } from 'react';
-import {
-  ArrowLeft,
-  Plus,
-  Trash2,
-  GripVertical,
-  ChevronDown,
-  ChevronUp,
-  Eye,
-} from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, Eye } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import type { FormField, FormSettings, FormType } from '../../pages/admin/InquiryFormsPage';

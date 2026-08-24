@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Shield, Cpu, Calendar, Clock, AlertTriangle, CreditCard as Edit2, Trash2, Wrench, CheckCircle2, ChevronDown, ArrowRight, FileText, ClipboardList, RefreshCw } from 'lucide-react';
+import { Plus, Shield, Cpu, Calendar, AlertTriangle, CreditCard as Edit2, Trash2, Wrench, CheckCircle2, ArrowRight, FileText, ClipboardList, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';

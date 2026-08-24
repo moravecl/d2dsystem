@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { CalendarClock, Search, Filter, CheckCircle2, AlertTriangle, Clock, CreditCard as Edit2 } from 'lucide-react';
+import { CalendarClock, Search, CheckCircle2, AlertTriangle, Clock, CreditCard as Edit2 } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
 import { supabase } from '../../lib/supabase';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../../types/assets';
 import CompleteDueItemModal from '../../components/assets/CompleteDueItemModal';
 import DueItemFormModal from '../../components/assets/DueItemFormModal';
-import type { DueItem, Asset, DueStatus, DueType } from '../../types/assets';
+import type { DueItem, Asset, DueStatus } from '../../types/assets';
 
 interface DueWithAsset extends DueItem {
   asset?: Asset;
@@ -17,7 +17,7 @@ interface DueWithAsset extends DueItem {
 
 export default function DueItemsPage() {
   const { setConfig } = useHeader();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [items, setItems] = useState<DueWithAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');

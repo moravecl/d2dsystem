@@ -53,7 +53,7 @@ function parseDate(val: unknown): string {
     if (iso) return iso;
   }
   if (typeof val === 'string') {
-    const parts = val.match(/(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{2,4})/);
+    const parts = val.match(/(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{2,4})/);
     if (parts) {
       const [, d, m, y] = parts;
       const year = y.length === 2 ? `20${y}` : y;

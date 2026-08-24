@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Plus, Trash2, GripVertical, CheckSquare, Square,
-  ChevronDown, ChevronRight, FileCheck,
-} from 'lucide-react';
+import { Plus, Trash2, CheckSquare, Square, FileCheck } from 'lucide-react';
 import Modal from '../ui/Modal';
 import SignaturePad from '../projects/SignaturePad';
 import { supabase } from '../../lib/supabase';
@@ -79,7 +76,7 @@ export default function ProtocolFormModal({ open, onClose, projectId, protocol, 
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [saving, setSaving] = useState(false);
   const [tab, setTab] = useState<TabKey>('basic');
-  const [showSignatures, setShowSignatures] = useState(false);
+  const [, setShowSignatures] = useState(false);
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
 

@@ -121,7 +121,7 @@ export interface EpsDesign {
   updated_at: string;
 }
 
-const EMPTY_DESIGN_DATA: EpsDesignData = {
+export const EMPTY_DESIGN_DATA: EpsDesignData = {
   layers: [],
   detectors: [],
   panels: [],

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { sanitizeHtml } from '../../lib/sanitize';
-import { Users, ShieldCheck, ShieldOff, Eye, ChevronDown, ChevronUp, KeyRound, CreditCard as Edit, UserPlus, Trash2, Loader2, RefreshCw, Mail, Crown, Shield, Wrench, User, AlertTriangle, Plus, Copy, Lock, EyeOff, Save, X, Check, ChevronRight, Search, Phone, MapPin, Cake, Briefcase, Clock, Palmtree, Calendar, FileText, Download, Send, CheckCircle, Archive, PenTool } from 'lucide-react';
+import { Users, ShieldCheck, ShieldOff, Eye, ChevronDown, ChevronUp, KeyRound, CreditCard as Edit, UserPlus, Trash2, Loader2, RefreshCw, Mail, Crown, Shield, Wrench, User, AlertTriangle, Plus, Copy, Lock, EyeOff, Save, X, Check, ChevronRight, Search, Phone, MapPin, Cake, Briefcase, Clock, Palmtree, Calendar, FileText, Send, CheckCircle, Archive, PenTool } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../contexts/OrganizationContext';
@@ -87,7 +87,7 @@ const PRESET_COLORS = [
 
 export default function UsersPage() {
   const [tab, setTab] = useState<Tab>('users');
-  const { user: currentUser, profile: currentProfile, isAdmin } = useAuth();
+  const { user: currentUser } = useAuth();
   const { organization, canManageTeam } = useOrganization();
   const { toast } = useToast();
   const planLimits = usePlanLimits();
@@ -915,7 +915,7 @@ function TeamTab({
 
   const [contracts, setContracts] = useState<EmployeeContract[]>([]);
   const [contractTemplates, setContractTemplates] = useState<ContractTemplate[]>([]);
-  const [loadingContracts, setLoadingContracts] = useState(false);
+  const [, setLoadingContracts] = useState(false);
   const [showContractModal, setShowContractModal] = useState<string | null>(null);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
   const [contractTitle, setContractTitle] = useState('');

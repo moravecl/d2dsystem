@@ -59,7 +59,6 @@ export default function GanttMilestoneBar({ milestone, startDate, totalDays, onU
       const dayDelta = Math.round((dx / dragState.current.containerWidth) * totalDays);
 
       if (dragState.current.mode === 'move') {
-        const newLeft = dragState.current.origLeftDay + dayDelta;
         const pctDelta = (dayDelta / totalDays) * 100;
         setTempOffset({ leftPct: pctDelta, widthPct: 0 });
       } else if (dragState.current.mode === 'resize-left') {

@@ -1,4 +1,4 @@
-import { Mail, Phone, MessageSquare, Calendar, Clock, ArrowUpRight, FileText } from 'lucide-react';
+import { Mail, Phone, MessageSquare, Calendar, ArrowUpRight, FileText } from 'lucide-react';
 import Modal from '../ui/Modal';
 
 interface Lead {

@@ -334,7 +334,6 @@ export default function TasksBoardPage() {
               ) : (
                 filtered.map(task => {
                   const pri = PRIORITIES[task.priority] || PRIORITIES.medium;
-                  const col = columns.find(c => c.key === task.status);
                   const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done';
                   return (
                     <tr key={task.id} className="hover:bg-white/[0.04] transition group">

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, DollarSign, CheckCircle2, AlertCircle, Clock, Download, Search, Eye, FileText, PenLine, Trash2, CreditCard as Edit2, TrendingUp, TrendingDown, Zap, ChevronDown, ArrowDownCircle, Receipt, FileCheck, Banknote, CreditCard, ArrowRight } from 'lucide-react';
+import { Plus, DollarSign, CheckCircle2, AlertCircle, Clock, Download, Search, Eye, FileText, PenLine, Trash2, CreditCard as Edit2, TrendingUp, TrendingDown, Zap, ChevronDown, ArrowDownCircle, Receipt, FileCheck, Banknote, CreditCard } from 'lucide-react';
 import SortControl, { sortItems, type SortDir } from '../../components/ui/SortControl';
 import { useHeader } from '../../contexts/HeaderContext';
 import { supabase } from '../../lib/supabase';
@@ -10,10 +10,7 @@ import Tabs from '../../components/ui/Tabs';
 import { useToast } from '../../components/ui/Toast';
 import ManualEntryModal, { type FinancialEntry } from '../../components/financial/ManualEntryModal';
 import BillingQuickJobsTab from '../../components/financial/BillingQuickJobsTab';
-import {
-  INVOICE_TYPES, INVOICE_TYPE_LABELS, INVOICE_TYPE_COLORS, INVOICE_TYPE_SHORT_LABELS,
-  type InvoiceType,
-} from '../../lib/invoiceTypes';
+import { INVOICE_TYPES, INVOICE_TYPE_COLORS, INVOICE_TYPE_SHORT_LABELS } from '../../lib/invoiceTypes';
 
 const FOLLOWUP_DOC: Record<string, { type: string; label: string }> = {
   [INVOICE_TYPES.DEPOSIT_INVOICE]: { type: INVOICE_TYPES.TAX_DOCUMENT, label: 'Daňový doklad' },

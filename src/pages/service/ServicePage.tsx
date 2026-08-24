@@ -1,9 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Wrench, Calendar, AlertTriangle, MapPin, Clock,
-  ChevronRight, Filter, Search, Cpu, Shield, Ticket,
-} from 'lucide-react';
+import { Calendar, AlertTriangle, Clock, ChevronRight, Shield, Ticket } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
 import { supabase } from '../../lib/supabase';
 import Tabs from '../../components/ui/Tabs';

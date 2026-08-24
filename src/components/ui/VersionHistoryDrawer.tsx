@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { History, RotateCcw, X, Save, Loader2, ChevronDown, AlertTriangle } from 'lucide-react';
+import { History, RotateCcw, X, Save, Loader2, AlertTriangle } from 'lucide-react';
 
 export interface VersionItem {
   id: string;

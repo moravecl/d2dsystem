@@ -29,11 +29,10 @@ jobs:
       - name: Security audit (high+)
         run: npm audit --audit-level=high
 
-  typecheck:
-    # Typecheck zatím neblokuje (postupné umazávání ~400 chyb),
-    # ale výsledek je vidět u každého commitu.
+  # Od 24. 8. 2026 blokujici: typecheck je na 0 chybach, lint na 0 errorech
+  # (no-explicit-any je warning - dlouhodoby dluh ~300 mist).
+  typecheck-and-lint:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,5 +40,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: TypeScript check (informativní)
+      - name: TypeScript check
         run: npm run typecheck
+      - name: ESLint
+        run: npm run lint -- --max-warnings=500

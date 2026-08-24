@@ -21,7 +21,6 @@ interface Props {
 
 export default function UsedElementsPanel({
   products,
-  categories,
   selected,
   floors,
   rooms = [],

@@ -32,7 +32,7 @@ export default function TimeTrackingPage() {
   const { toast } = useToast();
   const timer = useTimer();
   const [entries, setEntries] = useState<TimeEntry[]>([]);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [, setProfiles] = useState<Profile[]>([]);
   const [projects, setProjects] = useState<ProjectRef[]>([]);
   const [_tasks, setTasks] = useState<TaskRef[]>([]);
   const [loading, setLoading] = useState(true);

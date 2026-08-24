@@ -131,7 +131,7 @@ export default function InvoiceDetailPage() {
   useEffect(() => {
     setConfig({
       breadcrumbs: [
-        { label: 'Finance', path: '/finance' },
+        { label: 'Finance', href: '/finance' },
         { label: 'Detail dokladu' },
       ],
     });
@@ -299,7 +299,6 @@ export default function InvoiceDetailPage() {
 
     const invType = (invoice.invoice_type as InvoiceType) || INVOICE_TYPES.STANDARD;
     const printTitle = INVOICE_TYPE_PRINT_TITLE[invType] || 'FAKTURA';
-    const typeColors = INVOICE_TYPE_COLORS[invType] || INVOICE_TYPE_COLORS[INVOICE_TYPES.STANDARD];
 
     const spaydStr = generateSpayd(invoice.iban, invoice.total - (invoice.paid_amount || 0), invoice.variable_symbol, 'CZK', invoice.bank_account);
     let qrImgTag = '';

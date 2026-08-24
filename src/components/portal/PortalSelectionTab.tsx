@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { Package, MapPin, Layers, DollarSign, FileDown, Loader2, GitBranch } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import type { Product, Category, Material } from '../../types/database';
+import type { Product } from '../../types/database';
 import type { SelectionState, Floor, Placement } from '../../hooks/useProjectState';
 import { useCatalogData } from '../../hooks/useCatalogData';
 import { useMaterials } from '../../hooks/useMaterials';

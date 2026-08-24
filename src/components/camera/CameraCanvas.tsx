@@ -66,7 +66,7 @@ interface Props {
 export default function CameraCanvas({
   layer, cameras, routes, nvrs, switches, cameraModels, mode,
   selectedCameraModelId, selectedPlacedCameraId, selectedPlacedNvrId, selectedPlacedSwitchId,
-  scale, mapScale, onPlaceCamera, onUpdateCameraRotation, onMoveCamera, onMoveNvr, onMoveSwitch,
+  scale, onPlaceCamera, onUpdateCameraRotation, onMoveCamera, onMoveNvr, onMoveSwitch,
   onSelectPlacedCamera, onSelectPlacedNvr, onSelectPlacedSwitch, onDeletePlacedNvr, onDeletePlacedSwitch,
   onAddRoutePoint, onFinishRoute, onPlaceNvr, onPlaceSwitch, onScalePoint,
   drawingRoute, scalePoints, showIrRange, showFov, onCanvasAspect,
@@ -74,10 +74,10 @@ export default function CameraCanvas({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ w: 800, h: 600 });
   const [view, setView] = useState<ViewState>({ centerX: lonToTileX(14.4378, 18), centerY: latToTileY(50.0755, 18), zoom: 18 });
-  const [rotatingCam, setRotatingCam] = useState<string | null>(null);
+  const [, setRotatingCam] = useState<string | null>(null);
   const rotatingRef = useRef<string | null>(null);
   const draggingRef = useRef<{ type: 'camera' | 'nvr' | 'switch'; id: string } | null>(null);
-  const [draggingCam, setDraggingCam] = useState<string | null>(null);
+  const [, setDraggingCam] = useState<string | null>(null);
   const isMap = layer?.type === 'map';
 
   useEffect(() => {

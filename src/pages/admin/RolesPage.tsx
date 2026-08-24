@@ -4,11 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useOrganization } from '../../contexts/OrganizationContext';
 import { useToast } from '../../components/ui/Toast';
 import type { CustomRole, RolePermissions, ModuleKey, DataPermissionKey } from '../../lib/permissions';
-import {
-  MODULE_KEYS, MODULE_LABELS,
-  DATA_PERMISSION_GROUPS, DATA_PERMISSION_LABELS,
-  getDefaultPermissions, createFullAccessPermissions,
-} from '../../lib/permissions';
+import { MODULE_KEYS, MODULE_LABELS, DATA_PERMISSION_GROUPS, DATA_PERMISSION_LABELS } from '../../lib/permissions';
 import RoleFormModal from './RoleFormModal';
 import RoleAssignmentSection from './RoleAssignmentSection';
 

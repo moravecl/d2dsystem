@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Settings, Save, Loader2, Hash } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
-import { INVOICE_TYPE_LABELS } from '../../lib/invoiceTypes';
 
 interface InvSettings {
   id: string;

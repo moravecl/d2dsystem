@@ -28,7 +28,7 @@ export default function DesignerConfigPage() {
 
     const loadConfig = async () => {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('designer_config')
         .select('*')
         .eq('organization_id', organization.id)

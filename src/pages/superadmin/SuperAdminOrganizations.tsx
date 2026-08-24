@@ -41,7 +41,7 @@ const tierColors: Record<string, string> = {
 
 export default function SuperAdminOrganizations() {
   const [orgs, setOrgs] = useState<OrgRow[]>([]);
-  const [plans, setPlans] = useState<OrgPlan[]>([]);
+  const [, setPlans] = useState<OrgPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<'name' | 'created_at' | 'member_count'>('created_at');

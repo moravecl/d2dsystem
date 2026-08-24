@@ -75,7 +75,7 @@ export default function QuoteDetailView({ quoteId }: Props) {
   const [globalDiscount, setGlobalDiscount] = useState(0);
   const [summaries, setSummaries] = useState<QuoteSystemSummary[]>([]);
   const [images, setImages] = useState<QuoteAttachment[]>([]);
-  const [sourceType, setSourceType] = useState<string | null>(null);
+  const [, setSourceType] = useState<string | null>(null);
   const [unassignedItems, setUnassignedItems] = useState<UnassignedItem[]>([]);
   const [showUnassigned, setShowUnassigned] = useState(true);
   const [loading, setLoading] = useState(true);

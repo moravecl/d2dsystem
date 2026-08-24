@@ -24,7 +24,7 @@ const STATUS_LABELS: Record<string, string> = {
   in_progress: 'Probíhá',
 };
 
-export default function UnscheduledProjectsPanel({ open, onToggle, onProjectDrop, refreshKey }: Props) {
+export default function UnscheduledProjectsPanel({ open, onToggle, refreshKey }: Props) {
   const [projects, setProjects] = useState<UnscheduledProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');

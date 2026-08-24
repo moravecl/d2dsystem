@@ -61,6 +61,12 @@ export interface Room {
   id: string;
   name: string;
   points: { x: number; y: number }[];
+  /**
+   * Volitelne umisteni produktu v mistnosti. Za behu je plni jen workflow
+   * (useDesignWorkflow, ProductAssignmentPage) na docasnych kopiich pater;
+   * mistnosti v ulozenem stavu projektu toto pole nemaji.
+   */
+  placements?: Placement[];
   heatingSystemId?: string;
   heatingConfig?: Record<string, string>;
   doors?: RoomDoor[];
@@ -178,7 +184,7 @@ function migrateRoomNamesToIds(selected: SelectionState, floors: Floor[]): Selec
   return migrated;
 }
 
-function loadFromStorage(): { selected: SelectionState; meta: ProjectMeta; floors: Floor[]; loadedProjectId?: string | null } | null {
+function loadFromStorage(): { selected: SelectionState; meta: ProjectMeta; floors: Floor[]; loadedProjectId?: string | null; pinSize?: number; schematicSymbolScale?: number } | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
@@ -493,7 +499,7 @@ export function useProjectState() {
           ...o,
           id: crypto.randomUUID(),
           floorId: newFloorId,
-          roomId: o.roomId ? (idMap.get(o.roomId) ?? o.roomId) : undefined,
+          roomId: o.roomId ? (idMap.get(o.roomId) ?? o.roomId) : '',
         })),
       };
 
@@ -645,7 +651,7 @@ export function useProjectState() {
         ...f,
         rooms: (f.rooms ?? []).map((r) => {
           if (r.id !== roomId) return r;
-          const updated = { ...r, ...updates };
+          const updated = { ...r, ...updates } as Room;
           if (updates.manualSupplyVents === null) delete (updated as any).manualSupplyVents;
           if (updates.manualExhaustVents === null) delete (updated as any).manualExhaustVents;
           return updated;

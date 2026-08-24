@@ -11,6 +11,7 @@ export interface Organization {
   max_users: number;
   is_active: boolean;
   logo_url: string | null;
+  onboarding_tours_enabled?: boolean;
   created_at: string;
 }
 

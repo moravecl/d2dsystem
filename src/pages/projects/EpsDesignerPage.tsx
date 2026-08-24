@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Loader2, Calculator } from 'lucide-react';
+import { ArrowLeft, Loader2, Calculator } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useEpsCatalog } from '../../hooks/useEpsCatalog';
 import { useEpsDesign } from '../../hooks/useEpsDesign';
-import type { EpsDesignData, EpsDesignLayer, PlacedDetector, PlacedPanel, PlacedSiren, PlacedMotionSensor, PlacedKeypad, PlacedControlDevice, EpsCableRoute } from '../../hooks/useEpsDesign';
+import type { EpsDesignData, EpsDesignLayer } from '../../hooks/useEpsDesign';
 import { useEpsDesignVersions } from '../../hooks/useEpsDesignVersions';
 import { calcTotalPrice } from '../../lib/epsCalculations';
 import EpsCanvas from '../../components/eps/EpsCanvas';
@@ -27,7 +27,7 @@ export default function EpsDesignerPage() {
   const [showCoverage, setShowCoverage] = useState(true);
   const [showZones, setShowZones] = useState(false);
   const [selectedDetectorModelId, setSelectedDetectorModelId] = useState<string | null>(null);
-  const [selectedCableTypeId, setSelectedCableTypeId] = useState<string | null>(null);
+  const [selectedCableTypeId] = useState<string | null>(null);
   const [selectedPanelId, setSelectedPanelId] = useState<string | null>(null);
   const [selectedSirenId, setSelectedSirenId] = useState<string | null>(null);
   const [selectedMotionSensorId, setSelectedMotionSensorId] = useState<string | null>(null);
@@ -64,7 +64,6 @@ export default function EpsDesignerPage() {
   const activeLayerIndex = activeLayer ? designData.layers.indexOf(activeLayer) : 0;
   const effectiveScale = activeLayer?.scale ?? designData.scale;
 
-  const hasFloorplan = designData.layers.length > 0;
   const scaleLocked = !!activeLayer && !effectiveScale;
 
   const layerDetectors = designData.detectors.filter(d => d.layerIndex === activeLayerIndex);
@@ -369,10 +368,10 @@ export default function EpsDesignerPage() {
         <div className="flex items-center gap-2">
           {saving && <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500"><Loader2 className="w-3 h-3 animate-spin" /> Ukladani...</span>}
           <SaveVersionButton
-            onSave={handleSaveVersion}
-            onOpenHistory={() => setVersionDrawerOpen(true)}
+            onSave={() => handleSaveVersion('')}
+            onOpenVersions={() => setVersionDrawerOpen(true)}
             versionCount={versions.length}
-            accentColor="red"
+            variant="dark"
           />
           <button
             onClick={async () => { await saveDesign(); navigate(`/projekty/${projectId}/eps-navrh/kalkulace`); }}
@@ -519,10 +518,11 @@ export default function EpsDesignerPage() {
           version_number: v.version_number,
           note: v.note,
           created_at: v.created_at,
-          summary: `${v.summary_detector_count} detektoru · ${v.summary_total_price.toLocaleString('cs-CZ')} Kc`,
         }))}
-        onLoadVersion={handleLoadVersion}
-        accentColor="red"
+        loading={false}
+        onSaveVersion={handleSaveVersion}
+        onRestore={(v) => { void handleLoadVersion(v.id); setVersionDrawerOpen(false); }}
+        title="Historie verzí EPS"
       />
 
       <VersionPickerModal
@@ -534,7 +534,10 @@ export default function EpsDesignerPage() {
           note: v.note,
           created_at: v.created_at,
         }))}
-        onSelect={handleLoadVersion}
+        loading={false}
+        onSelectVersion={(v) => { void handleLoadVersion(v.id); }}
+        onStartNew={() => setVersionPickerOpen(false)}
+        title="EPS Návrhář – vyberte verzi"
       />
     </div>
   );

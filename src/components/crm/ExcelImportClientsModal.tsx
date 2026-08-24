@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { readSheetRows, downloadXlsx } from '../../lib/excelCompat';
-import { Upload, FileText, AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, X, Download, TableProperties } from 'lucide-react';
+import { FileText, AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, X, Download, TableProperties } from 'lucide-react';
 import Modal from '../ui/Modal';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';

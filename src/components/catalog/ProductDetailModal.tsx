@@ -42,7 +42,7 @@ export default function ProductDetailModal({
     setActiveImg(0);
     setSelectedColorId(null);
 
-    const queries: Promise<unknown>[] = [
+    const queries: PromiseLike<{ data: unknown; error: unknown }>[] = [
       supabase.from('product_colors')
         .select('*')
         .eq('product_id', productId)

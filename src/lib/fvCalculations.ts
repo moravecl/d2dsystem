@@ -429,12 +429,9 @@ export async function calculateFvSystem(
   let batteryState = usableCapacity * 0.5;
 
   let totalSelfConsumption = 0;
-  let totalDirectSelf = 0;
   let totalGridFeed = 0;
   let totalGridDraw = 0;
   let totalBatteryContribution = 0;
-  let totalBatteryCharge = 0;
-  let totalBatteryDischarge = 0;
 
   for (let m = 0; m < 12; m++) {
     const production = monthlyProductionRaw[m];
@@ -471,13 +468,10 @@ export async function calculateFvSystem(
     }
 
     const monthSelf = monthDirectSelf + monthBatteryContribution;
-    totalDirectSelf += monthDirectSelf;
     totalSelfConsumption += monthSelf;
     totalGridFeed += monthGridFeed;
     totalGridDraw += monthGridDraw;
     totalBatteryContribution += monthBatteryContribution;
-    totalBatteryCharge += monthBatteryCharge;
-    totalBatteryDischarge += monthBatteryDischarge;
 
     monthly.push({
       month: m + 1,

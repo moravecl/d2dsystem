@@ -19,13 +19,6 @@ interface QuoteRow {
   created_at: string;
 }
 
-interface VicepraceRow {
-  id: string;
-  title: string;
-  status: string;
-  amount: number;
-  items: VicepraceItemRow[];
-}
 
 interface VicepraceItemRow {
   id: string;

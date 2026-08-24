@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Cable, Trash2, Plus, Check, X, Zap, Droplets, Flame, Wind, Shield, Eye, EyeOff } from 'lucide-react';
 import type { Circuit, Cable as CableType, FloorScale, CircuitType, CircuitBreaker } from '../../../hooks/useProjectState';
 import type { Material } from '../../../types/database';
-import { polylineLength, normalizedToMeters, polylineLengthM } from './geometry';
+import { polylineLength, polylineLengthM } from './geometry';
 import { CIRCUIT_TYPE_LABELS } from './materialLibrary';
 import FittingsPanel from './FittingsPanel';
 

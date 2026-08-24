@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { X, Layers, Move, RotateCw, Trash2, ArrowUp, ArrowDown, Palette, Link2, Unlink, GripVertical, ChevronDown, Search, Check } from 'lucide-react';
 import type { MountingOrientation, DesignElementType, ProjectDesignElement } from '../../types/designElements';
-import type { MountingGroupWithSlots, MountingGroupSlot } from '../../hooks/useMountingGroups';
+import type { MountingGroupWithSlots } from '../../hooks/useMountingGroups';
+import type { MountingGroupSlot } from '../../types/designElements';
 import type { Product } from '../../types/database';
 
 interface Props {

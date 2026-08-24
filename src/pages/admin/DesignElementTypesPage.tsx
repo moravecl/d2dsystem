@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { sanitizeSvg } from '../../lib/sanitize';
-import { Plus, Pencil, Trash2, X, Check, Search, GripVertical, ChevronDown, ChevronRight, Palette, RotateCcw, Upload } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Check, Search, ChevronDown, ChevronRight, RotateCcw, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import { useOrganization } from '../../contexts/OrganizationContext';
@@ -20,7 +20,8 @@ const emptyForm = {
 };
 
 export default function DesignElementTypesPage() {
-  const { orgId } = useOrganization();
+  const { organization } = useOrganization();
+  const orgId = organization?.id ?? null;
   const { toast } = useToast();
   const [types, setTypes] = useState<DesignElementType[]>([]);
   const [loading, setLoading] = useState(true);

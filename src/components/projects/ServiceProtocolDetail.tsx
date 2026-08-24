@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Download, Printer, Clock, Package, FileText, ClipboardList } from 'lucide-react';
+import { X, Download, Printer, Clock, Package, ClipboardList } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 interface WorkItem {
@@ -165,7 +165,7 @@ export default function ServiceProtocolDetail({ open, onClose, protocolId, proje
       ${laborSection}
       ${materialSection}
       ${grandTotalSection}
-      <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; };<\/script>
+      <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; };</script>
     </body></html>`;
 
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });

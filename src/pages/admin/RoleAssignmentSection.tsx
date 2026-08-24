@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Users, Shield, Loader2, ChevronDown, AlertTriangle, Search, X } from 'lucide-react';
+import { Shield, Loader2, ChevronDown, AlertTriangle, Search, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../contexts/OrganizationContext';
 import { useToast } from '../../components/ui/Toast';
-import type { CustomRole, UserRoleAssignment } from '../../lib/permissions';
+import type { CustomRole } from '../../lib/permissions';
 
 interface MemberWithRole {
   memberId: string;
@@ -23,7 +23,7 @@ interface Props {
   onRefreshRoles: () => Promise<void>;
 }
 
-export default function RoleAssignmentSection({ roles, onRefreshRoles }: Props) {
+export default function RoleAssignmentSection({ roles }: Props) {
   const { user } = useAuth();
   const { organization } = useOrganization();
   const { toast } = useToast();

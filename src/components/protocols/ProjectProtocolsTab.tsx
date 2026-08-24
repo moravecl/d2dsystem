@@ -1,8 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Plus, FileCheck, Calendar, User, AlertTriangle, CheckCircle2,
-  Clock, Edit2, Trash2, Search, Filter, ChevronDown,
-} from 'lucide-react';
+import { Plus, FileCheck, Calendar, User, AlertTriangle, CheckCircle2, Clock, Edit2, Trash2, Search } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
 import type { ProjectProtocol } from './protocolTypes';
@@ -23,7 +20,6 @@ export default function ProjectProtocolsTab({ projectId }: Props) {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [filterType, setFilterType] = useState('');
   const [search, setSearch] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);

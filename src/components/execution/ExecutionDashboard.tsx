@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Clock, Package, BookOpen, CheckSquare, Map,
-  BarChart3, ClipboardCheck, Wrench, FileText, Square,
-  CheckCircle2, Play, Plus, BookOpen as DiaryIcon, Timer,
-} from 'lucide-react';
+import { Clock, Package, BookOpen, CheckSquare, Map, BarChart3, ClipboardCheck, Wrench, FileText, CheckCircle2, Plus, BookOpen as DiaryIcon, Timer } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
 import { logAudit } from '../../lib/auditLog';

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Link2, CheckCircle2, Search } from 'lucide-react';
+import { X, Link2, Search } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useToast } from '../../../components/ui/Toast';
 import type { BankTransaction, BankTransactionMatch } from '../../../types/bank';

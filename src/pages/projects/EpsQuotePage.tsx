@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, Loader2, Percent, Wrench, Plus, Trash2, FileDown, X as XIcon, TrendingUp } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useEpsCatalog } from '../../hooks/useEpsCatalog';
-import { useEpsDesign } from '../../hooks/useEpsDesign';
+import { useEpsDesign, EMPTY_DESIGN_DATA } from '../../hooks/useEpsDesign';
 import type { EpsQuoteConfig } from '../../hooks/useEpsDesign';
 import { calcTotalPrice, calcCableLengthM } from '../../lib/epsCalculations';
 import { polylineLength, normalizedToMeters } from '../../components/catalog/floorplan/geometry';
@@ -35,7 +35,7 @@ export default function EpsQuotePage() {
     loadQuoteCompanyInfo().then(setQuoteCompany);
   }, [projectId]);
 
-  const designData = design?.design_data ?? { layers: [], detectors: [], panels: [], sirens: [], routes: [], accessoryItems: [], zones: [] };
+  const designData = design?.design_data ?? EMPTY_DESIGN_DATA;
   const quoteConfig = designData.quoteConfig ?? {};
 
   const updateQuoteConfig = useCallback((updates: Partial<EpsQuoteConfig>) => {

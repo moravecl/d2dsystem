@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Camera, HardDrive, Network, Cable, Package } from 'lucide-react';
+import { Camera, HardDrive, Network, Package } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useOrganization } from '../../../contexts/OrganizationContext';
 import type { CameraDesignData, DesignLayer } from '../../../hooks/useCameraDesign';
@@ -29,7 +29,7 @@ function CameraDesignPreview({ designData, catalog }: { designData: CameraDesign
   const mapLayer = designData.layers.find(l => l.type === 'map' && l.mapCenter) as DesignLayer | undefined;
   const imageLayer = designData.layers.find(l => l.type === 'image' && l.imageData);
 
-  let mapTiles: JSX.Element[] = [];
+  const mapTiles: JSX.Element[] = [];
   if (mapLayer?.type === 'map' && mapLayer.mapCenter && mapLayer.mapZoom) {
     const zoom = mapLayer.mapZoom;
     const lonToTileX = (lon: number, z: number) => ((lon + 180) / 360) * Math.pow(2, z);

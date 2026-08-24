@@ -368,7 +368,6 @@ function buildConstructionSection(p: ExportParams): string {
 
   const rows = roofConstructions.map(roof => {
     const tile = p.catalog.roofTiles.find(t => t.id === roof.mounting?.roofTileId);
-    const hook = p.catalog.hooks.find(h => h.id === roof.mounting?.hookId);
     const rail = p.catalog.railProfiles.find(rp => rp.id === roof.mounting?.railProfileId);
     const hookSpacing = roof.mounting?.hookSpacingMm ?? tile?.hook_spacing_mm ?? 350;
     const railCount = 2;
@@ -600,15 +599,16 @@ export async function exportFvProposalPdf(p: ExportParams): Promise<void> {
   document.body.appendChild(container);
 
   try {
+    const pdfOptions = {
+      margin: [10, 10, 10, 10] as [number, number, number, number],
+      filename: `fv-nabidka-${p.projectName.replace(/\s+/g, '-').toLowerCase()}.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'], before: '.page-break', avoid: '.section' },
+    };
     await html2pdf()
-      .set({
-        margin: [10, 10, 10, 10],
-        filename: `fv-nabidka-${p.projectName.replace(/\s+/g, '-').toLowerCase()}.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'], before: '.page-break', avoid: '.section' },
-      })
+      .set(pdfOptions)
       .from(container)
       .save();
   } finally {

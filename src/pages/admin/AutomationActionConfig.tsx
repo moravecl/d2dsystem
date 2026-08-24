@@ -19,7 +19,6 @@ export default function AutomationActionConfig({
  actionType, config, onConfigChange,
  triggerEntity, projectStatuses, taskStatuses, teamMembers,
 }: Props) {
- const statuses = getStatusesForEntity(triggerEntity, projectStatuses, taskStatuses);
 
  switch (actionType) {
  case 'create_task':

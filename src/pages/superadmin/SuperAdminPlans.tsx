@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import {
-  CreditCard, Plus, Edit2, Save, X, Check, Users, FolderOpen,
-  HardDrive, Trash2
-} from 'lucide-react';
+import { Edit2, Save, X, Check, Users, FolderOpen, HardDrive } from 'lucide-react';
 
 interface Plan {
   id: string;

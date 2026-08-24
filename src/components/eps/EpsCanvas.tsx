@@ -70,8 +70,8 @@ interface Props {
 
 export default function EpsCanvas({
   layer, detectors, routes, panels, sirens, motionSensors, keypads, controlDevices,
-  detectorModels, motionSensorModels, keypadModels, controlDeviceModels, zones, mode,
-  selectedDetectorModelId, selectedMotionSensorId, selectedKeypadId, selectedControlDeviceId,
+  detectorModels, motionSensorModels, zones, mode,
+  selectedDetectorModelId,
   selectedPlacedDetectorId, selectedPlacedMotionSensorId,
   scale, onPlaceDetector, onMoveDetector, onMovePanel, onMoveSiren, onMoveMotionSensor,
   onMoveKeypad, onMoveControlDevice, onSelectPlacedDetector, onSelectPlacedMotionSensor,
@@ -478,7 +478,6 @@ export default function EpsCanvas({
             const sx = ms.x * vw;
             const sy = ms.y * vh;
             const isSelected = selectedPlacedMotionSensorId === ms.id;
-            const model = motionSensorModels.find(m => m.id === ms.sensorId);
             const dirRad = (ms.rotationDeg * Math.PI) / 180;
             const dirLen = 20;
             return (

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { ClipboardList, Search, RefreshCw, Loader2, User, Calendar, Activity } from 'lucide-react';
+import { ClipboardList, Search, RefreshCw, Loader2, Calendar, Activity } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useOrganization } from '../../contexts/OrganizationContext';
 

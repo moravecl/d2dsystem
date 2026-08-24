@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Package, AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Search, CreditCard as Edit2, Trash2, Download, RefreshCw, Loader2, X, QrCode, ScanLine, Printer, GitMerge } from 'lucide-react';
+import { Plus, Package, AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Search, CreditCard as Edit2, Trash2, Download, RefreshCw, Loader2, X, ScanLine, Printer, GitMerge } from 'lucide-react';
 import SortControl, { sortItems, type SortDir } from '../../components/ui/SortControl';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useAuth } from '../../contexts/AuthContext';

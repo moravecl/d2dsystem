@@ -272,7 +272,7 @@ export default function ProjectTemplatesPage() {
                           <Flag className="w-3.5 h-3.5" /> Milníky
                         </h4>
                         <div className="space-y-1.5">
-                          {tpl.milestones.map((m, i) => (
+                          {tpl.milestones.map((m, _i) => (
                             <div key={m.id} className="flex items-center gap-3 text-sm">
                               <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
                               <span className="font-semibold text-slate-300">{m.name}</span>

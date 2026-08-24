@@ -1101,7 +1101,7 @@ function ProjectsList({ projects, onSelect, emptyLabel }: { projects: ProjectRow
 }
 
 function ProjectFilesBrowser({
-  folders, files, loading, projectId, onNavigateFolder, onPreview, onOpenProject, getFolderFileCount,
+  folders, files, loading, onNavigateFolder, onPreview, onOpenProject, getFolderFileCount,
 }: {
   folders: ProjectFolderRow[];
   files: ProjectFileRow[];

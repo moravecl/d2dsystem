@@ -332,7 +332,6 @@ export default function CompatibilityPage() {
                   {selectedTypeRecords.map((record) => {
                     const product = getProductById(record.product_id);
                     if (!product) return null;
-                    const opt = COMPATIBILITY_OPTIONS.find((o) => o.value === record.compatibility_type);
                     return (
                       <div
                         key={record.id}

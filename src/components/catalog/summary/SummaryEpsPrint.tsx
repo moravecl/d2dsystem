@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Shield, AlertTriangle, Siren, Eye, Keyboard, Settings, Layers } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useOrganization } from '../../../contexts/OrganizationContext';
-import type { EpsDesignData, EpsDesignLayer, PlacedDetector, PlacedPanel, PlacedSiren, PlacedMotionSensor, PlacedKeypad, PlacedControlDevice, EpsCableRoute, EpsZone } from '../../../hooks/useEpsDesign';
+import type { EpsDesignData, EpsDesignLayer } from '../../../hooks/useEpsDesign';
 import type { EpsCatalogData, EpsDetectorModel, EpsPanel as EpsPanelModel, EpsSiren, EpsAccessory, EpsMotionSensor, EpsKeypad, EpsControlDevice } from '../../../hooks/useEpsCatalog';
 
 const DETECTOR_TYPE_COLORS: Record<string, string> = {
@@ -35,7 +35,8 @@ function EpsLayerPreview({ layer, layerIndex, designData, catalog }: {
     const ctx = canvas.getContext('2d')!;
 
     const draw = (bgImg?: HTMLImageElement) => {
-      let cw = W, ch = H;
+      const cw = W;
+      let ch = H;
       if (bgImg) {
         const ar = bgImg.naturalWidth / bgImg.naturalHeight;
         ch = Math.round(cw / ar);
@@ -369,7 +370,7 @@ export default function SummaryEpsPrint({ projectId }: Props) {
             {(() => {
               const msGroups = new Map<string, number>();
               for (const ms of designData.motionSensors ?? []) {
-                msGroups.set(ms.modelId, (msGroups.get(ms.modelId) ?? 0) + 1);
+                msGroups.set(ms.sensorId, (msGroups.get(ms.sensorId) ?? 0) + 1);
               }
               return Array.from(msGroups.entries()).map(([modelId, count]) => {
                 const model = motionSensorModels.find(m => m.id === modelId);
@@ -393,7 +394,7 @@ export default function SummaryEpsPrint({ projectId }: Props) {
             {(() => {
               const kpGroups = new Map<string, number>();
               for (const kp of designData.keypads ?? []) {
-                kpGroups.set(kp.modelId, (kpGroups.get(kp.modelId) ?? 0) + 1);
+                kpGroups.set(kp.keypadId, (kpGroups.get(kp.keypadId) ?? 0) + 1);
               }
               return Array.from(kpGroups.entries()).map(([modelId, count]) => {
                 const model = keypadModels.find(m => m.id === modelId);

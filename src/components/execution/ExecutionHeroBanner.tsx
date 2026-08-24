@@ -1,4 +1,4 @@
-import { Play, Pause, CheckCircle2, Clock, Zap, RotateCcw } from 'lucide-react';
+import { Play, Pause, CheckCircle2, Zap, RotateCcw } from 'lucide-react';
 
 interface Job {
   id: string;
@@ -60,7 +60,6 @@ function formatTimerElapsed(s: number) {
 
 export default function ExecutionHeroBanner({ job, onStatusChange, runningTimerElapsed, runningTimerActivity }: Props) {
   const theme = STATUS_THEMES[job.status] || STATUS_THEMES.ready;
-  const isDark = job.status === 'completed';
 
   const daysFromStart = job.started_at
     ? Math.max(1, Math.ceil((Date.now() - new Date(job.started_at).getTime()) / 86400000))

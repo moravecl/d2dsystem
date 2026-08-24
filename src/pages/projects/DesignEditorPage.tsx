@@ -5,7 +5,6 @@ import { useDesignVersions } from '../../hooks/useDesignVersions';
 import { useDesignElementTypes } from '../../hooks/useDesignElementTypes';
 import { useProjectDesignElements } from '../../hooks/useProjectDesignElements';
 import SchematicElementPanel from '../../components/editor/SchematicElementPanel';
-import type { ProjectDesignElement } from '../../types/designElements';
 import { useCategoryColors } from '../../hooks/useCategoryColors';
 import type { DesignVersion } from '../../hooks/useDesignVersions';
 import SaveVersionButton from '../../components/ui/SaveVersionButton';
@@ -61,7 +60,7 @@ import type { MountingOrientation } from '../../types/designElements';
 import MountingGroupModal from '../../components/editor/MountingGroupModal';
 import MountingGroupEditModal from '../../components/editor/MountingGroupEditModal';
 
-let pendingSavePromise: Promise<void> | null = null;
+const pendingSavePromise: Promise<void> | null = null;
 
 type ScaleStep = 'idle' | 'point1' | 'point2' | 'input';
 type RightTab = 'catalog' | 'schematic' | 'used' | 'rooms';
@@ -100,7 +99,7 @@ export default function DesignEditorPage() {
   const { systems: heatingSystems } = useHeatingSystems();
   const { norms: lightingNorms } = useLightingNorms();
 
-  const { types: elementTypes, loading: elementTypesLoading, getTypeById } = useDesignElementTypes();
+  const { types: elementTypes, getTypeById } = useDesignElementTypes();
   const { colorMap: categoryColorMap } = useCategoryColors();
   const {
     elements: designElements,
@@ -166,7 +165,6 @@ export default function DesignEditorPage() {
     groupsWithSlots: mountingGroups,
     getGroupsByFloor,
     getGroupForElement,
-    getSlotForElement,
     createGroupFromElements,
     updateGroup: updateMountingGroup,
     updateSlot: updateMountingSlot,
@@ -1000,7 +998,7 @@ export default function DesignEditorPage() {
     setDraggingLabel(null);
   };
 
-  const handleToolModeChange = (mode: ToolMode) => {
+  const handleToolModeChange = (mode: ToolMode | 'fv') => {
     if (mode === 'fv') {
       setShowFvDesigner(true);
       return;
@@ -1595,6 +1593,7 @@ export default function DesignEditorPage() {
           mode={toolMode}
           onModeChange={handleToolModeChange}
           hasScale={!!activeFloor?.scale}
+          hasImage={!!activeFloor?.floorplanImg}
           visibleLayers={visibleLayers}
           onToggleLayer={(type) => setVisibleLayers((prev) => ({ ...prev, [type]: !prev[type] }))}
           showGrid={showGrid}
@@ -2581,7 +2580,7 @@ export default function DesignEditorPage() {
             }}
             onClose={() => setActiveElementId(null)}
             onAddCircuit={(name, color) => {
-              project.addCircuit({ id: crypto.randomUUID(), name, color });
+              project.addCircuit(activeFloorId, { id: crypto.randomUUID(), name, color, type: 'electric' });
             }}
             onDefaultsChange={setPlacementDefaults}
           />
@@ -2606,7 +2605,7 @@ export default function DesignEditorPage() {
               <FvSection
                 projectId={id}
                 projectAddress={project.meta.client}
-                onExportToQuote={(sections) => {
+                onExportToQuote={(_sections) => {
                   toast('FV sekce pridana do nabidky.', 'success');
                   setShowFvDesigner(false);
                 }}

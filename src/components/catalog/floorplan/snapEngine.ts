@@ -210,7 +210,7 @@ export function computeSnap(raw: Point, cfg: SnapConfig): SnapResult {
 export function createDimensionsFromSnap(
   pinPos: Point,
   rooms: { id: string; points: Point[] }[],
-  scale?: FloorScale,
+  _scale?: FloorScale,
   threshold = 0.04,
 ): { p1: Point; p2: Point }[] {
   const dims: { p1: Point; p2: Point }[] = [];

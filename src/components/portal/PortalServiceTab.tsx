@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Calendar, Cpu, Wrench, Plus, Shield, AlertTriangle, Send, Clock,
-} from 'lucide-react';
+import { Calendar, Cpu, Wrench, Plus, Send, Clock } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { usePortalAuth } from '../../contexts/PortalAuthContext';
 import Modal from '../ui/Modal';

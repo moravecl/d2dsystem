@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Settings2, GripVertical, Eye, EyeOff, RotateCcw, Check, X, Loader2 } from 'lucide-react';
+import { Settings2, GripVertical, Eye, EyeOff, RotateCcw, Check, Loader2 } from 'lucide-react';
 import { ALL_WIDGET_IDS, WIDGET_LABELS } from '../../hooks/useDashboardLayout';
 import type { WidgetId } from '../../hooks/useDashboardLayout';
 

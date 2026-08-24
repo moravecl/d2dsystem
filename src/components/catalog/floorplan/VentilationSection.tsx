@@ -132,7 +132,6 @@ export default function VentilationSection({ rooms, scale, onUpdateRoomVentilati
   const currentAch = selectedRoom?.airChangesPerHour ?? 0.5;
   const currentMode = selectedRoom?.ventilationMode ?? 'supply';
   const currentDuct = selectedRoom?.ductDiameter ?? 75;
-  const currentDuctOption = DUCT_OPTIONS.find((d) => d.diameter === currentDuct) ?? DUCT_OPTIONS[0];
 
   const handleApplyPreset = (roomType: string) => {
     if (!selectedRoom) return;

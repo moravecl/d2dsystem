@@ -350,11 +350,11 @@ export default function EpsCatalogPage() {
     setSaving(true);
     try {
       if (id) {
-        const { error } = await supabase.from(TABLE_NAME[tab]).update(data).eq('id', id);
+        const { error } = await supabase.from(TABLE_NAME[tab]!).update(data).eq('id', id);
         if (error) throw error;
         toast('Uloženo', 'success');
       } else {
-        const { error } = await supabase.from(TABLE_NAME[tab]).insert({ ...data, org_id: organizationId });
+        const { error } = await supabase.from(TABLE_NAME[tab]!).insert({ ...data, org_id: organizationId });
         if (error) throw error;
         toast('Přidáno', 'success');
       }
@@ -370,7 +370,7 @@ export default function EpsCatalogPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Opravdu smazat?')) return;
-    const { error } = await supabase.from(TABLE_NAME[tab]).delete().eq('id', id);
+    const { error } = await supabase.from(TABLE_NAME[tab]!).delete().eq('id', id);
     if (error) toast(error.message, 'error');
     else { toast('Smazáno', 'success'); catalog.reload(); }
   };

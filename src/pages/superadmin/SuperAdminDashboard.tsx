@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import {
-  Building2, Users, FolderOpen, TrendingUp, Activity,
-  CreditCard, AlertTriangle, CheckCircle, Clock, ArrowUpRight
-} from 'lucide-react';
+import { Building2, Users, FolderOpen, Activity, CreditCard, AlertTriangle, CheckCircle, Clock, ArrowUpRight } from 'lucide-react';
 
 interface PlatformStats {
   totalOrgs: number;

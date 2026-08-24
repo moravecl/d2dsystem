@@ -4,7 +4,6 @@ import {
   Mail, Send, CheckCircle, XCircle, Clock, Eye, Inbox, RefreshCw, Users,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
 import EmailComposer from '../../pages/emailing/EmailComposer';
 
@@ -43,7 +42,6 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof
 };
 
 export default function ProjectEmailTab({ projectId, clientId }: Props) {
-  const { toast } = useToast();
   const [logs, setLogs] = useState<EmailLogEntry[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);

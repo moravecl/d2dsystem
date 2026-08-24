@@ -2,7 +2,7 @@ import type { Room, FloorScale, Circuit, Cable, Dimension, FloorDistributor } fr
 import { sanitizeSvg } from '../../../lib/sanitize';
 import type { CircuitType } from '../../../hooks/useProjectState';
 import type { HeatingSystemFull } from '../../../hooks/useHeatingSystems';
-import { polygonCentroid, polygonAreaM2, getDoorWallPoints, distanceBetween } from './geometry';
+import { polygonCentroid, polygonAreaM2, distanceBetween } from './geometry';
 import { generateHeatingPipes, pipeSpacingToNorm } from './heatingPipeGenerator';
 import type { PipePattern } from './heatingPipeGenerator';
 import type { Product, FloorplanSymbol } from '../../../types/database';
@@ -64,7 +64,6 @@ export default function FloorplanCanvas({
   products: allProducts = [],
   activeObjectId,
   draggingObject,
-  canvasAspectRatio = 1,
   bathroomSymbols = [],
   snappedMousePos,
   snapGuides = [],

@@ -36,7 +36,7 @@ export default function CashRegisterPage() {
   useEffect(() => {
     setConfig({
       breadcrumbs: [
-        { label: 'Finance', to: '/finance' },
+        { label: 'Finance', href: '/finance' },
         { label: 'Pokladna' },
       ],
     });

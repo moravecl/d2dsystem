@@ -138,11 +138,11 @@ export default function CalendarInstallationView({ currentDate }: Props) {
         <InstallationInspector
           job={selectedJob}
           onClose={() => setSelectedJob(null)}
-          onMoveJob={job => {
+          onMoveJob={() => {
             setSelectedJob(null);
             toast('Přetáhněte zakázku na nové místo v mřížce');
           }}
-          onChangeTechnicians={job => {
+          onChangeTechnicians={() => {
             toast('Funkcionalita bude brzy dostupná');
           }}
         />

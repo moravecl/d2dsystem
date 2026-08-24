@@ -5,11 +5,7 @@ import { useHeader } from '../../contexts/HeaderContext';
 import { useToast } from '../../components/ui/Toast';
 import Tabs from '../../components/ui/Tabs';
 import { supabase } from '../../lib/supabase';
-import {
-  ASSET_TYPE_LABELS, EVENT_TYPE_LABELS, DUE_TYPE_LABELS,
-  computeDueStatus, dueStatusColor, dueStatusLabel,
-  BUILDING_TYPES, FUEL_TYPES,
-} from '../../types/assets';
+import { ASSET_TYPE_LABELS, EVENT_TYPE_LABELS, DUE_TYPE_LABELS, computeDueStatus, dueStatusColor, dueStatusLabel, BUILDING_TYPES } from '../../types/assets';
 import AssetFormModal from '../../components/assets/AssetFormModal';
 import DueItemFormModal from '../../components/assets/DueItemFormModal';
 import CompleteDueItemModal from '../../components/assets/CompleteDueItemModal';
@@ -61,7 +57,6 @@ export default function AssetDetailPage() {
   const [showEventForm, setShowEventForm] = useState(false);
   const [editEvent, setEditEvent] = useState<AssetEvent | null>(null);
   const [completeItem, setCompleteItem] = useState<DueItem | null>(null);
-  const [renewItem, setRenewItem] = useState<DueItem | null>(null);
 
   const loadData = useCallback(async () => {
     if (!id) return;
@@ -355,7 +350,7 @@ function OverviewTab({ asset, activeDues, onComplete }: { asset: Asset; activeDu
 }
 
 function DeadlinesTab({
-  activeDues, completedDues, assetName, coverageTypes, onAddDue, onComplete, onDelete, onEdit,
+  activeDues, completedDues, coverageTypes, onAddDue, onComplete, onDelete, onEdit,
 }: {
   activeDues: DueItem[];
   completedDues: DueItem[];

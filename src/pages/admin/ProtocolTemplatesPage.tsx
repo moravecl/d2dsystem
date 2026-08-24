@@ -1,9 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Plus, Search, Edit2, Trash2, Copy, ChevronDown, ChevronRight,
-  CheckSquare, Square, GripVertical, FileCheck, ToggleLeft, ToggleRight,
-  Gauge, Zap, Wind, Flame, Thermometer, Droplets, Scan, Eye,
-} from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Copy, ChevronDown, ChevronRight, CheckSquare, GripVertical, FileCheck, ToggleLeft, ToggleRight, Gauge, Zap, Wind, Flame, Thermometer, Droplets, Scan } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useOrganization } from '../../contexts/OrganizationContext';
 import { useToast } from '../../components/ui/Toast';

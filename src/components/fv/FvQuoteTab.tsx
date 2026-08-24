@@ -69,7 +69,7 @@ function useQuoteCategories(lines: DisplayLineItem[]) {
   }, [lines]);
 }
 
-export default function FvQuoteTab({ catalog, config, roofs, result, roofSnapshots, subsidyPrograms, onConfigChange, onExportToQuote, projectId, resultsStale }: Props) {
+export default function FvQuoteTab({ catalog, config, roofs, result, roofSnapshots, subsidyPrograms, onConfigChange, projectId, resultsStale }: Props) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [editingDiscount, setEditingDiscount] = useState<string | null>(null);
   const [editingLabor, setEditingLabor] = useState(false);
@@ -180,10 +180,6 @@ export default function FvQuoteTab({ catalog, config, roofs, result, roofSnapsho
     }];
   };
 
-  const handleExport = () => {
-    if (!onExportToQuote) return;
-    onExportToQuote(buildExportSections());
-  };
 
   const buildRoofAttachments = (): QuoteAttachment[] => {
     const att: QuoteAttachment[] = [];

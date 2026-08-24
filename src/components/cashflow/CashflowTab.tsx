@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { TrendingUp, TrendingDown, Plus, FileText, RefreshCw, ReceiptText, Wallet, ChevronRight, CreditCard as Edit2, Trash2, BarChart3, List, Receipt, Banknote, Building2, Settings2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
-import { useOrganization } from '../../contexts/OrganizationContext';
 import { useCashflowData } from '../../hooks/useCashflowData';
 import type { MonthRow, SalesInvoice, CashflowManualEntry, VatRefund } from '../../types/cashflow';
 import MonthDetailDrawer from './MonthDetailDrawer';
@@ -179,11 +178,8 @@ function CumulativeChart({ months }: { months: MonthRow[] }) {
 
 export default function CashflowTab() {
   const { toast } = useToast();
-  const { organization } = useOrganization();
   const { months, salesInvoices, manualEntries, vatRefunds, cashBalance, bankBalance: bankTxBalance, settings, loading, reload } = useCashflowData();
   const [view, setView] = useState<View>('dashboard');
-  const [editingCorrection, setEditingCorrection] = useState(false);
-  const [correctionInput, setCorrectionInput] = useState('');
   const [selectedMonth, setSelectedMonth] = useState<MonthRow | null>(null);
   const [showSalesModal, setShowSalesModal] = useState(false);
   const [editSales, setEditSales] = useState<SalesInvoice | null>(null);
@@ -208,30 +204,6 @@ export default function CashflowTab() {
   const bankCorrection = settings ? Number(settings.bank_balance_correction) || 0 : 0;
   const bankBalance = bankTxBalance !== 0 ? bankTxBalance : bankCorrection;
 
-  const saveCorrection = async () => {
-    const val = parseFloat(correctionInput.replace(/\s/g, '').replace(',', '.')) || 0;
-    if (settings?.id) {
-      const { error } = await supabase
-        .from('cashflow_settings')
-        .update({ bank_balance_correction: val, updated_at: new Date().toISOString() })
-        .eq('id', settings.id);
-      if (error) { toast('Chyba při ukládání', 'error'); return; }
-    } else {
-      const orgId = organization?.id;
-      if (!orgId) { toast('Organizace nenalezena', 'error'); return; }
-      const { error } = await supabase.from('cashflow_settings').insert({
-        org_id: orgId,
-        bank_balance_correction: val,
-        granularity: 'month',
-        default_payment_terms_days: 14,
-        invoice_date_field: 'due_date',
-      });
-      if (error) { toast('Chyba při ukládání', 'error'); return; }
-    }
-    toast('Korekce uložena');
-    setEditingCorrection(false);
-    reload();
-  };
 
   const deleteSalesInvoice = async (id: string) => {
     if (!confirm('Smazat fakturu?')) return;

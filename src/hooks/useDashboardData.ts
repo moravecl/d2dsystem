@@ -34,16 +34,15 @@ const INITIAL_DATA: DashboardData = {
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000;
 
-type QueryResult<T> = { data: T | null; error: unknown; count?: number | null };
-
 async function safeQuery<T>(
-  query: Promise<QueryResult<T>>,
+  // Supabase builder je thenable, ne Promise - proto PromiseLike
+  query: PromiseLike<{ data: unknown; error: unknown; count?: number | null }>,
   fallback: T
 ): Promise<{ value: T; failed: boolean; count?: number | null }> {
   try {
     const res = await query;
     if (res.error) return { value: fallback, failed: true, count: res.count };
-    return { value: res.data ?? fallback, failed: false, count: res.count };
+    return { value: (res.data ?? fallback) as T, failed: false, count: res.count };
   } catch {
     return { value: fallback, failed: true };
   }

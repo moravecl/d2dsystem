@@ -31,7 +31,7 @@ export async function renderLayerToDataUrl(
   canvas.height = height;
   const ctx = canvas.getContext('2d')!;
 
-  let renderW = width;
+  const renderW = width;
   let renderH = height;
 
   if (layer.imageData) {

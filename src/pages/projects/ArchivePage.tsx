@@ -1,18 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Archive,
-  Search,
-  ArrowUpDown,
-  ArrowRight,
-  MapPin,
-  Calendar,
-  Clock,
-  RotateCcw,
-  Trash2,
-  CheckCircle2,
-  XCircle,
-} from 'lucide-react';
+import { Archive, Search, ArrowUpDown, ArrowRight, MapPin, Calendar, RotateCcw, Trash2, CheckCircle2, XCircle } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../components/ui/Toast';

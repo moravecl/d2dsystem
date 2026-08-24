@@ -20,12 +20,10 @@ import {
   mergeQuoteSections,
   aggregateFramePreview,
   type MountingGroupQuoteInput,
-  type QuoteWarning,
-  type FramePreviewEntry,
 } from '../../components/catalog/quoteHelpers';
 import { useDesignSeriesLinks } from '../../hooks/useDesignSeriesLinks';
 import { saveQuoteDirectly } from '../../lib/quoteDirectSave';
-import DesignWorkflowStepper, { type WorkflowStep } from '../../components/editor/DesignWorkflowStepper';
+import DesignWorkflowStepper from '../../components/editor/DesignWorkflowStepper';
 import WorkflowCtaBanner, { type WorkflowContextStats } from '../../components/editor/WorkflowCtaBanner';
 import { useDesignWorkflow } from '../../hooks/useDesignWorkflow';
 import type { Floor } from '../../hooks/useProjectState';
@@ -49,7 +47,7 @@ export default function ProductAssignmentPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const { products, categories, loading: catalogLoading } = useCatalogData();
+  const { products, loading: catalogLoading } = useCatalogData();
   const { types: elementTypes, getTypeById } = useDesignElementTypes();
   const { elements: designElements } = useProjectDesignElements(id);
   const {
@@ -59,14 +57,13 @@ export default function ProductAssignmentPage() {
     productKindMap,
     refetch: refetchAssignments,
   } = useProductAssignments(id);
-  const { compatibilityMap, loading: compatibilityLoading } = useElementTypeCompatibility();
+  const { compatibilityMap } = useElementTypeCompatibility();
   const { groupsWithSlots, getSlotForElement } = useMountingGroups(id);
   const { links: designSeriesLinks } = useDesignSeriesLinks();
 
   const [groupMode, setGroupMode] = useState<GroupMode>('type');
   const [filterMode, setFilterMode] = useState<'all' | 'unassigned' | 'assigned' | 'inherited' | 'in_group'>('all');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [selectedElements, setSelectedElements] = useState<Set<string>>(new Set());
   const [productSearch, setProductSearch] = useState('');
   const [showProductPicker, setShowProductPicker] = useState(false);
   const [bulkAssignTarget, setBulkAssignTarget] = useState<{
@@ -119,7 +116,7 @@ export default function ProductAssignmentPage() {
     return floors.map((f) => ({
       ...f,
       floorplanImg: null,
-      scale: null,
+      scale: undefined,
       rooms: f.rooms.map((r) => ({ ...r, points: [], placements: [] })),
       circuits: [],
       cables: [],
@@ -561,7 +558,7 @@ export default function ProductAssignmentPage() {
                 Přejít do souhrnu
               </button>
               <button
-                onClick={handleCreateQuote}
+                onClick={() => handleCreateQuote()}
                 disabled={saving || designElements.length === 0}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.06] text-slate-300 font-extrabold text-sm hover:bg-white/[0.08] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -1008,7 +1005,7 @@ export default function ProductAssignmentPage() {
                         </div>
                         <div className="text-right shrink-0">
                           <div className="text-sm font-bold text-white">
-                            {product.price_selling?.toLocaleString('cs-CZ')} Kc
+                            {product.price?.toLocaleString('cs-CZ')} Kc
                           </div>
                         </div>
                         <ArrowRight className="w-4 h-4 text-slate-500" />

@@ -72,7 +72,7 @@ export default function QrPrintPage() {
   useEffect(() => {
     setConfig({
       breadcrumbs: [
-        { label: 'Sklad', path: '/warehouse' },
+        { label: 'Sklad', href: '/sklad' },
         { label: 'Tisk QR kodu' },
       ],
     });
@@ -470,7 +470,7 @@ export default function QrPrintPage() {
               {qrDataUrls[item.id] ? (
                 <img
                   src={qrDataUrls[item.id]}
-                  alt={item.name}
+                  alt={item.name ?? ''}
                   style={{
                     width: LABEL_SIZES[labelSize].qr,
                     height: LABEL_SIZES[labelSize].qr,

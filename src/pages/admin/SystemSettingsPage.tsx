@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Settings, Plus, Edit2, Trash2, Save, X, GripVertical, Wrench, Lightbulb, RotateCcw, ToggleLeft, ToggleRight, Loader2, HardHat } from 'lucide-react';
+import { Settings, Plus, Edit2, Trash2, Save, GripVertical, Wrench, Lightbulb, RotateCcw, ToggleLeft, ToggleRight, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
 import { useOrganization } from '../../contexts/OrganizationContext';
 import { useTour } from '../../contexts/TourContext';
-import { TOURS_BY_PATH } from '../../components/tour/tourDefinitions';
 
 interface TaskStatus {
   id: string;

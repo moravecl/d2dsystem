@@ -56,7 +56,7 @@ export default function InvoiceFormPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<InvoiceSettings | null>(null);
-  const [company, setCompany] = useState<CompanyInfo | null>(null);
+  const [, setCompany] = useState<CompanyInfo | null>(null);
   const [clients, setClients] = useState<ClientRef[]>([]);
   const [projects, setProjects] = useState<ProjectRef[]>([]);
   const [catalogProducts, setCatalogProducts] = useState<CatalogProduct[]>([]);
@@ -91,7 +91,7 @@ export default function InvoiceFormPage() {
     const typeLabel = INVOICE_TYPE_LABELS[invoiceType] || 'Faktura';
     setConfig({
       breadcrumbs: [
-        { label: 'Finance', path: '/finance' },
+        { label: 'Finance', href: '/finance' },
         { label: isEdit ? `Upravit – ${typeLabel}` : `Nový doklad – ${typeLabel}` },
       ],
     });
@@ -381,7 +381,7 @@ export default function InvoiceFormPage() {
           let clientAddress = ss.client_address || '';
 
           if (ss.project_id && ss.projects) {
-            const proj = ss.projects as { id: string; project_name: string; client_id: string | null };
+            const proj = ss.projects as unknown as { id: string; project_name: string; client_id: string | null };
             setForm(prev => ({ ...prev, project_id: proj.id }));
             if (proj.client_id) {
               const cl = (clientsRes.data || []).find((c: ClientRef) => c.id === proj.client_id);
@@ -395,7 +395,7 @@ export default function InvoiceFormPage() {
             }
           }
 
-          const typeName = (ss.service_types as { id: string; name: string } | null)?.name || 'Servis';
+          const typeName = (ss.service_types as unknown as { id: string; name: string } | null)?.name || 'Servis';
 
           setForm(prev => ({
             ...prev,

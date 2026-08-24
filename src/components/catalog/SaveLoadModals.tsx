@@ -321,14 +321,14 @@ export async function loadProjectById(projectId: string): Promise<{
   const { data: proj } = await supabase.from('projects').select('*').eq('id', projectId).maybeSingle();
   if (!proj) return null;
 
-  let selected: SelectionState = {};
+  const selected: SelectionState = {};
 
   if (proj.selection_data && typeof proj.selection_data === 'object' && !Array.isArray(proj.selection_data)) {
     const sd = proj.selection_data as Record<string, { placements: unknown[] }>;
     for (const [pid, entry] of Object.entries(sd)) {
       if (entry && Array.isArray(entry.placements)) {
         selected[pid] = {
-          placements: entry.placements.map((pl: Record<string, unknown>) => ({
+          placements: (entry.placements as Record<string, unknown>[]).map((pl) => ({
             id: (pl.id as string) || crypto.randomUUID(),
             x: Number(pl.x ?? 0),
             y: Number(pl.y ?? 0),

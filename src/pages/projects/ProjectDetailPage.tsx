@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { CreditCard as EditIcon, Calendar, Plus, Trash2, Tags } from 'lucide-react';
+import { CreditCard as EditIcon, Calendar, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useToast } from '../../components/ui/Toast';
@@ -8,7 +8,7 @@ import ProjectTabNav from '../../components/projects/ProjectTabNav';
 import StatusBadge from '../../components/ui/StatusBadge';
 import Modal from '../../components/ui/Modal';
 import AddressAutocomplete from '../../components/ui/AddressAutocomplete';
-import ProjectTypeSelect, { ProjectTypeBadges } from '../../components/ui/ProjectTypeSelect';
+import ProjectTypeSelect from '../../components/ui/ProjectTypeSelect';
 import { supabase } from '../../lib/supabase';
 import { logAudit } from '../../lib/auditLog';
 import { useCatalogData } from '../../hooks/useCatalogData';
@@ -56,12 +56,6 @@ interface ProjectTypeRow {
   is_active: boolean;
 }
 
-interface DesignVersionData {
-  id: string;
-  label: string;
-  selection_data: Record<string, unknown>;
-  floorplan_data: unknown[];
-}
 
 interface FvVersionOption {
   id: string;
@@ -1115,7 +1109,7 @@ export default function ProjectDetailPage() {
             <ProjectQuickJobsTab
               projectId={project.id}
               projectName={project.project_name}
-              clientId={project.client_id}
+              clientId={project.client_id ?? undefined}
               clientName={project.client_name}
               address={project.address}
               addressLat={project.address_lat}

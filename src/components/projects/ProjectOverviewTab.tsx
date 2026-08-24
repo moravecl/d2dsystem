@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { FileText, MapPin, CircleUser as UserCircle, Calendar, Clock, TrendingUp, Hash, Navigation, Phone, Mail, ExternalLink, Pencil, Check, X, UserPlus } from 'lucide-react';
 import StatusBadge from '../ui/StatusBadge';
 import { supabase } from '../../lib/supabase';
-import type { Profile } from '../../types/database';
 import DesignPreviewSection from './DesignPreviewSection';
 
 interface ProjectData {
