@@ -33,6 +33,19 @@ export interface ChecklistItem {
 
 export const PROTOCOL_TYPES: { key: string; label: string; icon: string; defaultChecklist: string[] }[] = [
   {
+    key: 'handover',
+    label: 'Předávací protokol',
+    icon: 'clipboard-check',
+    defaultChecklist: [
+      'Dílo je kompletní dle smlouvy / objednávky',
+      'Provedena funkční zkouška za účasti objednatele',
+      'Objednatel zaškolen v obsluze',
+      'Předána dokumentace (revize, návody, schémata)',
+      'Předány klíče / přístupové údaje',
+      'Pracoviště předáno uklizené',
+    ],
+  },
+  {
     key: 'pressure_test',
     label: 'Tlaková zkouška',
     icon: 'gauge',
@@ -194,6 +207,7 @@ export const STATUS_OPTIONS = [
 ];
 
 export const MEASURED_VALUE_TEMPLATES: Record<string, { key: string; label: string; unit: string }[]> = {
+  handover: [],
   pressure_test: [
     { key: 'test_pressure', label: 'Zkušební tlak', unit: 'bar' },
     { key: 'hold_duration', label: 'Doba udržení', unit: 'min' },

@@ -29,6 +29,8 @@ interface Props {
   projectId: string;
   protocol?: ProjectProtocol | null;
   onSaved: () => void;
+  /** predvyplneny typ pri zakladani noveho protokolu (napr. 'handover') */
+  defaultType?: string;
 }
 
 interface FormState {
@@ -69,7 +71,7 @@ const INITIAL_FORM: FormState = {
 
 type TabKey = 'basic' | 'checklist' | 'measurements' | 'signatures';
 
-export default function ProtocolFormModal({ open, onClose, projectId, protocol, onSaved }: Props) {
+export default function ProtocolFormModal({ open, onClose, projectId, protocol, onSaved, defaultType }: Props) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
@@ -138,8 +140,9 @@ export default function ProtocolFormModal({ open, onClose, projectId, protocol, 
         });
       setSelectedTemplateId('');
     } else {
-      setForm(INITIAL_FORM);
-      const typeConf = PROTOCOL_TYPES.find(t => t.key === INITIAL_FORM.protocol_type);
+      const initialType = defaultType || INITIAL_FORM.protocol_type;
+      setForm({ ...INITIAL_FORM, protocol_type: initialType });
+      const typeConf = PROTOCOL_TYPES.find(t => t.key === initialType);
       setChecklist(
         (typeConf?.defaultChecklist || []).map((label, i) => ({
           label, checked: false, note: '', sort_order: i,

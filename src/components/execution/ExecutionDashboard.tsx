@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, Package, BookOpen, CheckSquare, Map, BarChart3, ClipboardCheck, Wrench, FileText, CheckCircle2, Plus, BookOpen as DiaryIcon, Timer } from 'lucide-react';
+import { Clock, Package, BookOpen, CheckSquare, Map, BarChart3, ClipboardCheck, Wrench, FileText, Plus, BookOpen as DiaryIcon, Timer } from 'lucide-react';
+import ProtocolFormModal from '../protocols/ProtocolFormModal';
+import DeliveryNotesModule from './DeliveryNotesModule';
+import type { ProjectProtocol } from '../protocols/protocolTypes';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
 import { logAudit } from '../../lib/auditLog';
@@ -281,7 +284,7 @@ export default function ExecutionDashboard({ job, allQuotes, onStatusChange, onR
         )}
 
         {activeTab === 'predani' && (
-          <HandoverTab projectId={job.project_id} onNavigate={navigate} />
+          <HandoverTab projectId={job.project_id} jobId={job.id} onNavigate={navigate} />
         )}
 
         {activeTab === 'servis' && (
@@ -347,89 +350,91 @@ function MobileFAB({ activeTab, onStartTimer, onAddDiary, onAddMaterial }: {
   );
 }
 
-function HandoverTab({ projectId, onNavigate }: { projectId: string; onNavigate: (path: string) => void }) {
-  const checklist = [
-    'Kontrola dokončení všech prací',
-    'Úklid staveniště',
-    'Fotodokumentace hotového stavu',
-    'Příprava předávacích dokumentů',
-    'Zkoušky a revize',
-    'Zaškolení klienta',
-  ];
-  const [checked, setChecked] = useState<Record<number, boolean>>({});
-  const completedCount = Object.values(checked).filter(Boolean).length;
-  const progress = checklist.length > 0 ? Math.round((completedCount / checklist.length) * 100) : 0;
+function HandoverTab({ projectId, jobId, onNavigate }: { projectId: string; jobId: string; onNavigate: (path: string) => void }) {
+  const [protocols, setProtocols] = useState<ProjectProtocol[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showProtocolModal, setShowProtocolModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    supabase.from('project_protocols')
+      .select('*')
+      .eq('project_id', projectId)
+      .eq('protocol_type', 'handover')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        setProtocols((data ?? []) as ProjectProtocol[]);
+        setLoading(false);
+      });
+  }, [projectId, refreshKey]);
+
+  const latest = protocols[0];
+  const isSigned = !!latest && (!!latest.client_signature || latest.status === 'completed');
 
   return (
     <div className="space-y-5">
       <div className="bg-navy-800/60 backdrop-blur-sm rounded-2xl border border-white/[0.08] overflow-hidden">
         <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider">Checklist předání</h3>
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-            progress === 100
-              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-              : 'bg-white/[0.07] text-slate-400'
-          }`}>
-            {completedCount}/{checklist.length}
-          </span>
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <ClipboardCheck className="w-4 h-4 text-emerald-400" /> Předávací protokol
+          </h3>
+          {latest && (
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+              isSigned
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                : 'bg-amber-500/15 text-amber-400 border border-amber-500/25'
+            }`}>
+              {isSigned ? 'Podepsáno' : 'Rozpracováno'}
+            </span>
+          )}
         </div>
-
-        <div className="px-5 py-3">
-          <div className="h-2 bg-white/[0.07] rounded-full overflow-hidden mb-4">
-            <div
-              className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          <div className="space-y-1">
-            {checklist.map((item, i) => (
-              <label key={i} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.04] cursor-pointer transition group">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={!!checked[i]}
-                    onChange={() => setChecked(prev => ({ ...prev, [i]: !prev[i] }))}
-                    className="sr-only"
-                  />
-                  <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
-                    checked[i]
-                      ? 'bg-emerald-500 border-emerald-500'
-                      : 'border-white/20 group-hover:border-white/30'
-                  }`}>
-                    {checked[i] && (
-                      <CheckCircle2 className="w-4 h-4 text-white animate-check-pop" />
-                    )}
-                  </div>
+        <div className="px-5 py-4">
+          {loading ? (
+            <p className="text-sm text-slate-500 py-2">Načítám…</p>
+          ) : !latest ? (
+            <div className="text-center py-4">
+              <p className="text-sm text-slate-400 mb-4">
+                Předávací protokol zatím nebyl vytvořen. Obsahuje checklist předání,
+                podpisy obou stran a tiskovou verzi.
+              </p>
+              <button
+                onClick={() => setShowProtocolModal(true)}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white text-sm font-extrabold rounded-xl hover:bg-emerald-700 transition-all active:scale-95"
+              >
+                <ClipboardCheck className="w-4 h-4" />
+                Vytvořit předávací protokol
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-white truncate">{latest.title}</div>
+                <div className="text-xs text-slate-500 mt-0.5">
+                  {new Date(latest.protocol_date + 'T00:00:00').toLocaleDateString('cs-CZ')}
+                  {' · '}podpis klienta: {latest.client_signature ? 'ano' : 'ne'}
+                  {' · '}podpis technika: {latest.inspector_signature ? 'ano' : 'ne'}
                 </div>
-                <span className={`text-sm transition-all ${
-                  checked[i] ? 'text-slate-500 line-through' : 'text-slate-300'
-                }`}>{item}</span>
-              </label>
-            ))}
-          </div>
+              </div>
+              <button
+                onClick={() => onNavigate(`/projekty/${projectId}?tab=protocols`)}
+                className="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.10] text-slate-300 text-xs font-semibold transition shrink-0"
+              >
+                Otevřít
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-emerald-900/40 to-teal-900/40 border border-emerald-500/20 rounded-2xl p-6 text-center">
-        <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-          <ClipboardCheck className="w-7 h-7 text-emerald-400" />
-        </div>
-        <p className="text-sm font-semibold text-emerald-300 mb-4">Vytvořte předávací protokol z dokumentu projektu</p>
-        <button
-          onClick={() => {
-            const url = `/projekty/${projectId}`;
-            onNavigate(url);
-            setTimeout(() => {
-              window.dispatchEvent(new CustomEvent('open-document-modal', { detail: { type: 'predavaci_protokol' } }));
-            }, 300);
-          }}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white text-sm font-extrabold rounded-xl hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95"
-        >
-          <FileText className="w-4 h-4" />
-          Vytvořit předávací protokol
-        </button>
-      </div>
+      <DeliveryNotesModule projectId={projectId} jobId={jobId} />
+
+      <ProtocolFormModal
+        open={showProtocolModal}
+        onClose={() => setShowProtocolModal(false)}
+        projectId={projectId}
+        defaultType="handover"
+        onSaved={() => { setShowProtocolModal(false); setRefreshKey((k) => k + 1); }}
+      />
     </div>
   );
 }
