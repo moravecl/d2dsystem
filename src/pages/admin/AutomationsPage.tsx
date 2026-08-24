@@ -61,7 +61,7 @@ export default function AutomationsPage() {
  supabase.from('automation_logs').select('*').eq('org_id', orgId).order('executed_at', { ascending: false }).limit(100),
  supabase.from('project_statuses').select('key, label').eq('is_active', true).order('sort_order'),
  supabase.from('task_statuses').select('key, label').eq('is_active', true).order('sort_order'),
- supabase.from('profiles').select('id, display_name, email').eq('org_id', orgId),
+ supabase.from('profiles').select('id, display_name, email').eq('organization_id', orgId),
  ]);
 
  setAutomations((autoRes.data ?? []) as AutomationRow[]);
