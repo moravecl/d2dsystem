@@ -13,13 +13,13 @@ type Tab = 'detectors' | 'panels' | 'sirens' | 'cables' | 'accessories' | 'motio
 
 const TABS: { id: Tab; label: string; icon: typeof ShieldAlert }[] = [
   { id: 'detectors', label: 'Detektory', icon: ShieldAlert },
-  { id: 'panels', label: 'Ustredny', icon: Cpu },
-  { id: 'sirens', label: 'Sireny', icon: Volume2 },
+  { id: 'panels', label: 'Ústředny', icon: Cpu },
+  { id: 'sirens', label: 'Sirény', icon: Volume2 },
   { id: 'cables', label: 'Kabely', icon: Cable },
-  { id: 'accessories', label: 'Prislusenstvi', icon: Package },
-  { id: 'motion_sensors', label: 'Pohybova cidla', icon: Move },
-  { id: 'keypads', label: 'Klavesnice', icon: Keyboard },
-  { id: 'control_devices', label: 'Ovladaci prvky', icon: Radio },
+  { id: 'accessories', label: 'Příslušenství', icon: Package },
+  { id: 'motion_sensors', label: 'Pohybová čidla', icon: Move },
+  { id: 'keypads', label: 'Klávesnice', icon: Keyboard },
+  { id: 'control_devices', label: 'Ovládací prvky', icon: Radio },
   { id: 'categories', label: 'Kategorie', icon: Tag },
 ];
 
@@ -40,15 +40,15 @@ const COMM_DEFAULTS: [string, string][] = [['gsm', 'GSM'], ['gsm_lan', 'GSM+LAN'
 
 const EPS_CATEGORY_GROUPS: CategoryGroupDef[] = [
   { group: 'detector_type', label: 'Typy detektoru', defaults: DETECTOR_TYPE_DEFAULTS },
-  { group: 'siren_type', label: 'Typy siren', defaults: SIREN_TYPE_DEFAULTS },
+  { group: 'sirén_type', label: 'Typy sirén', defaults: SIREN_TYPE_DEFAULTS },
   { group: 'eps_cable_type', label: 'Typy kabelu', defaults: CABLE_TYPE_DEFAULTS },
-  { group: 'eps_accessory_type', label: 'Typy prislusenstvi', defaults: ACC_TYPE_DEFAULTS },
-  { group: 'motion_type', label: 'Typy pohybovych cidel', defaults: MOTION_TYPE_DEFAULTS },
-  { group: 'keypad_type', label: 'Typy klavesnic', defaults: KEYPAD_TYPE_DEFAULTS },
-  { group: 'device_type', label: 'Typy ovladacich prvku', defaults: DEVICE_TYPE_DEFAULTS },
+  { group: 'eps_accessory_type', label: 'Typy příslušenství', defaults: ACC_TYPE_DEFAULTS },
+  { group: 'motion_type', label: 'Typy pohybových čidel', defaults: MOTION_TYPE_DEFAULTS },
+  { group: 'keypad_type', label: 'Typy klávesnic', defaults: KEYPAD_TYPE_DEFAULTS },
+  { group: 'device_type', label: 'Typy ovládacích prvku', defaults: DEVICE_TYPE_DEFAULTS },
   { group: 'connection_type', label: 'Typy připojení', defaults: CONNECTION_DEFAULTS },
-  { group: 'power_source', label: 'Typy napajeni', defaults: POWER_DEFAULTS },
-  { group: 'communicator_type', label: 'Typy komunikatoru', defaults: COMM_DEFAULTS },
+  { group: 'power_source', label: 'Typy napájení', defaults: POWER_DEFAULTS },
+  { group: 'communicator_type', label: 'Typy komunikátoru', defaults: COMM_DEFAULTS },
 ];
 
 const DETECTOR_TYPE_LABELS: Record<string, string> = {
@@ -156,7 +156,7 @@ function DetectorFields({ data, onChange, opts }: { data: Partial<EpsDetectorMod
       <Row cols={2}><SelectField label="Připojení" value={data.connection_type ?? 'bus'} options={opts.connection_type} onChange={v => set('connection_type', v)} /><SelectField label="Napájení" value={data.power_source ?? 'bus_12v'} options={opts.power_source} onChange={v => set('power_source', v)} /></Row>
       <Row cols={3}>
         <NumField label="Dosah detekce (m)" value={data.detection_range_m ?? 7.5} step={0.1} onChange={v => set('detection_range_m', v)} />
-        <NumField label="Uhel (°)" value={data.detection_angle_deg ?? 360} onChange={v => set('detection_angle_deg', v)} />
+        <NumField label="Úhel (°)" value={data.detection_angle_deg ?? 360} onChange={v => set('detection_angle_deg', v)} />
         <NumField label="Max plocha (m2)" value={data.max_coverage_area_m2 ?? 150} onChange={v => set('max_coverage_area_m2', v)} />
       </Row>
       <Row cols={3}>
@@ -256,7 +256,7 @@ function MotionSensorFields({ data, onChange, opts }: { data: Partial<EpsMotionS
       <Row cols={2}><SelectField label="Připojení" value={data.connection_type ?? 'bus'} options={opts.connection_type} onChange={v => set('connection_type', v)} /><Field label="IP stupeň" value={data.ip_rating ?? 'IP40'} onChange={v => set('ip_rating', v)} /></Row>
       <Row cols={3}>
         <NumField label="Dosah detekce (m)" value={data.detection_range_m ?? 12} step={0.1} onChange={v => set('detection_range_m', v)} />
-        <NumField label="Uhel (°)" value={data.detection_angle_deg ?? 110} onChange={v => set('detection_angle_deg', v)} />
+        <NumField label="Úhel (°)" value={data.detection_angle_deg ?? 110} onChange={v => set('detection_angle_deg', v)} />
         <NumField label="Pet imunita (kg)" value={data.pet_immune_kg ?? 0} onChange={v => set('pet_immune_kg', v)} />
       </Row>
       <Row cols={2}>
@@ -451,7 +451,7 @@ export default function EpsCatalogPage() {
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-white">EPS / EZS katalog</h1>
-            <p className="text-sm text-slate-500 font-medium">Detektory, cidla, ustredny, klavesnice, sireny, ovladani, kabely a prislusenstvi</p>
+            <p className="text-sm text-slate-500 font-medium">Detektory, čidla, ústředny, klávesnice, sirény, ovládání, kabely a příslušenství</p>
           </div>
         </div>
       </div>

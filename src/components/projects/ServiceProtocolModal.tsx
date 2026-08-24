@@ -126,7 +126,7 @@ export default function ServiceProtocolModal({
 
   const handleSave = async () => {
     if (!form.technician_name.trim() || !form.description.trim()) {
-      toast('Vyplnte technika a popis prace', 'error');
+      toast('Vyplňte technika a popis práce', 'error');
       return;
     }
     setSaving(true);
@@ -148,7 +148,7 @@ export default function ServiceProtocolModal({
     }).select('id').maybeSingle();
 
     if (protoErr || !proto) {
-      toast('Chyba pri ukladani protokolu', 'error');
+      toast('Chyba při ukládání protokolu', 'error');
       setSaving(false);
       return;
     }
@@ -177,7 +177,7 @@ export default function ServiceProtocolModal({
     }
 
     setSaving(false);
-    toast('Servisni protokol vytvoren');
+    toast('Servisní protokol vytvořen');
     onSaved();
     onClose();
   };
@@ -185,12 +185,12 @@ export default function ServiceProtocolModal({
   if (!open) return null;
 
   return (
-    <Modal open={open} onClose={onClose} title="Servisni protokol" size="xl" footer={
+    <Modal open={open} onClose={onClose} title="Servisní protokol" size="xl" footer={
       <>
         <div className="flex-1 text-sm font-semibold text-slate-300">
           Celkem: {grandTotal.toLocaleString('cs-CZ')} Kc
         </div>
-        <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrusit</button>
+        <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrušit</button>
         <button onClick={handleSave} disabled={saving || !form.technician_name.trim() || !form.description.trim()} className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50">
           {saving ? 'Ukladam...' : 'Ulozit protokol'}
         </button>
@@ -209,27 +209,27 @@ export default function ServiceProtocolModal({
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Popis provedenych praci *</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-1">Popis provedených práci *</label>
             <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-xl border border-white/[0.08] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Zjisteni pri kontrole</label>
-            <textarea value={form.findings} onChange={e => setForm({ ...form, findings: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-xl border border-white/[0.08] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" placeholder="Stav zarizeni, namerene hodnoty..." />
+            <label className="block text-xs font-semibold text-slate-400 mb-1">Zjištění při kontrole</label>
+            <textarea value={form.findings} onChange={e => setForm({ ...form, findings: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-xl border border-white/[0.08] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" placeholder="Stav zařízení, naměřené hodnoty..." />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Doporuceni</label>
-            <textarea value={form.recommendations} onChange={e => setForm({ ...form, recommendations: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-xl border border-white/[0.08] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" placeholder="Doporuceni pro klienta..." />
+            <label className="block text-xs font-semibold text-slate-400 mb-1">Doporučení</label>
+            <textarea value={form.recommendations} onChange={e => setForm({ ...form, recommendations: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-xl border border-white/[0.08] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" placeholder="Doporučení pro klienta..." />
           </div>
         </div>
 
         {hasReportData && (
           <div className="space-y-4 pt-4 border-t border-white/[0.08]">
-            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Polozky z vykazu (pouze pro cteni)</div>
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Položky z výkazu (pouze pro čtení)</div>
 
             {laborItems.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-blue-400">
-                  <Clock className="w-3.5 h-3.5" /> Prace
+                  <Clock className="w-3.5 h-3.5" /> Práce
                 </div>
                 <div className="rounded-xl border border-white/[0.08] divide-y divide-white/[0.06]">
                   {laborItems.map((item, idx) => (
@@ -244,7 +244,7 @@ export default function ServiceProtocolModal({
                   ))}
                 </div>
                 <div className="text-right text-xs font-bold text-blue-400">
-                  Prace celkem: {laborTotal.toLocaleString('cs-CZ')} Kc
+                  Práce celkem: {laborTotal.toLocaleString('cs-CZ')} Kc
                 </div>
               </div>
             )}
@@ -252,7 +252,7 @@ export default function ServiceProtocolModal({
             {materialItems.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-amber-400">
-                  <Package className="w-3.5 h-3.5" /> Material a ostatni
+                  <Package className="w-3.5 h-3.5" /> Materiál a ostatní
                 </div>
                 <div className="rounded-xl border border-white/[0.08] divide-y divide-white/[0.06]">
                   {materialItems.map((item, idx) => (
@@ -267,13 +267,13 @@ export default function ServiceProtocolModal({
                   ))}
                 </div>
                 <div className="text-right text-xs font-bold text-amber-400">
-                  Material celkem: {materialTotal.toLocaleString('cs-CZ')} Kc
+                  Materiál celkem: {materialTotal.toLocaleString('cs-CZ')} Kc
                 </div>
               </div>
             )}
 
             <div className="flex items-center justify-between p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-              <span className="text-sm font-bold text-emerald-400">Celkova castka</span>
+              <span className="text-sm font-bold text-emerald-400">Celková částka</span>
               <span className="text-lg font-bold text-emerald-400">{grandTotal.toLocaleString('cs-CZ')} Kc</span>
             </div>
           </div>

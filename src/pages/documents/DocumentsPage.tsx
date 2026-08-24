@@ -314,7 +314,7 @@ export default function DocumentsPage() {
       toast('Složka není prázdná. Nejdříve přesuňte nebo smažte obsah.', 'error');
       return;
     }
-    if (!confirm(`Smazat slozku "${folder.name}"?`)) return;
+    if (!confirm(`Smazat složku "${folder.name}"?`)) return;
     await supabase.from('company_folders').delete().eq('id', folder.id);
     toast('Složka smazána');
     loadData();

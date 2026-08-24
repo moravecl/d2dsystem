@@ -41,7 +41,7 @@ export default function CalendarPage() {
   const [panelRefreshKey, setPanelRefreshKey] = useState(0);
 
   useEffect(() => {
-    setConfig({ breadcrumbs: [{ label: 'Kalendar' }] });
+    setConfig({ breadcrumbs: [{ label: 'Kalendář' }] });
   }, [setConfig]);
 
   useEffect(() => {
@@ -325,7 +325,7 @@ export default function CalendarPage() {
       .update({ montaz_start_date: date, updated_at: new Date().toISOString() })
       .eq('id', projectId);
     if (error) {
-      toast('Chyba pri ukladani terminu', 'error');
+      toast('Chyba při ukládání termínu', 'error');
       return;
     }
 

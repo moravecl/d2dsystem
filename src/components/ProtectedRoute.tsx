@@ -37,22 +37,22 @@ export default function ProtectedRoute({
           <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
             <ShieldX className="w-7 h-7 text-red-500" />
           </div>
-          <h1 className="text-lg font-bold text-white mb-2">Pristup odepren</h1>
+          <h1 className="text-lg font-bold text-white mb-2">Přístup odepřen</h1>
           <p className="text-sm text-slate-500 mb-6 leading-relaxed">
-            Vas ucet ma pristup pouze do klientskeho portalu. Pro pristup do systemu kontaktujte spravce.
+            Váš účet má přístup pouze do klientského portálu. Pro přístup do systému kontaktujte správce.
           </p>
           <div className="flex flex-col gap-3">
             <a
               href="/portal"
               className="w-full py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition text-center block"
             >
-              Prejit na klientsky portal
+              Přejít na klientský portál
             </a>
             <button
               onClick={() => signOut()}
               className="w-full py-2.5 rounded-xl border border-white/10 text-slate-400 text-sm font-medium hover:bg-white/[0.04] transition"
             >
-              Odhlasit se
+              Odhlásit se
             </button>
           </div>
         </div>

@@ -155,7 +155,7 @@ export default function DocumentEditorPage() {
     if (!confirm('Opravdu smazat tento dokument?')) return;
     await supabase.from('project_documents').delete().eq('id', doc.id);
     await logAudit('project_document', doc.id, 'deleted', {});
-    toast('Dokument smazan');
+    toast('Dokument smazán');
     navigate(`/projekty/${projectId}`);
   };
 
@@ -167,7 +167,7 @@ export default function DocumentEditorPage() {
     if (error) { toast('Chyba', 'error'); return; }
     setDoc(prev => prev ? { ...prev, status: 'FINAL' } : null);
     await logAudit('project_document', doc.id, 'locked', {});
-    toast('Dokument uzamcen jako FINAL');
+    toast('Dokument uzamčen jako FINAL');
     setShowMenu(false);
   };
 
@@ -287,7 +287,7 @@ export default function DocumentEditorPage() {
               onClick={() => setActivePanel('preview')}
               className={`flex-1 px-3 py-2.5 text-xs font-bold transition ${activePanel === 'preview' ? 'text-blue-400 border-b-2 border-blue-600' : 'text-slate-500 hover:text-slate-300'}`}
             >
-              Nahled
+              Náhled
             </button>
             <button
               onClick={() => setActivePanel('data')}
@@ -311,13 +311,13 @@ export default function DocumentEditorPage() {
                     <div className="flex justify-between text-xs"><span className="text-slate-500">Stav</span><span className="font-medium text-slate-300">{doc.status}</span></div>
                     <div className="flex justify-between text-xs"><span className="text-slate-500">Typ</span><span className="font-medium text-slate-300">{doc.document_type}</span></div>
                     {template && <div className="flex justify-between text-xs"><span className="text-slate-500">Šablona</span><span className="font-medium text-slate-300">{template.name} v{doc.template_version}</span></div>}
-                    <div className="flex justify-between text-xs"><span className="text-slate-500">Vytvoreno</span><span className="font-medium text-slate-300">{new Date(doc.created_at).toLocaleString('cs-CZ')}</span></div>
+                    <div className="flex justify-between text-xs"><span className="text-slate-500">Vytvořeno</span><span className="font-medium text-slate-300">{new Date(doc.created_at).toLocaleString('cs-CZ')}</span></div>
                     <div className="flex justify-between text-xs"><span className="text-slate-500">Upraveno</span><span className="font-medium text-slate-300">{new Date(doc.updated_at).toLocaleString('cs-CZ')}</span></div>
                   </div>
                 </div>
 
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Pripojeny kontext</div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Připojeny kontext</div>
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-xs"><span className="text-slate-500">Projekt</span><span className="font-medium text-slate-300">{projectName}</span></div>
                     {contextData.quote_id ? <div className="flex justify-between text-xs"><span className="text-slate-500">Nabídka</span><span className="font-medium text-blue-400">{String(contextData.quote_id).substring(0, 8)}...</span></div> : null}

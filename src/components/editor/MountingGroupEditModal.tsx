@@ -94,7 +94,7 @@ export default function MountingGroupEditModal({
   };
 
   const handleDisband = async () => {
-    if (!confirm('Opravdu chcete rozpojit tento viceramecek? Prvky zustanou na miste.')) return;
+    if (!confirm('Opravdu chcete rozpojit tento vícerámeček? Prvky zůstanou na místě.')) return;
     setSaving(true);
     await onDisbandGroup();
     setSaving(false);
@@ -102,7 +102,7 @@ export default function MountingGroupEditModal({
   };
 
   const handleRemoveElement = async (slotIndex: number) => {
-    if (!confirm('Odebrat prvek ze slotu? Prvek zustane na miste, ale nebude soucasti viceramecku.')) return;
+    if (!confirm('Odebrat prvek ze slotu? Prvek zůstane na místě, ale nebude součástí vícerámečku.')) return;
     await onRemoveElementFromSlot(slotIndex);
   };
 
@@ -115,7 +115,7 @@ export default function MountingGroupEditModal({
               <Layers className="w-5 h-5 text-teal-400" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Upravit viceramecek</h2>
+              <h2 className="text-base font-bold text-white">Upravit vícerámeček</h2>
               <p className="text-xs text-slate-400">{group.frame_size} pozic</p>
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function MountingGroupEditModal({
                           )}
                         </>
                       ) : (
-                        <div className="text-sm text-slate-500 italic">Prazdny slot</div>
+                        <div className="text-sm text-slate-500 italic">Prázdný slot</div>
                       )}
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
@@ -179,7 +179,7 @@ export default function MountingGroupEditModal({
                             ? 'text-slate-600 cursor-not-allowed'
                             : 'text-slate-400 hover:bg-white/[0.06] hover:text-white'
                         }`}
-                        title="Posunout dolu"
+                        title="Posunout dolů"
                       >
                         <ArrowDown className="w-3.5 h-3.5" />
                       </button>
@@ -201,7 +201,7 @@ export default function MountingGroupEditModal({
 
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-              Orientace ramecku
+              Orientace rámečku
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
@@ -214,7 +214,7 @@ export default function MountingGroupEditModal({
                 }`}
               >
                 <Move className="w-5 h-5" />
-                <span className="text-xs font-bold">Horizontalni</span>
+                <span className="text-xs font-bold">Horizontální</span>
                 <div className="flex gap-1">
                   {[1, 2, 3].slice(0, Math.min(3, group.frame_size)).map((i) => (
                     <div key={i} className="w-4 h-3 rounded-sm bg-current opacity-50" />
@@ -231,7 +231,7 @@ export default function MountingGroupEditModal({
                 }`}
               >
                 <RotateCw className="w-5 h-5" />
-                <span className="text-xs font-bold">Vertikalni</span>
+                <span className="text-xs font-bold">Vertikální</span>
                 <div className="flex flex-col gap-1">
                   {[1, 2, 3].slice(0, Math.min(3, group.frame_size)).map((i) => (
                     <div key={i} className="w-4 h-2 rounded-sm bg-current opacity-50" />
@@ -243,7 +243,7 @@ export default function MountingGroupEditModal({
 
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-              Designova rada
+              Designova řada
             </label>
             <div className="relative">
               <button
@@ -272,7 +272,7 @@ export default function MountingGroupEditModal({
                       <input
                         value={seriesSearch}
                         onChange={(e) => setSeriesSearch(e.target.value)}
-                        placeholder="Hledat radu..."
+                        placeholder="Hledat řadu..."
                         className="w-full pl-10 pr-4 py-2 rounded-lg border border-white/10 bg-white/[0.04] text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30"
                         autoFocus
                       />
@@ -288,7 +288,7 @@ export default function MountingGroupEditModal({
                         !designSeriesId ? 'bg-teal-600/20 text-teal-400' : 'text-slate-400 hover:bg-white/[0.04]'
                       }`}
                     >
-                      Zadna rada
+                      Žádná řada
                     </button>
                     {filteredSeries.map((series) => (
                       <button
@@ -347,7 +347,7 @@ export default function MountingGroupEditModal({
                       !colorName ? 'bg-teal-600/20 text-teal-400' : 'text-slate-400 hover:bg-white/[0.04]'
                     }`}
                   >
-                    Zadna barva
+                    Žádná barva
                   </button>
                   {productColors.map((c) => (
                     <button
@@ -377,13 +377,13 @@ export default function MountingGroupEditModal({
 
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-              Popis (volitelny)
+              Popis (volitelný)
             </label>
             <input
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="napr. Ramecek u dveri"
+              placeholder="např. Rámeček u dveří"
               className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500/30"
             />
           </div>
@@ -404,7 +404,7 @@ export default function MountingGroupEditModal({
                 onClick={onClose}
                 className="px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-sm font-bold text-slate-400 hover:bg-white/[0.06] transition"
               >
-                Zrusit
+                Zrušit
               </button>
               <button
                 onClick={handleSave}

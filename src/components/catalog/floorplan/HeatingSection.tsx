@@ -157,7 +157,7 @@ export default function HeatingSection({
                 className="w-full px-2 py-1.5 rounded-lg border border-red-200 bg-white/[0.06] text-xs font-extrabold focus:outline-none focus:ring-2 focus:ring-red-500/20"
               >
                 <option value="meandr">Meandr (hadovite)</option>
-                <option value="spiral">Smycka (spirala)</option>
+                <option value="spiral">Smycka (spirála)</option>
               </select>
             </div>
           )}
@@ -239,7 +239,7 @@ export default function HeatingSection({
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px] font-extrabold text-slate-400 flex items-center gap-1">
-                <DoorOpen className="w-3 h-3" /> Dvere ({(room.doors ?? []).length})
+                <DoorOpen className="w-3 h-3" /> Dveře ({(room.doors ?? []).length})
               </span>
               <div className="flex items-center gap-1">
                 <input
@@ -265,7 +265,7 @@ export default function HeatingSection({
                 {(room.doors ?? []).map((door, idx) => (
                   <div key={door.id} className="flex items-center gap-2 bg-navy-800/60 rounded-lg px-2 py-1 border border-white/[0.06] text-[10px]">
                     <DoorOpen className="w-3 h-3 text-slate-400 shrink-0" />
-                    <span className="font-extrabold text-slate-300">Dvere {idx + 1}</span>
+                    <span className="font-extrabold text-slate-300">Dveře {idx + 1}</span>
                     <span className="text-slate-500">{door.widthM} m</span>
                     <button onClick={() => onRemoveRoomDoor(room.id, door.id)} className="ml-auto p-0.5 text-slate-400 hover:text-red-500 transition">
                       <Trash2 className="w-2.5 h-2.5" />

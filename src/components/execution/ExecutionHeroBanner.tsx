@@ -22,14 +22,14 @@ const STATUS_THEMES: Record<string, {
   accentDot: string;
 }> = {
   ready: {
-    label: 'Pripraveno',
+    label: 'Připraveno',
     gradient: 'from-slate-700/60 to-slate-800/60 border-white/10',
     textColor: 'text-slate-300',
     btnClass: '',
     accentDot: 'bg-slate-400',
   },
   in_progress: {
-    label: 'Probiha',
+    label: 'Probíhá',
     gradient: 'from-teal-900/40 via-emerald-900/30 to-cyan-900/30 border-teal-500/25',
     textColor: 'text-teal-300',
     btnClass: '',
@@ -43,7 +43,7 @@ const STATUS_THEMES: Record<string, {
     accentDot: 'bg-amber-500',
   },
   completed: {
-    label: 'Dokonceno',
+    label: 'Dokončeno',
     gradient: 'from-slate-800 to-slate-900 border-slate-700',
     textColor: 'text-white',
     btnClass: '',
@@ -94,7 +94,7 @@ export default function ExecutionHeroBanner({ job, onStatusChange, runningTimerE
             </div>
             {job.started_at && (
               <p className="text-xs mt-0.5 text-slate-500">
-                Zahajeno {new Date(job.started_at).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
+                Zahájeno {new Date(job.started_at).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}
                 {job.completed_at && ` \u2022 Dokonceno ${new Date(job.completed_at).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })}`}
               </p>
             )}
@@ -117,7 +117,7 @@ export default function ExecutionHeroBanner({ job, onStatusChange, runningTimerE
               onClick={() => onStatusChange('in_progress')}
               className="flex items-center gap-2 bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-extrabold hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95"
             >
-              <Play className="w-4 h-4" /> Zahajit
+              <Play className="w-4 h-4" /> Zahájit
             </button>
           )}
           {job.status === 'in_progress' && (
@@ -132,7 +132,7 @@ export default function ExecutionHeroBanner({ job, onStatusChange, runningTimerE
                 onClick={() => onStatusChange('completed')}
                 className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-extrabold hover:bg-slate-900 transition-all hover:shadow-lg active:scale-95"
               >
-                <CheckCircle2 className="w-4 h-4" /> Ukoncit
+                <CheckCircle2 className="w-4 h-4" /> Ukončit
               </button>
             </>
           )}
@@ -141,7 +141,7 @@ export default function ExecutionHeroBanner({ job, onStatusChange, runningTimerE
               onClick={() => onStatusChange('in_progress')}
               className="flex items-center gap-2 bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-extrabold hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95"
             >
-              <Zap className="w-4 h-4" /> Pokracovat
+              <Zap className="w-4 h-4" /> Pokračovat
             </button>
           )}
           {job.status === 'completed' && (

@@ -81,7 +81,7 @@ export default function QuickAuthModal({ open, onClose, onSuccess }: Props) {
             <label className="text-xs font-extrabold uppercase tracking-widest text-slate-400 block mb-1">E-mail</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
               className="w-full px-4 py-2.5 rounded-xl border border-white/10 font-extrabold focus:outline-none focus:ring-4 focus:ring-blue-500/20"
-              placeholder="vas@email.cz" />
+              placeholder="váš@email.cz" />
           </div>
           <div>
             <label className="text-xs font-extrabold uppercase tracking-widest text-slate-400 block mb-1">Heslo</label>

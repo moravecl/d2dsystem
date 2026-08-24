@@ -19,9 +19,9 @@ interface CompatibilityRecord {
 }
 
 const COMPATIBILITY_OPTIONS = [
-  { value: 'recommended', label: 'Doporuceno', icon: Star, color: 'text-amber-400', bg: 'bg-amber-500/20' },
-  { value: 'compatible', label: 'Kompatibilni', icon: Check, color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-  { value: 'incompatible', label: 'Nekompatibilni', icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/20' },
+  { value: 'recommended', label: 'Doporučeno', icon: Star, color: 'text-amber-400', bg: 'bg-amber-500/20' },
+  { value: 'compatible', label: 'Kompatibilní', icon: Check, color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
+  { value: 'incompatible', label: 'Nekompatibilní', icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/20' },
 ] as const;
 
 export default function CompatibilityPage() {
@@ -109,7 +109,7 @@ export default function CompatibilityPage() {
       (r) => r.element_type_id === selectedTypeId && r.product_id === addForm.productId
     );
     if (existing) {
-      toast('Tato kombinace jiz existuje');
+      toast('Tato kombinace již existuje');
       return;
     }
 
@@ -131,7 +131,7 @@ export default function CompatibilityPage() {
       setRecords((prev) => [data as CompatibilityRecord, ...prev]);
       setShowAddModal(false);
       setAddForm({ productId: '', compatibilityType: 'compatible', notes: '' });
-      toast('Kompatibilita pridana');
+      toast('Kompatibilita přidána');
     }
     setSaving(false);
   };
@@ -151,7 +151,7 @@ export default function CompatibilityPage() {
       setRecords((prev) =>
         prev.map((r) => (r.id === recordId ? { ...r, compatibility_type: newType } : r))
       );
-      toast('Aktualizovano');
+      toast('Aktualizováno');
     }
   };
 
@@ -165,7 +165,7 @@ export default function CompatibilityPage() {
       toast(`Chyba: ${error.message}`);
     } else {
       setRecords((prev) => prev.filter((r) => r.id !== recordId));
-      toast('Odebrano');
+      toast('Odebráno');
     }
   };
 
@@ -193,7 +193,7 @@ export default function CompatibilityPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white">Kompatibilita prvku a produktu</h1>
         <p className="text-sm text-slate-400 mt-1">
-          Nastavte doporucene, kompatibilni a nekompatibilni produkty pro jednotlive typy schematickych prvku
+          Nastavte doporučené, kompatibilní a nekompatibilní produkty pro jednotlivé typy schematickych prvku
         </p>
       </div>
 
@@ -283,7 +283,7 @@ export default function CompatibilityPage() {
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition"
                 >
                   <Plus className="w-4 h-4" />
-                  Pridat produkt
+                  Přidat produkt
                 </button>
               </div>
 
@@ -298,7 +298,7 @@ export default function CompatibilityPage() {
                       : 'bg-white/[0.06] text-slate-400 hover:text-white'
                   }`}
                 >
-                  Vse
+                  Vše
                 </button>
                 {COMPATIBILITY_OPTIONS.map((opt) => (
                   <button
@@ -319,12 +319,12 @@ export default function CompatibilityPage() {
               {selectedTypeRecords.length === 0 ? (
                 <div className="py-16 text-center">
                   <HelpCircle className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                  <p className="text-slate-400 text-sm">Zadne produkty s nastavenou kompatibilitou</p>
+                  <p className="text-slate-400 text-sm">Žádné produkty s nastavenou kompatibilitou</p>
                   <button
                     onClick={() => setShowAddModal(true)}
                     className="mt-4 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition"
                   >
-                    Pridat prvni produkt
+                    Přidat první produkt
                   </button>
                 </div>
               ) : (
@@ -355,7 +355,7 @@ export default function CompatibilityPage() {
                             <span>{product.code}</span>
                             {product.kind === 'design_series' && (
                               <span className="ml-2 px-1.5 py-0.5 bg-teal-500/20 text-teal-400 rounded text-[9px] font-bold">
-                                Designova rada
+                                Designova řada
                               </span>
                             )}
                           </div>
@@ -392,7 +392,7 @@ export default function CompatibilityPage() {
           ) : (
             <div className="bg-navy-800/30 rounded-2xl border border-white/5 py-24 text-center">
               <HelpCircle className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400 text-sm">Vyberte typ prvku v levem panelu</p>
+              <p className="text-slate-400 text-sm">Vyberte typ prvku v levém panelu</p>
             </div>
           )}
         </div>
@@ -402,7 +402,7 @@ export default function CompatibilityPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-navy-900 rounded-2xl border border-white/10 w-full max-w-lg shadow-2xl">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-              <h3 className="text-base font-bold text-white">Pridat kompatibilni produkt</h3>
+              <h3 className="text-base font-bold text-white">Přidat kompatibilní produkt</h3>
               <button
                 onClick={() => setShowAddModal(false)}
                 className="p-2 rounded-lg hover:bg-white/[0.06] transition"
@@ -420,7 +420,7 @@ export default function CompatibilityPage() {
                   <input
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
-                    placeholder="Nazev, kod nebo vyrobce..."
+                    placeholder="Název, kód nebo výrobce..."
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                   />
                 </div>
@@ -454,7 +454,7 @@ export default function CompatibilityPage() {
                           <div className="text-sm font-bold text-white truncate">{p.name}</div>
                           <div className="text-[10px] text-slate-500">
                             {p.brand && `${p.brand} / `}{p.code}
-                            {alreadyAdded && <span className="ml-2 text-amber-400">Jiz pridano</span>}
+                            {alreadyAdded && <span className="ml-2 text-amber-400">Již přidáno</span>}
                           </div>
                         </div>
                         {isSelected && <Check className="w-4 h-4 text-blue-400 shrink-0" />}
@@ -488,12 +488,12 @@ export default function CompatibilityPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                  Poznamka (volitelne)
+                  Poznámka (volitelné)
                 </label>
                 <textarea
                   value={addForm.notes}
                   onChange={(e) => setAddForm((f) => ({ ...f, notes: e.target.value }))}
-                  placeholder="Napiste poznamku k teto kombinaci..."
+                  placeholder="Napište poznámku k této kombinaci..."
                   rows={2}
                   className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/30 resize-none"
                 />
@@ -504,7 +504,7 @@ export default function CompatibilityPage() {
                 onClick={() => setShowAddModal(false)}
                 className="px-4 py-2 rounded-xl border border-white/10 text-sm font-bold text-slate-400 hover:bg-white/[0.06] transition"
               >
-                Zrusit
+                Zrušit
               </button>
               <button
                 onClick={handleAddCompatibility}

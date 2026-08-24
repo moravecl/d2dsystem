@@ -76,7 +76,7 @@ export default function TermsPage() {
           <h2>8. Omezení odpovědnosti</h2>
           <p>
             Celková odpovědnost poskytovatele je omezena na výši zaplacených poplatků za
-            poslední 3 měsíce. Poskytovatel neodpovídá za nepřímé škody, ušlý zisk ani ztrátu dat
+            poslední 3 měsíce. Poskytovatel neodpovídá za nepřímé škódy, ušlý zisk ani ztrátu dat
             způsobenou zákazníkem.
           </p>
 

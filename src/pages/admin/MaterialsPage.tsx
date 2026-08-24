@@ -122,7 +122,7 @@ export default function MaterialsPage() {
     if (!confirm('Opravdu smazat materiál?')) return;
     const { error } = await supabase.from('materials').delete().eq('id', id);
     if (error) toast(error.message, 'error');
-    else { toast('Smazano'); load(); }
+    else { toast('Smazáno'); load(); }
   };
 
   const toggleActive = async (mat: Material) => {
@@ -281,7 +281,7 @@ export default function MaterialsPage() {
                 <th className="text-left p-4 font-extrabold text-slate-500 text-xs uppercase tracking-widest">Autopočet</th>
               )}
               <th className="text-right p-4 font-extrabold text-slate-500 text-xs uppercase tracking-widest">Prodej / j.</th>
-              <th className="text-right p-4 font-extrabold text-slate-500 text-xs uppercase tracking-widest">Nakup / j.</th>
+              <th className="text-right p-4 font-extrabold text-slate-500 text-xs uppercase tracking-widest">Nákup / j.</th>
               <th className="text-center p-4 font-extrabold text-slate-500 text-xs uppercase tracking-widest">Stav</th>
               <th className="text-right p-4 font-extrabold text-slate-500 text-xs uppercase tracking-widest">Akce</th>
             </tr>

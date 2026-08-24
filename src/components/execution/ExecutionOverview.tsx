@@ -47,10 +47,10 @@ interface Props {
 }
 
 const STATUS_BADGE: Record<string, { label: string; cls: string; Icon: typeof CheckCircle2 }> = {
-  approved: { label: 'Schvaleno', cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', Icon: CheckCircle2 },
-  presented: { label: 'Predlozeno', cls: 'text-blue-400 bg-blue-500/10 border-blue-500/20', Icon: Eye },
-  returned: { label: 'Vraceno', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/20', Icon: RotateCcw },
-  draft: { label: 'Rozpracovana', cls: 'text-slate-400 bg-white/[0.06] border-white/[0.08]', Icon: FileText },
+  approved: { label: 'Schváleno', cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', Icon: CheckCircle2 },
+  presented: { label: 'Předloženo', cls: 'text-blue-400 bg-blue-500/10 border-blue-500/20', Icon: Eye },
+  returned: { label: 'Vráceno', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/20', Icon: RotateCcw },
+  draft: { label: 'Rozpracována', cls: 'text-slate-400 bg-white/[0.06] border-white/[0.08]', Icon: FileText },
 };
 
 function QuoteStatusBadge({ status }: { status: string }) {
@@ -258,7 +258,7 @@ export default function ExecutionOverview({
         activityFeed.push({
           id: `diary-${d.id}`,
           type: 'diary',
-          title: 'Zapis v deniku',
+          title: 'Zápis v deníku',
           detail: (d.content || '').slice(0, 60) + ((d.content || '').length > 60 ? '...' : ''),
           timestamp: d.created_at || '',
         });
@@ -303,11 +303,11 @@ export default function ExecutionOverview({
         <div className="lg:col-span-1 rounded-2xl border border-white/10 bg-white/[0.06] p-5 flex flex-col items-center justify-center">
           <ProgressRing percentage={overallProgress} />
           <p className="text-[10px] font-semibold text-slate-400 mt-2 uppercase tracking-wider">
-            Odhad dokonceni
+            Odhad dokončení
           </p>
           {stats.totalPlannedItems > 0 && (
             <p className="text-[10px] text-slate-400 mt-0.5 tabular-nums">
-              {stats.materialWithActual} z {stats.totalPlannedItems} polozek
+              {stats.materialWithActual} z {stats.totalPlannedItems} položek
             </p>
           )}
         </div>
@@ -320,7 +320,7 @@ export default function ExecutionOverview({
               </div>
               <MiniBarChart values={weeklyHours} />
             </div>
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Odpracovano</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Odpracováno</div>
             <div className="text-xl font-extrabold text-white tabular-nums mt-0.5">{hours}h {mins}m</div>
           </div>
 
@@ -330,7 +330,7 @@ export default function ExecutionOverview({
                 <Package className="w-4.5 h-4.5 text-emerald-400" />
               </div>
             </div>
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Material</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Materiál</div>
             <div className="text-xl font-extrabold text-white tabular-nums mt-0.5">{stats.materialWithActual}<span className="text-sm text-slate-400 font-bold">/{stats.materialEntries}</span></div>
             <div className="mt-2 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
               <div
@@ -346,11 +346,11 @@ export default function ExecutionOverview({
                 <BookOpen className="w-4.5 h-4.5 text-amber-400" />
               </div>
             </div>
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Denik</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Deník</div>
             <div className="text-xl font-extrabold text-white tabular-nums mt-0.5">{stats.diaryEntries}</div>
             {stats.lastDiaryDate && (
               <p className="text-[10px] text-slate-400 mt-1">
-                Posledni: {new Date(stats.lastDiaryDate).toLocaleDateString('cs-CZ')}
+                Poslední: {new Date(stats.lastDiaryDate).toLocaleDateString('cs-CZ')}
               </p>
             )}
           </div>
@@ -368,7 +368,7 @@ export default function ExecutionOverview({
               </div>
               {stats.criticalDefects > 0 && (
                 <span className="text-[9px] font-extrabold text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full border border-red-200 animate-pulse">
-                  KRITICKE
+                  KRITICKÉ
                 </span>
               )}
             </div>
@@ -377,7 +377,7 @@ export default function ExecutionOverview({
               stats.openDefects > 0 ? 'text-red-400' : 'text-white'
             }`}>
               {stats.openDefects}
-              <span className="text-sm text-slate-400 font-bold"> otevrenych</span>
+              <span className="text-sm text-slate-400 font-bold"> otevřených</span>
             </div>
           </div>
         </div>
@@ -388,7 +388,7 @@ export default function ExecutionOverview({
           <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
             <div className="flex items-center gap-2 mb-3">
               <Users className="w-4 h-4 text-slate-400" />
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Dnes na stavbe</h3>
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Dnes na stavbě</h3>
               <span className="text-[10px] font-bold text-teal-600 bg-teal-500/10 px-2 py-0.5 rounded-full">
                 {todayWorkers.length}
               </span>
@@ -416,10 +416,10 @@ export default function ExecutionOverview({
         <div className={`rounded-2xl border border-white/10 bg-white/[0.06] p-4 ${todayWorkers.length > 0 ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="w-4 h-4 text-slate-400" />
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Posledni aktivita</h3>
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Poslední aktivita</h3>
           </div>
           {activity.length === 0 ? (
-            <p className="text-xs text-slate-400 text-center py-4">Zatim zadna aktivita</p>
+            <p className="text-xs text-slate-400 text-center py-4">Zatím žádná aktivita</p>
           ) : (
             <div className="space-y-1.5 max-h-48 overflow-y-auto">
               {activity.map((item) => {
@@ -451,7 +451,7 @@ export default function ExecutionOverview({
         <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
           <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-2">
             <FileText className="w-3.5 h-3.5 text-slate-400" />
-            Napojene nabidky
+            Napojené nabídky
           </h3>
           <span className="text-[10px] text-slate-400 font-semibold bg-white/[0.06] px-2 py-0.5 rounded-full">
             {includedIds.length}
@@ -461,9 +461,9 @@ export default function ExecutionOverview({
           {includedQuotes.length === 0 && (
             <div className="text-center py-4">
               <FileText className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-              <p className="text-xs text-slate-500">Zakazka nema napojenou zadnou nabidku</p>
+              <p className="text-xs text-slate-500">Zakázka nemá napojenou žádnou nabídku</p>
               {!isCompleted && unincluded.length > 0 && (
-                <p className="text-[10px] text-slate-500 mt-1">Pripojte nabidku nize</p>
+                <p className="text-[10px] text-slate-500 mt-1">Připojte nabídku níže</p>
               )}
             </div>
           )}
@@ -479,7 +479,7 @@ export default function ExecutionOverview({
                 <QuoteStatusBadge status={q.status} />
                 <span className="text-xs font-semibold text-slate-300">{fmt(q.total_selling)} Kc</span>
                 {q.id === mainQuoteId && (
-                  <span className="text-[9px] font-extrabold text-slate-400 uppercase bg-white/[0.06] px-1.5 py-0.5 rounded">hlavni</span>
+                  <span className="text-[9px] font-extrabold text-slate-400 uppercase bg-white/[0.06] px-1.5 py-0.5 rounded">hlavní</span>
                 )}
               </div>
               {!isCompleted && (
@@ -496,13 +496,13 @@ export default function ExecutionOverview({
           {isCompleted && (
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
               <Lock className="w-3.5 h-3.5 text-slate-500" />
-              <span className="text-[10px] text-slate-500">Zakazka je dokoncena. Pro zmenu nabidek ji vrate do stavu Probiha.</span>
+              <span className="text-[10px] text-slate-500">Zakázka je dokončena. Pro změnu nabídek ji vrate do stavu Probíhá.</span>
             </div>
           )}
 
           {!isCompleted && unincluded.length > 0 && (
             <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
-              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider px-1">Dalsi dostupne</p>
+              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider px-1">Další dostupné</p>
               {unincluded.map((q) => (
                 <div key={q.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl border border-dashed border-white/10 hover:border-sky-500/30 hover:bg-sky-500/5 transition">
                   <div className="flex items-center gap-2 flex-wrap">

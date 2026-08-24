@@ -754,7 +754,7 @@ export default function DesignElementTypesPage() {
                 <input
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  placeholder="zasuvka_dvojita"
+                  placeholder="zásuvka_dvojitá"
                   className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>

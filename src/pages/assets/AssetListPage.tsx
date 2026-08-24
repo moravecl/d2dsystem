@@ -124,7 +124,7 @@ export default function AssetListPage({ assetType }: Props) {
                 <div className="flex items-center gap-3 shrink-0">
                   {asset.warranty_until && (
                     <div className="text-right">
-                      <div className="text-[10px] text-slate-400">Zaruka do</div>
+                      <div className="text-[10px] text-slate-400">Záruka do</div>
                       <div className="text-xs font-medium text-slate-400">{new Date(asset.warranty_until).toLocaleDateString('cs-CZ')}</div>
                     </div>
                   )}

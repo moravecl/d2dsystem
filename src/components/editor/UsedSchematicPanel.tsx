@@ -165,7 +165,7 @@ export default function UsedSchematicPanel({
                           setBulkAssigningRoom(bulkAssigningRoom === room.id ? null : room.id);
                         }}
                         className={`p-1 rounded transition ${bulkAssigningRoom === room.id ? 'bg-blue-500/20 text-blue-400' : 'text-slate-400 hover:text-blue-400 hover:bg-blue-500/10'}`}
-                        title="Hromadne prirazeni produktu"
+                        title="Hromadné přiřazení produktu"
                       >
                         <Link className="w-3 h-3" />
                       </button>
@@ -180,7 +180,7 @@ export default function UsedSchematicPanel({
 
                 {bulkAssigningRoom === room.id && (
                   <div className="px-3 py-2 bg-blue-500/5 border-b border-white/[0.06]">
-                    <p className="text-[10px] text-slate-400 mb-1.5">Priradit produkt vsem prvkum v mistnosti:</p>
+                    <p className="text-[10px] text-slate-400 mb-1.5">Přiřadit produkt všem prvkům v místnosti:</p>
                     <select
                       className="w-full text-xs rounded border border-white/10 px-2 py-1.5 bg-white/[0.06] focus:outline-none focus:ring-1 focus:ring-blue-500"
                       onChange={(e) => {
@@ -232,7 +232,7 @@ export default function UsedSchematicPanel({
                             </div>
                             <div className="shrink-0 flex items-center gap-0.5">
                               {isInherited && (
-                                <div className="p-1" title={`Zdedeno z ${resolved.sourceLevel === 'room' ? 'mistnosti' : 'projektu'}`}>
+                                <div className="p-1" title={`Zděděno z ${resolved.sourceLevel === 'room' ? 'mistnosti' : 'projektu'}`}>
                                   <Info className="w-3 h-3 text-blue-400" />
                                 </div>
                               )}
@@ -246,7 +246,7 @@ export default function UsedSchematicPanel({
                               <button
                                 onClick={() => onSelectElement(element.id)}
                                 className="p-1 rounded text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 transition"
-                                title="Zobrazit na pudorysu"
+                                title="Zobrazit na půdorysu"
                               >
                                 <Eye className="w-3 h-3" />
                               </button>
@@ -270,7 +270,7 @@ export default function UsedSchematicPanel({
                                   setAssigningElementId(null);
                                 }}
                               >
-                                <option value="">-- Neprirazeno / Zdedit --</option>
+                                <option value="">-- Nepřiřazeno / Zdědit --</option>
                                 {relevantProducts.map(p => (
                                   <option key={p.id} value={p.id}>{p.name} ({p.code})</option>
                                 ))}
@@ -284,7 +284,7 @@ export default function UsedSchematicPanel({
                                     <div className={`text-[10px] font-bold truncate ${isInherited ? 'text-blue-300' : 'text-green-300'}`}>{assignedProduct.name}</div>
                                     <div className={`text-[9px] ${isInherited ? 'text-blue-400/70' : 'text-green-400/70'}`}>
                                       {assignedProduct.code}
-                                      {isInherited && <span className="ml-1">(zdedeno)</span>}
+                                      {isInherited && <span className="ml-1">(zděděno)</span>}
                                     </div>
                                   </div>
                                 </div>

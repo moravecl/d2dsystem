@@ -79,7 +79,7 @@ const CATALOG_TABS: { id: CatalogSection; label: string; icon: typeof ShieldAler
   { id: 'detectors', label: 'Det', icon: ShieldAlert },
   { id: 'motion', label: 'PIR', icon: Move },
   { id: 'panels', label: 'CPU', icon: Cpu },
-  { id: 'keypads', label: 'Klav', icon: Keyboard },
+  { id: 'keypads', label: 'Kláv', icon: Keyboard },
   { id: 'sirens', label: 'Sir', icon: Volume2 },
   { id: 'cables', label: 'Kab', icon: Cable },
   { id: 'control', label: 'Ovl', icon: Radio },
@@ -183,7 +183,7 @@ export default function EpsSidebar({
     <div className="w-80 h-full flex flex-col bg-slate-900/95 border-l border-slate-700/50">
       <div className="flex gap-0.5 p-1.5 bg-slate-900/50 border-b border-slate-700/50">
         <button onClick={() => setTab('layers')} className={tabBtnClass('layers')}>
-          <Layers className="w-3.5 h-3.5" /> Pudorysy
+          <Layers className="w-3.5 h-3.5" /> Půdorysy
         </button>
         <button onClick={() => setTab('catalog')} className={tabBtnClass('catalog')}>
           <ShieldAlert className="w-3.5 h-3.5" /> Katalog
@@ -201,7 +201,7 @@ export default function EpsSidebar({
               onClick={() => fileInputRef.current?.click()}
               className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/15 transition"
             >
-              <Upload className="w-4 h-4" /> Nahrat pudorys
+              <Upload className="w-4 h-4" /> Nahrát půdorys
             </button>
 
             <div className="space-y-1">
@@ -255,7 +255,7 @@ export default function EpsSidebar({
               {designData.layers.length === 0 && (
                 <div className="text-center py-6 text-slate-500 text-xs">
                   <Layers className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  Nahrajte pudorys pro zacatek
+                  Nahrajte půdorys pro začátek
                 </div>
               )}
             </div>
@@ -265,7 +265,7 @@ export default function EpsSidebar({
                 {designData.layers.filter(l => l.scale).map((l, _i) => (
                   <div key={l.id} className="bg-cyan-500/10 border border-cyan-500/20 rounded-xl px-3 py-2 flex items-center gap-2">
                     <div className="flex-1 min-w-0">
-                      <div className="text-[9px] font-extrabold text-cyan-400 uppercase">Meritko — {l.name}</div>
+                      <div className="text-[9px] font-extrabold text-cyan-400 uppercase">Měřítko — {l.name}</div>
                       <div className="text-xs font-bold text-white">{l.scale!.realDistanceM} m</div>
                     </div>
                   </div>
@@ -364,7 +364,7 @@ export default function EpsSidebar({
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[11px] font-bold text-white truncate">{p.model_number}</div>
-                      <div className="text-[9px] text-slate-500">{p.max_zones} zon · {p.communicator_type}</div>
+                      <div className="text-[9px] text-slate-500">{p.max_zones} zón · {p.communicator_type}</div>
                     </div>
                     <span className="text-[10px] font-bold text-slate-400">{p.price.toLocaleString('cs-CZ')} Kc</span>
                   </button>
@@ -485,7 +485,7 @@ export default function EpsSidebar({
 
             <button onClick={toggleExpanded} className="w-full flex items-center gap-2 px-3 py-2 text-[11px] font-extrabold text-slate-400 hover:text-slate-300 transition">
               {expandedPanels ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-              Umistene prvky ({placedTotal})
+              Umístěné prvky ({placedTotal})
             </button>
             {expandedPanels && (
               <div className="space-y-0.5">
@@ -521,7 +521,7 @@ export default function EpsSidebar({
                     const model = catalog.panels.find(m => m.id === p.panelId);
                     rows.push(
                       <PlacedRow key={p.id} num={n} icon={<Cpu className="w-3 h-3" />} iconColor="text-sky-400"
-                        title={model?.model_number ?? 'Ustredna'} subtitle={`Ustredna · ${model?.max_zones ?? '?'} zon`} onDelete={() => onDeletePanel(p.id)} />
+                        title={model?.model_number ?? 'Ustredna'} subtitle={`Ústředna · ${model?.max_zones ?? '?'} zón`} onDelete={() => onDeletePanel(p.id)} />
                     );
                   });
 
@@ -578,21 +578,21 @@ export default function EpsSidebar({
         {tab === 'calc' && (
           <div className="p-3 space-y-3">
             <div className="bg-white/[0.04] rounded-xl p-3 space-y-2">
-              <div className="text-[10px] font-extrabold text-slate-400 uppercase">Souhrn navrhu</div>
+              <div className="text-[10px] font-extrabold text-slate-400 uppercase">Souhrn návrhu</div>
               <div className="grid grid-cols-2 gap-2">
                 <StatBox label="Detektory" value={String(designData.detectors.length)} color="text-blue-400" />
-                <StatBox label="PIR cidla" value={String((designData.motionSensors ?? []).length)} color="text-green-400" />
-                <StatBox label="Ustredny" value={String(designData.panels.length)} color="text-indigo-400" />
-                <StatBox label="Klavesnice" value={String((designData.keypads ?? []).length)} color="text-teal-400" />
-                <StatBox label="Sireny" value={String(designData.sirens.length)} color="text-orange-400" />
-                <StatBox label="Ovladani" value={String((designData.controlDevices ?? []).length)} color="text-rose-400" />
-                <StatBox label="Kabelaz" value={`${cableLen} m`} color="text-amber-400" />
+                <StatBox label="PIR čidla" value={String((designData.motionSensors ?? []).length)} color="text-green-400" />
+                <StatBox label="Ústředny" value={String(designData.panels.length)} color="text-indigo-400" />
+                <StatBox label="Klávesnice" value={String((designData.keypads ?? []).length)} color="text-teal-400" />
+                <StatBox label="Sirény" value={String(designData.sirens.length)} color="text-orange-400" />
+                <StatBox label="Ovládání" value={String((designData.controlDevices ?? []).length)} color="text-rose-400" />
+                <StatBox label="Kabeláž" value={`${cableLen} m`} color="text-amber-400" />
                 <StatBox label="Prislusen." value={String(designData.accessoryItems.reduce((s, i) => s + i.quantity, 0))} color="text-slate-400" />
               </div>
             </div>
 
             <div className="bg-white/[0.04] rounded-xl p-3 space-y-2">
-              <div className="text-[10px] font-extrabold text-slate-400 uppercase">Kapacita ustredny</div>
+              <div className="text-[10px] font-extrabold text-slate-400 uppercase">Kapacita ústředny</div>
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-2 bg-white/[0.06] rounded-full overflow-hidden">
                   <div
@@ -605,15 +605,15 @@ export default function EpsSidebar({
             </div>
 
             <div className="bg-white/[0.04] rounded-xl p-3 space-y-1.5">
-              <div className="text-[10px] font-extrabold text-slate-400 uppercase">Cenovy rozpis</div>
+              <div className="text-[10px] font-extrabold text-slate-400 uppercase">Cenový rozpis</div>
               <PriceLine label="Detektory" value={prices.detectorsCost} />
-              <PriceLine label="PIR cidla" value={prices.motionSensorsCost} />
-              <PriceLine label="Ustredny" value={prices.panelsCost} />
-              <PriceLine label="Klavesnice" value={prices.keypadsCost} />
-              <PriceLine label="Sireny" value={prices.sirensCost} />
-              <PriceLine label="Ovladaci prvky" value={prices.controlDevicesCost} />
-              <PriceLine label="Kabelaz" value={prices.cablesCost} />
-              <PriceLine label="Prislusenstvi" value={prices.accessoriesCost} />
+              <PriceLine label="PIR čidla" value={prices.motionSensorsCost} />
+              <PriceLine label="Ústředny" value={prices.panelsCost} />
+              <PriceLine label="Klávesnice" value={prices.keypadsCost} />
+              <PriceLine label="Sirény" value={prices.sirensCost} />
+              <PriceLine label="Ovládací prvky" value={prices.controlDevicesCost} />
+              <PriceLine label="Kabeláž" value={prices.cablesCost} />
+              <PriceLine label="Příslušenství" value={prices.accessoriesCost} />
               <div className="border-t border-white/[0.08] pt-1.5 mt-1.5">
                 <div className="flex justify-between">
                   <span className="text-xs font-extrabold text-white">Celkem</span>
@@ -624,7 +624,7 @@ export default function EpsSidebar({
 
             {warnings.length > 0 && (
               <div className="space-y-1.5">
-                <div className="text-[10px] font-extrabold text-slate-400 uppercase">Kontrola navrhu</div>
+                <div className="text-[10px] font-extrabold text-slate-400 uppercase">Kontrola návrhu</div>
                 {warnings.map((w, i) => (
                   <div key={i} className={`flex items-start gap-2 px-3 py-2 rounded-lg text-[11px] font-bold ${
                     w.type === 'error' ? 'bg-red-500/10 text-red-400' :

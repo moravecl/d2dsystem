@@ -137,7 +137,7 @@ export default function HeaderTimer() {
                     className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition"
                   >
                     <Play className="w-3.5 h-3.5" />
-                    Pokracovat
+                    Pokračovat
                   </button>
                 ) : (
                   <button

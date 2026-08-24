@@ -23,7 +23,7 @@ const assetSubItems = [
 ];
 
 const financeSubItems = [
-  { to: '/finance', label: 'Vydané faktury', icon: DollarSign, end: true },
+  { to: '/finance', label: 'Vydáné faktury', icon: DollarSign, end: true },
   { to: '/finance/prijate', label: 'Přijaté faktury', icon: FileInput },
   { to: '/finance/pokladna', label: 'Pokladna', icon: Wallet },
   { to: '/finance/dodavatele', label: 'Dodavatelé', icon: Users },

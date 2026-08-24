@@ -173,7 +173,7 @@ export default function ClientDetailPage() {
           onClick: async () => {
             if (!id) return;
             await supabase.from('clients').update({ is_active: false }).eq('id', id);
-            toast('Klient deaktivovan');
+            toast('Klient deaktivován');
             navigate('/crm');
           },
         },
@@ -473,7 +473,7 @@ export default function ClientDetailPage() {
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between items-center">
                             <span className="text-slate-500">URL:</span>
-                            <span className="font-mono text-white">{window.location.origin}/portal/login</span>
+                            <span className="font-mono text-white">{window.location.origin}/portál/login</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="text-slate-500">Email:</span>
@@ -936,8 +936,8 @@ export default function ClientDetailPage() {
               <p className="text-sm font-medium text-emerald-800 mb-3">Portál přístup vytvořen. Předejte klientovi tyto údaje:</p>
               <dl className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-emerald-400">Portal URL</dt>
-                  <dd className="font-mono font-medium text-emerald-900">{window.location.origin}/portal/login</dd>
+                  <dt className="text-emerald-400">Portál URL</dt>
+                  <dd className="font-mono font-medium text-emerald-900">{window.location.origin}/portál/login</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-emerald-400">Email</dt>
@@ -991,7 +991,7 @@ export default function ClientDetailPage() {
               </div>
             </div>
             <p className="text-xs text-slate-400">
-              Klient se přihlásí na {window.location.origin}/portal/login s těmito údaji.
+              Klient se přihlásí na {window.location.origin}/portál/login s těmito údaji.
             </p>
           </div>
         )}

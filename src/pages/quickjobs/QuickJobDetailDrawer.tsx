@@ -339,7 +339,7 @@ export default function QuickJobDetailDrawer({ job, onClose, onUpdated, onEdit }
               <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.06]">
                 {job.status === 'pool' && (
                   <button onClick={claimJob} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-xl shadow-sm shadow-blue-500/20 transition disabled:opacity-50">
-                    <ArrowRight className="w-3.5 h-3.5" /> Vzit si
+                    <ArrowRight className="w-3.5 h-3.5" /> Vzít si
                   </button>
                 )}
                 {(job.status === 'pool' || job.status === 'claimed') && (
@@ -349,7 +349,7 @@ export default function QuickJobDetailDrawer({ job, onClose, onUpdated, onEdit }
                 )}
                 {(job.status === 'claimed' || job.status === 'scheduled') && (
                   <button onClick={startJob} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 rounded-xl shadow-sm shadow-amber-500/20 transition disabled:opacity-50">
-                    <Play className="w-3.5 h-3.5" /> Zahajit
+                    <Play className="w-3.5 h-3.5" /> Zahájit
                   </button>
                 )}
                 {(job.status === 'in_progress' || job.status === 'scheduled') && (

@@ -101,7 +101,7 @@ export default function CategoryManager({
                   <div className="flex items-center gap-3 py-3">
                     <div className="flex-1">
                       <div className="text-xs text-slate-400 font-medium">
-                        Pouzivaji se vychozi kategorie ({g.defaults.length}):
+                        Používají se výchozí kategorie ({g.defaults.length}):
                         <span className="text-slate-500 ml-1">{g.defaults.map(([, l]) => l).join(', ')}</span>
                       </div>
                     </div>
@@ -111,7 +111,7 @@ export default function CategoryManager({
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition ${accent.btnLight}`}
                     >
                       {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
-                      Nacist k uprave
+                      Načíst k úpravě
                     </button>
                   </div>
                 )}
@@ -126,7 +126,7 @@ export default function CategoryManager({
                             <input
                               value={editKey}
                               onChange={e => setEditKey(e.target.value)}
-                              placeholder="klic"
+                              placeholder="klíč"
                               className="w-28 px-2 py-1.5 text-xs font-medium bg-white/[0.06] border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
                             />
                             <input
@@ -171,7 +171,7 @@ export default function CategoryManager({
                     onClick={() => { setAddingGroup(g.group); setNewKey(''); setNewLabel(''); }}
                     className="flex items-center gap-1.5 text-xs font-extrabold text-slate-500 hover:text-slate-300 transition mt-1"
                   >
-                    <Plus className="w-3.5 h-3.5" /> Pridat kategorii
+                    <Plus className="w-3.5 h-3.5" /> Přidat kategorii
                   </button>
                 )}
 
@@ -181,14 +181,14 @@ export default function CategoryManager({
                       autoFocus
                       value={newKey}
                       onChange={e => setNewKey(e.target.value)}
-                      placeholder="klic (napr. smoke)"
+                      placeholder="klíč (např. smoke)"
                       className="w-32 px-2 py-1.5 text-xs font-medium bg-white/[0.06] border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
                     />
                     <input
                       value={newLabel}
                       onChange={e => setNewLabel(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') handleAdd(g.group); }}
-                      placeholder="Popisek (napr. Kourovak)"
+                      placeholder="Popisek (např. Kourovak)"
                       className="flex-1 px-2 py-1.5 text-xs font-medium bg-white/[0.06] border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
                     />
                     <button onClick={() => handleAdd(g.group)} disabled={busy || !newKey.trim() || !newLabel.trim()}

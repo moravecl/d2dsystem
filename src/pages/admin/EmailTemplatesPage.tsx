@@ -93,7 +93,7 @@ export default function EmailTemplatesPage() {
 
  const handleSave = async () => {
  if (!form.name || !form.subject) {
- toast('Vyplnte nazev a predmet', 'error');
+ toast('Vyplňte název a předmět', 'error');
  return;
  }
  setSaving(true);
@@ -109,8 +109,8 @@ export default function EmailTemplatesPage() {
  updated_at: new Date().toISOString(),
  })
  .eq('id', editing.id);
- if (error) { toast('Chyba pri ukladani', 'error'); setSaving(false); return; }
- toast('Sablona aktualizovana');
+ if (error) { toast('Chyba při ukládání', 'error'); setSaving(false); return; }
+ toast('Šablona aktualizována');
  } else {
  const { error } = await supabase
  .from('email_templates')
@@ -119,8 +119,8 @@ export default function EmailTemplatesPage() {
  placeholders_used: placeholders,
  created_by: user!.id,
  });
- if (error) { toast('Chyba pri vytvareni', 'error'); setSaving(false); return; }
- toast('Sablona vytvorena');
+ if (error) { toast('Chyba při vytváření', 'error'); setSaving(false); return; }
+ toast('Šablona vytvořena');
  }
 
  setSaving(false);
@@ -129,10 +129,10 @@ export default function EmailTemplatesPage() {
  };
 
  const handleDelete = async (id: string) => {
- if (!confirm('Opravdu smazat tuto sablonu?')) return;
+ if (!confirm('Opravdu smazat tuto šablonu?')) return;
  const { error } = await supabase.from('email_templates').delete().eq('id', id);
- if (error) { toast('Chyba pri mazani', 'error'); return; }
- toast('Sablona smazana');
+ if (error) { toast('Chyba při mazání', 'error'); return; }
+ toast('Šablona smazána');
  loadTemplates();
  };
 
@@ -146,8 +146,8 @@ export default function EmailTemplatesPage() {
  placeholders_used: tpl.placeholders_used,
  created_by: user!.id,
  });
- if (error) { toast('Chyba pri duplikaci', 'error'); return; }
- toast('Sablona duplikovana');
+ if (error) { toast('Chyba při duplikaci', 'error'); return; }
+ toast('Šablona duplikována');
  loadTemplates();
  };
 
@@ -176,16 +176,16 @@ export default function EmailTemplatesPage() {
  <div>
  <div className="flex items-center gap-3 mb-1">
  <FileText className="w-6 h-6 text-slate-300"/>
- <h1 className="text-xl font-bold text-white">Emailove sablony</h1>
+ <h1 className="text-xl font-bold text-white">Emailové šablony</h1>
  </div>
- <p className="text-sm text-slate-400">Pripravte si sablony emailu s podporou zastupnych znaku</p>
+ <p className="text-sm text-slate-400">Připravte si šablony emailu s podporou zástupných znaku</p>
  </div>
  <button
  onClick={openCreate}
  className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-500/100/100 transition"
  >
  <Plus className="w-4 h-4"/>
- Nova sablona
+ Nová šablona
  </button>
  </div>
 
@@ -195,7 +195,7 @@ export default function EmailTemplatesPage() {
  <input
  value={search}
  onChange={(e) => setSearch(e.target.value)}
- placeholder="Hledat sablony..."
+ placeholder="Hledat šablony..."
  className="w-full pl-10 pr-4 py-2.5 text-sm border border-white/10 rounded-xl bg-white/[0.06]/[0.06] text-white placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none transition"
  />
  </div>
@@ -204,7 +204,7 @@ export default function EmailTemplatesPage() {
  onChange={(e) => setFilterCategory(e.target.value)}
  className="px-3.5 py-2.5 text-sm border border-white/10 rounded-xl bg-white/[0.06]/[0.06] text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none transition"
  >
- <option value="">Vsechny kategorie</option>
+ <option value="">Všechny kategorie</option>
  {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
  </select>
  </div>
@@ -212,16 +212,16 @@ export default function EmailTemplatesPage() {
  {filtered.length === 0 ? (
  <div className="bg-navy-800/60 backdrop-blur-sm rounded-2xl border border-white/[0.08] p-12 text-center">
  <FileText className="w-12 h-12 text-slate-400 mx-auto mb-3"/>
- <p className="text-sm font-semibold text-slate-500">Zatim zadne sablony</p>
- <p className="text-xs text-slate-500 mt-1">Vytvorte emailovou sablonu s podporou zastupnych znaku</p>
+ <p className="text-sm font-semibold text-slate-500">Zatím žádné šablony</p>
+ <p className="text-xs text-slate-500 mt-1">Vytvořte emailovou šablonu s podporou zástupných znaku</p>
  </div>
  ) : (
  <div className="bg-navy-800/60 backdrop-blur-sm rounded-2xl border border-white/[0.08] overflow-hidden">
  <table className="w-full">
  <thead>
  <tr className="bg-white/[0.06]/[0.04]">
- <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Nazev</th>
- <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Predmet</th>
+ <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Název</th>
+ <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Předmět</th>
  <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Kategorie</th>
  <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Placeholdery</th>
  <th className="text-right px-5 py-3 text-xs font-bold text-slate-500 uppercase">Akce</th>
@@ -242,11 +242,11 @@ export default function EmailTemplatesPage() {
  </span>
  </td>
  <td className="px-5 py-3">
- <span className="text-xs text-slate-400">{tpl.placeholders_used.length} pouzitych</span>
+ <span className="text-xs text-slate-400">{tpl.placeholders_used.length} použitých</span>
  </td>
  <td className="px-5 py-3">
  <div className="flex items-center justify-end gap-1">
- <button onClick={() => setPreviewTemplate(tpl)} className="p-1.5 rounded-lg hover:bg-white/[0.06]/[0.07] text-slate-400 hover:text-slate-300 transition"title="Nahled">
+ <button onClick={() => setPreviewTemplate(tpl)} className="p-1.5 rounded-lg hover:bg-white/[0.06]/[0.07] text-slate-400 hover:text-slate-300 transition"title="Náhled">
  <Eye className="w-4 h-4"/>
  </button>
  <button onClick={() => handleDuplicate(tpl)} className="p-1.5 rounded-lg hover:bg-white/[0.06]/[0.07] text-slate-400 hover:text-slate-300 transition"title="Duplikovat">
@@ -290,7 +290,7 @@ export default function EmailTemplatesPage() {
  <input
  value={form.name}
  onChange={(e) => setForm({ ...form, name: e.target.value })}
- placeholder="Napr. Potvrzeni objednavky"
+ placeholder="Např. Potvrzení objednávky"
  className="w-full px-3.5 py-2.5 text-sm border border-white/10 rounded-xl bg-white/[0.06]/[0.06] text-white placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none transition"
  />
  </div>
@@ -307,18 +307,18 @@ export default function EmailTemplatesPage() {
  </div>
 
  <div>
- <label className="block text-xs font-semibold text-slate-400 mb-1.5">Predmet emailu</label>
+ <label className="block text-xs font-semibold text-slate-400 mb-1.5">Předmět emailu</label>
  <input
  value={form.subject}
  onChange={(e) => setForm({ ...form, subject: e.target.value })}
- placeholder="Predmet s podporou {{zastupnych_znaku}}"
+ placeholder="Předmět s podporou {{zástupných_znaku}}"
  className="w-full px-3.5 py-2.5 text-sm border border-white/10 rounded-xl bg-white/[0.06]/[0.06] text-white placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none transition"
  />
  </div>
 
  <div>
  <div className="flex items-center justify-between mb-1.5">
- <label className="text-xs font-semibold text-slate-400">Telo emailu (HTML)</label>
+ <label className="text-xs font-semibold text-slate-400">Tělo emailu (HTML)</label>
  <button
  onClick={() => setShowPlaceholders(!showPlaceholders)}
  className="flex items-center gap-1.5 text-xs font-medium text-blue-400 hover:text-blue-300 transition"
@@ -330,7 +330,7 @@ export default function EmailTemplatesPage() {
 
  {showPlaceholders && (
  <div className="mb-3 p-3 bg-white/[0.06]/[0.04] rounded-xl border border-white/[0.08]">
- <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Kliknutim vlozite do tela emailu</div>
+ <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Kliknutím vložíte do těla emailu</div>
  <div className="flex flex-wrap gap-1.5">
  {PLACEHOLDER_REGISTRY.map((p) => (
  <button
@@ -350,13 +350,13 @@ export default function EmailTemplatesPage() {
  value={form.body_html}
  onChange={(e) => setForm({ ...form, body_html: e.target.value })}
  rows={12}
- placeholder="<h1>Dobry den {{client.name}},</h1><p>Vas projekt {{project.name}} ...</p>"
+ placeholder="<h1>Dobrý den {{client.name}},</h1><p>Váš projekt {{project.name}} ...</p>"
  className="w-full px-3.5 py-2.5 text-sm font-mono border border-white/10 rounded-xl bg-white/[0.06]/[0.06] text-white placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none transition resize-y"
  />
  </div>
 
  <div>
- <label className="block text-xs font-semibold text-slate-400 mb-1.5">Textova verze (nepovinne)</label>
+ <label className="block text-xs font-semibold text-slate-400 mb-1.5">Textová verze (nepovinné)</label>
  <textarea
  value={form.body_text}
  onChange={(e) => setForm({ ...form, body_text: e.target.value })}
@@ -371,18 +371,18 @@ export default function EmailTemplatesPage() {
  <Modal
  open={!!previewTemplate}
  onClose={() => setPreviewTemplate(null)}
- title={`Nahled: ${previewTemplate?.name || ''}`}
+ title={`Náhled: ${previewTemplate?.name || ''}`}
  size="xl"
  >
  {previewTemplate && (
  <div className="space-y-4">
  <div className="p-3 bg-white/[0.06]/[0.04] rounded-xl border border-white/[0.08]">
- <div className="text-xs font-semibold text-slate-500 mb-1">Predmet:</div>
+ <div className="text-xs font-semibold text-slate-500 mb-1">Předmět:</div>
  <div className="text-sm font-medium text-white">{previewTemplate.subject}</div>
  </div>
  <div className="border border-white/[0.08] rounded-xl overflow-hidden">
  <div className="bg-white/[0.06]/[0.04] px-4 py-2 border-b border-white/[0.08]">
- <span className="text-xs font-semibold text-slate-500">HTML nahled</span>
+ <span className="text-xs font-semibold text-slate-500">HTML náhled</span>
  </div>
  <div
  className="p-4 prose prose-sm max-w-none"
@@ -391,7 +391,7 @@ export default function EmailTemplatesPage() {
  </div>
  {previewTemplate.placeholders_used.length > 0 && (
  <div className="p-3 bg-white/[0.06]/[0.04] rounded-xl">
- <div className="text-xs font-semibold text-slate-500 mb-2">Pouzite zastupne znaky:</div>
+ <div className="text-xs font-semibold text-slate-500 mb-2">Použité zástupné znaky:</div>
  <div className="flex flex-wrap gap-1.5">
  {previewTemplate.placeholders_used.map(p => (
  <span key={p} className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/[0.06]/[0.06] border border-white/10 text-slate-400">

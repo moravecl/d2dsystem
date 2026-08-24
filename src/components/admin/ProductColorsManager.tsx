@@ -50,7 +50,7 @@ export default function ProductColorsManager({ productId }: Props) {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Smazat barvu? Obrazky připojené k této barvě ztratí vazbu.')) return;
+    if (!confirm('Smazat barvu? Obrázky připojené k této barvě ztratí vazbu.')) return;
     const { error } = await supabase.from('product_colors').delete().eq('id', id);
     if (error) { toast(error.message, 'error'); return; }
     toast('Barva smazána');

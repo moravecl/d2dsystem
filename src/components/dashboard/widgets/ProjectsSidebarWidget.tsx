@@ -94,7 +94,7 @@ export default function ProjectsSidebarWidget({ data, editMode }: Props) {
           <div className="glass-card overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.07]">
               <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2"><CalendarClock className="w-4 h-4 text-amber-400" />Termíny majetku</h3>
-              <Link to="/majetek/terminy" className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 group transition-colors">Vse <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" /></Link>
+              <Link to="/majetek/terminy" className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 group transition-colors">Vše <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" /></Link>
             </div>
             <div className="divide-y divide-white/[0.06]">
               {dueAlerts.map(d => {

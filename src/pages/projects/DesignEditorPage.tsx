@@ -1383,14 +1383,14 @@ export default function DesignEditorPage() {
           <div className="border-t border-white/10 p-4">
             <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-2">
               <DoorOpen className="w-3.5 h-3.5" />
-              Dvere {allDoors.length > 0 && <span className="bg-white/[0.06] px-1.5 py-0.5 rounded text-[10px]">{allDoors.length}</span>}
+              Dveře {allDoors.length > 0 && <span className="bg-white/[0.06] px-1.5 py-0.5 rounded text-[10px]">{allDoors.length}</span>}
             </div>
             {!isPlacingDoor ? (
               <button
                 onClick={() => { setIsPlacingDoor(true); setIsDrawingRoom(false); setIsPlacingDistributor(false); }}
                 className="w-full bg-amber-500/10 text-amber-400 border border-amber-200 py-2 rounded-xl font-extrabold text-xs hover:bg-amber-500/20 transition flex items-center justify-center gap-2"
               >
-                <Plus className="w-3 h-3" /> Umistit dvere
+                <Plus className="w-3 h-3" /> Umístit dveře
               </button>
             ) : (
               <div>
@@ -1398,7 +1398,7 @@ export default function DesignEditorPage() {
                   Klikni na stěnu místnosti pro umístění dveří.
                 </div>
                 <div className="flex items-center gap-2 mb-3">
-                  <label className="text-[11px] font-extrabold text-slate-400">Sirka:</label>
+                  <label className="text-[11px] font-extrabold text-slate-400">Šířka:</label>
                   <div className="flex items-center gap-1">
                     {[0.6, 0.7, 0.8, 0.9, 1.0].map((w) => (
                       <button
@@ -1450,7 +1450,7 @@ export default function DesignEditorPage() {
     if (toolMode === 'dimension') return (
       <div className="p-4 border-b border-white/10">
         <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-2">
-          Koty {dimensions.length > 0 && <span className="bg-white/[0.06] px-1.5 py-0.5 rounded text-[10px]">{dimensions.length}</span>}
+          Kóty {dimensions.length > 0 && <span className="bg-white/[0.06] px-1.5 py-0.5 rounded text-[10px]">{dimensions.length}</span>}
         </div>
         {dimTempPoints.length === 1 && <div className="bg-blue-500/10 border border-blue-200 rounded-xl p-2.5 mb-3 text-xs font-extrabold text-blue-400">Klikni na druhý bod kóty.</div>}
         {dimTempPoints.length === 0 && dimensions.length === 0 && <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-2.5 text-xs text-slate-500">Klikni na půdorys pro první bod kóty.</div>}
@@ -1567,7 +1567,7 @@ export default function DesignEditorPage() {
           <button onClick={handleRedo} disabled={redoStack.length === 0} className={`bg-navy-800/60 border border-white/[0.08] p-2 rounded-xl transition ${redoStack.length === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:bg-white/[0.04]'}`} title="Znovu (Ctrl+Y)">
             <Redo2 className="w-3.5 h-3.5" />
           </button>
-          <label className="bg-navy-800/60 border border-white/[0.08] text-slate-500 p-2 rounded-xl hover:bg-white/[0.04] transition cursor-pointer" title="Nahrat půdorys">
+          <label className="bg-navy-800/60 border border-white/[0.08] text-slate-500 p-2 rounded-xl hover:bg-white/[0.04] transition cursor-pointer" title="Nahrát půdorys">
             <Upload className="w-3.5 h-3.5" />
             <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleFileUpload} />
           </label>
@@ -2124,14 +2124,14 @@ export default function DesignEditorPage() {
                     }`}
                   >
                     <Layers className="w-3.5 h-3.5" />
-                    Schéma
+                    Schémá
                   </button>
                   {designMode === 'schematic' && designElements.length > 0 && (
                     <button
                       onClick={() => handleNavigateAway(() => navigate(`/projekty/${id}/prirazeni`))}
                       className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-extrabold bg-emerald-600 text-white hover:bg-emerald-700 transition"
                     >
-                      Prirazeni
+                      Přiřazení
                     </button>
                   )}
                 </div>
@@ -2142,7 +2142,7 @@ export default function DesignEditorPage() {
                     onClick={() => handleNavigateAway(() => navigate(`/projekty/${id}/prirazeni`))}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-extrabold bg-emerald-600 text-white hover:bg-emerald-700 transition"
                   >
-                    Prirazeni produktu
+                    Přiřazení produktu
                   </button>
                 </div>
               )}
@@ -2376,7 +2376,7 @@ export default function DesignEditorPage() {
                   }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
-                  Schéma
+                  Schémá
                 </button>
               </div>
             )}
@@ -2606,7 +2606,7 @@ export default function DesignEditorPage() {
                 projectId={id}
                 projectAddress={project.meta.client}
                 onExportToQuote={(_sections) => {
-                  toast('FV sekce pridana do nabidky.', 'success');
+                  toast('FV sekce přidána do nabídky.', 'success');
                   setShowFvDesigner(false);
                 }}
               />
@@ -2728,10 +2728,10 @@ export default function DesignEditorPage() {
       {bulkAssignDialog && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-2">Hromadne prirazeni produktu</h3>
+            <h3 className="text-lg font-bold text-white mb-2">Hromadné přiřazení produktu</h3>
             <p className="text-sm text-slate-400 mb-4">
               {bulkAssignDialog.alreadyAssigned.length} z {bulkAssignDialog.elementIds.length} prvku
-              jiz ma prirazeny produkt. Jak chcete postupovat?
+              již má přiřazeny produkt. Jak chcete postupovat?
             </p>
             <div className="space-y-2">
               <button
@@ -2743,7 +2743,7 @@ export default function DesignEditorPage() {
                 }}
                 className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition"
               >
-                Prepsat vsechny
+                Přepsat všechny
               </button>
               <button
                 onClick={() => {
@@ -2757,13 +2757,13 @@ export default function DesignEditorPage() {
                 }}
                 className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold transition"
               >
-                Ponechat jiz prirazene ({bulkAssignDialog.elementIds.length - bulkAssignDialog.alreadyAssigned.length} novych)
+                Ponechat již přiřazené ({bulkAssignDialog.elementIds.length - bulkAssignDialog.alreadyAssigned.length} nových)
               </button>
               <button
                 onClick={() => setBulkAssignDialog(null)}
                 className="w-full px-4 py-2 text-slate-400 hover:text-white transition text-sm"
               >
-                Zrusit
+                Zrušit
               </button>
             </div>
           </div>
@@ -2779,7 +2779,7 @@ export default function DesignEditorPage() {
                   <Save className="w-5 h-5 text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Neulozene zmeny</h3>
+                  <h3 className="text-lg font-bold text-white">Neuložené změny</h3>
                   <p className="text-xs text-slate-400">
                     {activeVersion ? `Pracujete s verzi ${activeVersion.version_number}: ${activeVersion.label || 'Bez nazvu'}` : 'Novy navrh - zatim bez ulozene verze'}
                   </p>
@@ -2789,7 +2789,7 @@ export default function DesignEditorPage() {
 
             <div className="px-6 py-5">
               <p className="text-sm text-slate-300 mb-4">
-                Mate neulozen zmeny v navrhu. Jak chcete postupovat?
+                Máte neuložen změny v návrhu. Jak chcete postupovat?
               </p>
 
               <div className="space-y-3">
@@ -2800,7 +2800,7 @@ export default function DesignEditorPage() {
                   >
                     <Save className="w-4 h-4" />
                     <div className="text-left">
-                      <div className="text-sm">Prepsat aktualni verzi</div>
+                      <div className="text-sm">Přepsat aktuální verzi</div>
                       <div className="text-xs opacity-70">V{activeVersion.version_number}: {activeVersion.label || 'Bez nazvu'}</div>
                     </div>
                   </button>
@@ -2811,7 +2811,7 @@ export default function DesignEditorPage() {
                     type="text"
                     value={saveVersionNote}
                     onChange={(e) => setSaveVersionNote(e.target.value)}
-                    placeholder="Nazev nove verze (volitelne)"
+                    placeholder="Název nové verze (volitelné)"
                     className="w-full px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
                   />
                   <button
@@ -2820,8 +2820,8 @@ export default function DesignEditorPage() {
                   >
                     <FileEdit className="w-4 h-4" />
                     <div className="text-left">
-                      <div className="text-sm">Ulozit jako novou verzi</div>
-                      <div className="text-xs opacity-70">Vytvori verzi {versions.length + 1}</div>
+                      <div className="text-sm">Uložit jako novou verzi</div>
+                      <div className="text-xs opacity-70">Vytvoří verzi {versions.length + 1}</div>
                     </div>
                   </button>
                 </div>
@@ -2831,13 +2831,13 @@ export default function DesignEditorPage() {
                     onClick={handleDiscardAndExit}
                     className="flex-1 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-xl transition text-sm font-medium"
                   >
-                    Zahodit zmeny
+                    Zahodit změny
                   </button>
                   <button
                     onClick={() => { setShowExitConfirm(false); setPendingNavigation(null); }}
                     className="flex-1 px-4 py-2 text-slate-400 hover:text-white hover:bg-white/[0.06] rounded-xl transition text-sm font-medium"
                   >
-                    Zrusit
+                    Zrušit
                   </button>
                 </div>
               </div>
@@ -2916,7 +2916,7 @@ export default function DesignEditorPage() {
                 toast(`Chyba: ${result.error}`);
                 return { error: result.error };
               }
-              toast('Viceramecek upraven');
+              toast('Vícerámeček upraven');
               return {};
             }}
             onReorderSlot={async (slotId, newIndex) => {
@@ -2943,7 +2943,7 @@ export default function DesignEditorPage() {
                 toast(`Chyba: ${result.error}`);
                 return { error: result.error };
               }
-              toast('Viceramecek byl rozpusten');
+              toast('Vícerámeček byl rozpuštěn');
               return {};
             }}
             onClose={() => setEditingMountingGroupId(null)}

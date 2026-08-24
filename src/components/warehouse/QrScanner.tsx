@@ -126,7 +126,7 @@ export default function QrScanner({ onScan, onClose, isActive }: QrScannerProps)
               onClick={onClose}
               className="px-6 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition"
             >
-              Zavrit
+              Zavřít
             </button>
           </div>
         ) : (
@@ -145,7 +145,7 @@ export default function QrScanner({ onScan, onClose, isActive }: QrScannerProps)
       <div className="absolute bottom-0 left-0 right-0 z-10 p-6 bg-gradient-to-t from-black/80 to-transparent">
         <div className="flex items-center justify-center gap-2 text-white/60 text-sm">
           <Camera className="w-4 h-4" />
-          <span>Namirite kameru na QR kod</span>
+          <span>Namíříte kameru na QR kód</span>
         </div>
       </div>
     </div>

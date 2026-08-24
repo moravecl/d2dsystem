@@ -264,14 +264,14 @@ export default function ProjectFinanceTab({ projectId }: Props) {
           className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition"
         >
           <FilePlus className="w-3.5 h-3.5" />
-          Fakturovat z nabidky
+          Fakturovat z nabídky
         </button>
         <button
           onClick={() => navigate(`/finance/faktura/nova?project=${projectId}`)}
           className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-300 bg-white/[0.06] hover:bg-white/[0.10] rounded-lg transition"
         >
           <FilePlus className="w-3.5 h-3.5" />
-          Prazdna faktura
+          Prázdná faktura
         </button>
         <button
           onClick={() => { setEditingEntry(null); setDefaultEntryType('income'); setShowEntryModal(true); }}

@@ -45,7 +45,7 @@ export default function InspirationForm({ inspiration, onSave, onCancel }: Props
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) { toast('Vyplňte název', 'error'); return; }
-    if (!form.slug.trim()) { toast('Slug je povinny', 'error'); return; }
+    if (!form.slug.trim()) { toast('Slug je povinný', 'error'); return; }
 
     setSaving(true);
     const payload = {
@@ -87,7 +87,7 @@ export default function InspirationForm({ inspiration, onSave, onCancel }: Props
                 value={form.title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 className="w-full text-3xl font-extrabold text-white bg-transparent border-0 outline-none placeholder:text-slate-300"
-                placeholder="Nadpis clanku..."
+                placeholder="Nadpis článku..."
               />
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs font-extrabold text-slate-400">Slug:</span>

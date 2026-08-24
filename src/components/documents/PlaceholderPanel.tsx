@@ -25,7 +25,7 @@ export default function PlaceholderPanel({ onInsert }: Props) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-3 border-b border-white/[0.06]">
-        <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-2">Zastupne znaky</div>
+        <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-2">Zástupné znaky</div>
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
           <input
@@ -42,7 +42,7 @@ export default function PlaceholderPanel({ onInsert }: Props) {
           onClick={() => setActiveCategory('')}
           className={`px-2 py-1 rounded-md text-[10px] font-bold transition ${!activeCategory ? 'bg-blue-500/20 text-blue-400' : 'text-slate-500 hover:bg-white/[0.06]'}`}
         >
-          Vse
+          Vše
         </button>
         {PLACEHOLDER_CATEGORIES.map(cat => (
           <button

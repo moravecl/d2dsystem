@@ -379,7 +379,7 @@ export default function FvImportModal({ open, onClose, projectId, onImport }: Pr
   }, [design]);
 
   return (
-    <Modal open={open} onClose={onClose} title="Importovat FVE do nabidky" size="lg">
+    <Modal open={open} onClose={onClose} title="Importovat FVE do nabídky" size="lg">
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
@@ -387,9 +387,9 @@ export default function FvImportModal({ open, onClose, projectId, onImport }: Pr
       ) : !design ? (
         <div className="text-center py-10">
           <Sun className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <div className="text-sm font-extrabold text-slate-300">Zadny FV navrh</div>
+          <div className="text-sm font-extrabold text-slate-300">Žádný FV návrh</div>
           <div className="text-xs text-slate-400 mt-1">
-            Tento projekt nema zadny fotovoltaicky navrh. Nejprve jej vytvorte v zalozce FVE.
+            Tento projekt nemá žádný fotovoltaický návrh. Nejprve jej vytvořte v záložce FVE.
           </div>
         </div>
       ) : (
@@ -403,7 +403,7 @@ export default function FvImportModal({ open, onClose, projectId, onImport }: Pr
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-extrabold text-white">
-                Aktualni konfigurace
+                Aktuální konfigurace
               </div>
               <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-3 flex-wrap">
                 <span className="flex items-center gap-1">
@@ -420,7 +420,7 @@ export default function FvImportModal({ open, onClose, projectId, onImport }: Pr
           {versions.length > 0 && (
             <div>
               <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 px-1">
-                Ulozene verze ({versions.length})
+                Uložené verze ({versions.length})
               </div>
               <div className="space-y-1.5 max-h-[40vh] overflow-y-auto">
                 {versions.map(v => (
@@ -442,7 +442,7 @@ export default function FvImportModal({ open, onClose, projectId, onImport }: Pr
                         </span>
                         {v.summary_inverter_kw > 0 && (
                           <span className="flex items-center gap-1">
-                            <Zap className="w-2.5 h-2.5" /> {v.summary_inverter_kw} kW stridac
+                            <Zap className="w-2.5 h-2.5" /> {v.summary_inverter_kw} kW střídač
                           </span>
                         )}
                         {v.summary_battery_kwh > 0 && (

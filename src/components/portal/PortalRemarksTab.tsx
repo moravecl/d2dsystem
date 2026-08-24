@@ -477,7 +477,7 @@ export default function PortalRemarksTab({ projectId, userId }: { projectId: str
                       )}
                       {isResolved && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400">
-                          Vyreseno
+                          Vyřešeno
                         </span>
                       )}
                     </div>

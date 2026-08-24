@@ -205,7 +205,7 @@ export default function OnboardingPage() {
                       setSlugManual(true);
                     }}
                     className="flex-1 px-3 py-3 text-sm font-medium text-white bg-transparent focus:outline-none"
-                    placeholder="nazev-firmy"
+                    placeholder="název-firmy"
                   />
                 </div>
                 <p className="text-xs text-slate-400 mt-1.5">Pouze malá písmena, čísla a pomlčky.</p>

@@ -120,7 +120,7 @@ export default function QuickMovementModal({
     <Modal
       open={!!qrCode}
       onClose={onClose}
-      title="Skladovy pohyb"
+      title="Skladový pohyb"
       size="md"
       footer={
         <>
@@ -128,7 +128,7 @@ export default function QuickMovementModal({
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.04] rounded-lg transition"
           >
-            Zrusit
+            Zrušit
           </button>
           <button
             onClick={handleSave}
@@ -136,7 +136,7 @@ export default function QuickMovementModal({
             className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50 flex items-center gap-2"
           >
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-            Ulozit a pokracovat
+            Uložit a pokračovat
           </button>
         </>
       }
@@ -148,8 +148,8 @@ export default function QuickMovementModal({
       ) : notFound ? (
         <div className="text-center py-8">
           <Package className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-          <p className="text-slate-400 mb-2">Polozka nenalezena</p>
-          <p className="text-xs text-slate-500">Kod: {qrCode}</p>
+          <p className="text-slate-400 mb-2">Položka nenalezena</p>
+          <p className="text-xs text-slate-500">Kód: {qrCode}</p>
           <button
             onClick={onContinueScanning}
             className="mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition"
@@ -168,10 +168,10 @@ export default function QuickMovementModal({
                 <h3 className="font-bold text-white truncate">{item.name}</h3>
                 <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
                   {item.sku && <span>SKU: {item.sku}</span>}
-                  {item.location && <span>Umisteni: {item.location}</span>}
+                  {item.location && <span>Umístění: {item.location}</span>}
                 </div>
                 <div className="mt-2 text-sm">
-                  <span className="text-slate-400">Aktualni stav: </span>
+                  <span className="text-slate-400">Aktuální stav: </span>
                   <span className="font-bold text-white">
                     {item.quantity} {item.unit}
                   </span>
@@ -207,7 +207,7 @@ export default function QuickMovementModal({
 
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5">
-              Mnozstvi *
+              Množství *
             </label>
             <div className="flex items-center gap-2">
               <button
@@ -236,7 +236,7 @@ export default function QuickMovementModal({
 
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5">
-              Projekt (volitelne)
+              Projekt (volitelné)
             </label>
             <select
               value={projectId}
@@ -254,12 +254,12 @@ export default function QuickMovementModal({
 
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5">
-              Poznamka
+              Poznámka
             </label>
             <input
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Volitelna poznamka..."
+              placeholder="Volitelná poznámka..."
               className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
             />
           </div>

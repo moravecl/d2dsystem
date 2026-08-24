@@ -202,7 +202,7 @@ export default function ClientAutocomplete({ onSelect, placeholder, includeProje
                 )}
                 {c.ico && (
                   <span className="text-[10px] font-bold text-slate-400 bg-white/[0.06] px-2 py-0.5 rounded">
-                    ICO: {c.ico}
+                    IČO: {c.ico}
                   </span>
                 )}
               </div>
@@ -215,7 +215,7 @@ export default function ClientAutocomplete({ onSelect, placeholder, includeProje
         <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-navy-800 rounded-xl border border-white/[0.08] shadow-xl">
           <div className="flex items-center gap-2 px-4 py-3 text-sm text-slate-500">
             <Search className="w-4 h-4 text-slate-300" />
-            Zadny klient nenalezen
+            Žádný klient nenalezen
           </div>
         </div>
       )}

@@ -57,7 +57,7 @@ export const DATA_PERMISSION_GROUPS: { group: string; keys: DataPermissionKey[] 
     keys: ['edit_projects', 'delete_projects', 'edit_clients', 'delete_clients'],
   },
   {
-    group: 'Katalog a nabidky',
+    group: 'Katalog a nabídky',
     keys: ['edit_products', 'edit_quotes', 'approve_quotes'],
   },
   {

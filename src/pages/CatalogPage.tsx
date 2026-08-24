@@ -127,7 +127,7 @@ export default function CatalogPage() {
       loadProjectById(loadParam).then((result) => {
         if (result) {
           projectState.loadState(result.selected, result.meta, result.floorsOrFp, loadParam);
-          toast('Projekt nacten');
+          toast('Projekt načten');
         }
         setSearchParams((prev) => {
           const next = new URLSearchParams(prev);

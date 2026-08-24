@@ -45,7 +45,7 @@ interface Props {
 
 const STATUS_CFG: Record<string, { label: string; color: string; bg: string }> = {
   draft: { label: 'Koncept', color: 'text-slate-500', bg: 'bg-white/[0.06]' },
-  sent: { label: 'K uhrade', color: 'text-blue-400', bg: 'bg-blue-500/10' },
+  sent: { label: 'K úhradě', color: 'text-blue-400', bg: 'bg-blue-500/10' },
   partial: { label: 'Částečně uhrazena', color: 'text-amber-400', bg: 'bg-amber-500/10' },
   paid: { label: 'Zaplacena', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
   overdue: { label: 'Po splatnosti', color: 'text-red-400', bg: 'bg-red-500/10' },
@@ -290,7 +290,7 @@ export default function PortalInvoicesTab({ projectId, clientId }: Props) {
                     </div>
                     {inv.bank_account && (
                       <div className="text-right text-[10px] shrink-0">
-                        <span className="text-slate-400 block">Ucet</span>
+                        <span className="text-slate-400 block">Účet</span>
                         <span className="font-semibold text-slate-300">{inv.bank_account}</span>
                         {inv.variable_symbol && (
                           <>
@@ -319,7 +319,7 @@ export default function PortalInvoicesTab({ projectId, clientId }: Props) {
               onClick={() => { setDetailInvoice(null); setDetailItems([]); }}
               className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition"
             >
-              Zavrit
+              Zavřít
             </button>
             <button
               onClick={handlePrint}
@@ -391,14 +391,14 @@ function InvoiceDetailContent({
         <div>
           <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Dodavatel</div>
           <div className="text-sm font-bold text-white">{inv.issuer_name}</div>
-          {inv.issuer_ico && <div className="text-xs text-slate-500">ICO: {inv.issuer_ico}</div>}
+          {inv.issuer_ico && <div className="text-xs text-slate-500">IČO: {inv.issuer_ico}</div>}
           {inv.issuer_dic && <div className="text-xs text-slate-500">DIC: {inv.issuer_dic}</div>}
           {inv.issuer_address && <div className="text-xs text-slate-500 mt-1">{inv.issuer_address}</div>}
         </div>
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Odberatel</div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Odběratel</div>
           <div className="text-sm font-bold text-white">{inv.client_name}</div>
-          {inv.client_ico && <div className="text-xs text-slate-500">ICO: {inv.client_ico}</div>}
+          {inv.client_ico && <div className="text-xs text-slate-500">IČO: {inv.client_ico}</div>}
           {inv.client_dic && <div className="text-xs text-slate-500">DIC: {inv.client_dic}</div>}
           {inv.client_address && <div className="text-xs text-slate-500 mt-1">{inv.client_address}</div>}
         </div>

@@ -905,9 +905,9 @@ ${notesHtml}
         <div className="p-4 border-b border-white/10 bg-gradient-to-r from-slate-900 to-slate-800 flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Cenova nabidka</div>
+              <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Cenová nabídka</div>
               <div className="text-lg font-extrabold text-white flex items-center gap-3 mt-0.5">
-                <span>Polozky projektu</span>
+                <span>Položky projektu</span>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="text-emerald-400 flex items-center gap-1">
                     <DollarSign className="w-4 h-4" /> {fmtInt(totals.totalSelling)} Kc
@@ -952,7 +952,7 @@ ${notesHtml}
               {projectId && (
                 <button onClick={() => setShowSaveForm(true)} disabled={quoteData.sections.length === 0}
                   className="bg-amber-500 text-white px-3.5 py-2 rounded-xl font-bold hover:bg-amber-600 transition text-xs flex items-center gap-1.5 disabled:opacity-40">
-                  <Save className="w-3.5 h-3.5" /> Ulozit
+                  <Save className="w-3.5 h-3.5" /> Uložit
                 </button>
               )}
               <button onClick={exportPDF} disabled={quoteData.sections.length === 0}
@@ -1003,7 +1003,7 @@ ${notesHtml}
                             <ArrowUp className="w-3 h-3" style={{ color: sc.text }} />
                           </button>
                           <button onClick={() => moveSectionDown(sectionIndex)} disabled={sectionIndex === quoteData.sections.length - 1}
-                            className="p-0.5 rounded hover:bg-black/10 disabled:opacity-20 transition" title="Posunout dolu">
+                            className="p-0.5 rounded hover:bg-black/10 disabled:opacity-20 transition" title="Posunout dolů">
                             <ArrowDown className="w-3 h-3" style={{ color: sc.text }} />
                           </button>
                         </div>
@@ -1012,7 +1012,7 @@ ${notesHtml}
                             onClick={(e) => { e.stopPropagation(); setCustomizerSectionId(customizerSectionId === section.id ? null : section.id); }}
                             className="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition"
                             style={{ background: sc.accent }}
-                            title="Zmenit ikonu a barvu"
+                            title="Změnit ikonu a barvu"
                           >
                             {(() => { const I = getSectionIconComponent(section); return <I className="w-4 h-4 text-white" />; })()}
                           </button>
@@ -1044,7 +1044,7 @@ ${notesHtml}
                             <div className="flex items-center gap-1.5">
                               <h3 className="text-sm font-extrabold" style={{ color: sc.text }}>{section.name}</h3>
                               <button onClick={(e) => startRenamingSection(section, e)}
-                                className="p-0.5 rounded hover:bg-black/10 transition opacity-50 hover:opacity-100" title="Prejmenovat sekci">
+                                className="p-0.5 rounded hover:bg-black/10 transition opacity-50 hover:opacity-100" title="Přejmenovat sekci">
                                 <Edit3 className="w-3 h-3" style={{ color: sc.text }} />
                               </button>
                             </div>
@@ -1084,12 +1084,12 @@ ${notesHtml}
                             <thead>
                               <tr className="border-b-2" style={{ borderColor: sc.border }}>
                                 <th className="w-6"></th>
-                                <th className="text-left py-2 px-2 font-extrabold text-slate-400">Kod</th>
-                                <th className="text-left py-2 px-2 font-extrabold text-slate-400">Nazev</th>
+                                <th className="text-left py-2 px-2 font-extrabold text-slate-400">Kód</th>
+                                <th className="text-left py-2 px-2 font-extrabold text-slate-400">Název</th>
                                 <th className="text-left py-2 px-2 font-extrabold text-slate-400">Jedn.</th>
-                                <th className="text-right py-2 px-2 font-extrabold text-slate-400">Pocet</th>
+                                <th className="text-right py-2 px-2 font-extrabold text-slate-400">Počet</th>
                                 <th className="text-right py-2 px-2 font-extrabold text-slate-400">Prodej/j.</th>
-                                <th className="text-right py-2 px-2 font-extrabold text-slate-400">Naklad/j.</th>
+                                <th className="text-right py-2 px-2 font-extrabold text-slate-400">Náklad/j.</th>
                                 <th className="text-right py-2 px-2 font-extrabold text-slate-400">Sleva %</th>
                                 <th className="text-right py-2 px-2 font-extrabold text-slate-400">DPH %</th>
                                 <th className="text-right py-2 px-2 font-extrabold text-slate-400">Celkem</th>
@@ -1111,19 +1111,19 @@ ${notesHtml}
                                           <ArrowUp className="w-3 h-3" />
                                         </button>
                                         <button onClick={() => moveItemDown(section.id, itemIndex)} disabled={itemIndex === section.items.length - 1}
-                                          className="p-0 text-slate-500 hover:text-white disabled:opacity-20 transition" title="Dolu">
+                                          className="p-0 text-slate-500 hover:text-white disabled:opacity-20 transition" title="Dolů">
                                           <ArrowDown className="w-3 h-3" />
                                         </button>
                                       </div>
                                     </td>
                                     <td className="py-2 px-2">
                                       <input value={item.code} onChange={(e) => updateItem(section.id, item.id, { code: e.target.value })}
-                                        className="w-full px-2 py-1 rounded border border-white/10 text-xs" placeholder="Kod" />
+                                        className="w-full px-2 py-1 rounded border border-white/10 text-xs" placeholder="Kód" />
                                     </td>
                                     <td className="py-2 px-2">
                                       <div className="flex items-center gap-1">
                                         <input value={item.name} onChange={(e) => updateItem(section.id, item.id, { name: e.target.value })}
-                                          className="w-full px-2 py-1 rounded border border-white/10 text-xs" placeholder="Nazev" />
+                                          className="w-full px-2 py-1 rounded border border-white/10 text-xs" placeholder="Název" />
                                         {item.isAutoMaterial && (
                                           <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-blue-500/10 text-blue-400 border border-blue-500/20">auto</span>
                                         )}
@@ -1244,7 +1244,7 @@ ${notesHtml}
                       </div>
                       <div>
                         <div className="text-sm font-extrabold text-white">DPH</div>
-                        <div className="text-[10px] text-slate-500">Centralni sazba - prepise vsechny polozky</div>
+                        <div className="text-[10px] text-slate-500">Centrální sazba - přepíše všechny položky</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -1270,8 +1270,8 @@ ${notesHtml}
                         <Percent className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="text-sm font-extrabold text-white">Celkova sleva na nabidku</div>
-                        <div className="text-[10px] text-slate-500">Aplikuje se na celkovou prodejni cenu po vsech slevach</div>
+                        <div className="text-sm font-extrabold text-white">Celková sleva na nabídku</div>
+                        <div className="text-[10px] text-slate-500">Aplikuje se na celkovou prodejní cenu po všech slevách</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">

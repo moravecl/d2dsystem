@@ -98,10 +98,10 @@ export default function PortalLoginPage() {
             <img src="/housesmartlogo.png" alt="" className="w-9 h-9 rounded-lg" />
           </div>
           <h1 className="text-2xl font-extrabold text-white tracking-tight">
-            Klientsky portal
+            Klientský portál
           </h1>
           <p className="text-sm text-slate-400 mt-2 leading-relaxed">
-            Prihlaste se pro pristup k vasim projektum
+            Přihlaste se pro přístup k vaším projektům
           </p>
         </div>
 
@@ -121,7 +121,7 @@ export default function PortalLoginPage() {
               required
               autoFocus
               className="w-full px-4 py-3 rounded-xl border border-white/10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition bg-white/[0.06] placeholder:text-slate-300"
-              placeholder="vas@email.cz"
+              placeholder="váš@email.cz"
             />
           </div>
 
@@ -156,13 +156,13 @@ export default function PortalLoginPage() {
             ) : (
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             )}
-            Prihlasit se
+            Přihlásit se
           </button>
 
           <div className="flex items-center gap-2 justify-center pt-1">
             <ShieldCheck className="w-3.5 h-3.5 text-slate-300" />
             <span className="text-[11px] text-slate-400 font-medium">
-              Zabezpecene pripojeni
+              Zabezpečené připojení
             </span>
           </div>
         </form>
@@ -180,7 +180,7 @@ export default function PortalLoginPage() {
         {isStandalone && (
           <div className="mt-4 flex items-center justify-center gap-2 text-slate-500">
             <Smartphone className="w-3.5 h-3.5" />
-            <span className="text-[11px] font-medium">Spusteno jako aplikace</span>
+            <span className="text-[11px] font-medium">Spuštěno jako aplikace</span>
           </div>
         )}
       </div>

@@ -1200,7 +1200,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
                                       </span>
                                     )}
                                     <span className="text-xs font-semibold text-slate-300">{typeName}</span>
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-extrabold">schéma</span>
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-extrabold">schémá</span>
                                   </div>
                                   <span className="text-xs font-extrabold text-white">{group.items.length} ks</span>
                                 </div>

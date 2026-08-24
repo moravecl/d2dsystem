@@ -51,7 +51,7 @@ export default function ScaleCalibrator({ scale, scaleStep, onStart, onSetDistan
       ) : scaleStep === 'point1' ? (
         <div className="bg-blue-500/10 border border-blue-200 rounded-2xl p-3">
           <div className="text-sm font-extrabold text-blue-800">Klikni na PRVNÍ bod</div>
-          <div className="text-xs text-blue-400 mt-1">Vyber začátek úsečky, jejíž skutečnou délku znáš.</div>
+          <div className="text-xs text-blue-400 mt-1">Výběr začátek úsečky, jejíž skutečnou délku znáš.</div>
           <button onClick={onCancel} className="mt-2 text-xs font-extrabold text-blue-400 underline">Zrušit</button>
         </div>
       ) : scaleStep === 'point2' ? (

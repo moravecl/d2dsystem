@@ -702,10 +702,10 @@ export default function FloorplanModal({
                       <div className="w-12 h-12 rounded-2xl bg-blue-500/20 mx-auto flex items-center justify-center mb-3">
                         <Ruler className="w-6 h-6 text-blue-400" />
                       </div>
-                      <div className="text-sm font-extrabold text-white mb-1">Nastavte meritko</div>
-                      <div className="text-xs text-slate-500 mb-4">Pro spravnou praci s pudorysem je nutne nejprve zkalibrovat meritko.</div>
+                      <div className="text-sm font-extrabold text-white mb-1">Nastavte měřítko</div>
+                      <div className="text-xs text-slate-500 mb-4">Pro správnou práci s půdorysem je nutné nejprve zkalibrovat měřítko.</div>
                       <button onClick={handleStartScale} className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-extrabold text-sm hover:bg-blue-700 transition flex items-center gap-2 mx-auto">
-                        <Ruler className="w-4 h-4" /> Kalibrovat meritko
+                        <Ruler className="w-4 h-4" /> Kalibrovat měřítko
                       </button>
                     </div>
                   </div>

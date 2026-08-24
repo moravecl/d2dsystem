@@ -162,8 +162,8 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
         <div className="w-14 h-14 rounded-2xl bg-white/[0.06] flex items-center justify-center mx-auto mb-4">
           <FileText className="w-7 h-7 text-slate-300" />
         </div>
-        <p className="text-sm font-semibold text-slate-500 mb-1">Zadne soubory</p>
-        <p className="text-xs text-slate-400">K tomuto projektu zatim nebyly sdileny zadne soubory.</p>
+        <p className="text-sm font-semibold text-slate-500 mb-1">Žádné soubory</p>
+        <p className="text-xs text-slate-400">K tomuto projektu zatím nebyly sdílený žádné soubory.</p>
       </div>
     );
   }
@@ -174,8 +174,8 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
         <div className="bg-amber-500/10 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
           <Shield className="w-5 h-5 text-amber-400 shrink-0" />
           <div>
-            <div className="text-sm font-bold text-amber-800">{pendingCount} {pendingCount === 1 ? 'dokument ceka' : 'dokumentu ceka'} na vase schvaleni</div>
-            <div className="text-xs text-amber-400">Prosim zkontrolujte a schvalte ci zamitnete dokumenty</div>
+            <div className="text-sm font-bold text-amber-800">{pendingCount} {pendingCount === 1 ? 'dokument ceka' : 'dokumentu ceka'} na vaše schválení</div>
+            <div className="text-xs text-amber-400">Prosím zkontrolujte a schvalte ci zamítnete dokumenty</div>
           </div>
         </div>
       )}
@@ -237,17 +237,17 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
                   <span className="text-sm font-semibold text-white truncate">{file.name}</span>
                   {isPending && (
                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 shrink-0 flex items-center gap-0.5">
-                      <Clock className="w-2.5 h-2.5" /> Ke schvaleni
+                      <Clock className="w-2.5 h-2.5" /> Ke schválení
                     </span>
                   )}
                   {isApproved && (
                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 shrink-0 flex items-center gap-0.5">
-                      <CheckCircle2 className="w-2.5 h-2.5" /> Schvaleno
+                      <CheckCircle2 className="w-2.5 h-2.5" /> Schváleno
                     </span>
                   )}
                   {isRejected && (
                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 shrink-0 flex items-center gap-0.5">
-                      <XCircle className="w-2.5 h-2.5" /> Zamitnuto
+                      <XCircle className="w-2.5 h-2.5" /> Zamítnuto
                     </span>
                   )}
                 </div>
@@ -272,7 +272,7 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
                     onClick={() => { setApprovalFile(file); setApprovalNote(''); }}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-amber-400 bg-amber-500/20 hover:bg-amber-200 rounded-lg transition"
                   >
-                    <Shield className="w-3.5 h-3.5" /> Schvalit / Zamitnout
+                    <Shield className="w-3.5 h-3.5" /> Schválit / Zamítnout
                   </button>
                 )}
               </div>
@@ -284,7 +284,7 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
       <Modal
         open={!!approvalFile}
         onClose={() => setApprovalFile(null)}
-        title={`Schvaleni: ${approvalFile?.name || ''}`}
+        title={`Schválení: ${approvalFile?.name || ''}`}
         size="md"
         footer={
           <>
@@ -292,7 +292,7 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
               onClick={() => setApprovalFile(null)}
               className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition"
             >
-              Zrusit
+              Zrušit
             </button>
             <button
               onClick={() => handleApproval(false)}
@@ -300,7 +300,7 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
               className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition disabled:opacity-50"
             >
               {approving && <Loader2 className="w-4 h-4 animate-spin" />}
-              <XCircle className="w-4 h-4" /> Zamitnout
+              <XCircle className="w-4 h-4" /> Zamítnout
             </button>
             <button
               onClick={() => handleApproval(true)}
@@ -308,7 +308,7 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
               className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition disabled:opacity-50"
             >
               {approving && <Loader2 className="w-4 h-4 animate-spin" />}
-              <CheckCircle2 className="w-4 h-4" /> Schvalit
+              <CheckCircle2 className="w-4 h-4" /> Schválit
             </button>
           </>
         }
@@ -327,17 +327,17 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
                 rel="noopener noreferrer"
                 className="ml-auto flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-400"
               >
-                <Download className="w-3.5 h-3.5" /> Stahnout
+                <Download className="w-3.5 h-3.5" /> Stáhnout
               </a>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Komentar (volitelny)</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Komentář (volitelný)</label>
               <textarea
                 value={approvalNote}
                 onChange={(e) => setApprovalNote(e.target.value)}
                 rows={3}
-                placeholder="Napiste duvod schvaleni ci zamitnuti..."
+                placeholder="Napište důvod schválení ci zamítnutí..."
                 className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
               />
             </div>

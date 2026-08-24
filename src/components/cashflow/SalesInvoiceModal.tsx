@@ -17,7 +17,7 @@ interface AllocationRow { project_id: string; amount: string; }
 
 const STATUS_OPTS = [
   { value: 'draft', label: 'Koncept' },
-  { value: 'sent', label: 'Odeslaná' },
+  { value: 'sent', label: 'Odesláná' },
   { value: 'paid', label: 'Zaplacená' },
   { value: 'canceled', label: 'Zrušená' },
 ];

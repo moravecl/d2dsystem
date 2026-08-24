@@ -375,10 +375,10 @@ export default function ServiceSchedulesList() {
     const { error } = await supabase.from('service_schedules').delete().eq('id', id);
     setDeleting(false);
     if (error) {
-      toast('Chyba pri mazani servisu', 'error');
+      toast('Chyba při mazání servisu', 'error');
       return;
     }
-    toast('Servis byl smazan');
+    toast('Servis byl smazán');
     setDeleteConfirm(null);
     if (detailSchedule?.id === id) setDetailSchedule(null);
     loadSchedules();
@@ -560,7 +560,7 @@ export default function ServiceSchedulesList() {
                       <button
                         onClick={(e) => openDateEdit(s, e)}
                         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-100 hover:bg-cyan-500/20 transition"
-                        title="Naplanovaný termin - kliknete pro upravu"
+                        title="Naplánováný termín - klikněte pro úpravu"
                       >
                         <CalendarCheck className="w-3.5 h-3.5 text-cyan-600" />
                         <span className="text-xs font-semibold text-cyan-700">
@@ -1033,7 +1033,7 @@ export default function ServiceSchedulesList() {
                     {form.client_ico && (
                       <div className="flex items-center gap-1.5">
                         <Building2 className="w-3 h-3 text-slate-500" />
-                        ICO: {form.client_ico}
+                        IČO: {form.client_ico}
                       </div>
                     )}
                     {form.client_dic && (
@@ -1102,7 +1102,7 @@ export default function ServiceSchedulesList() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1">
-                    <Building2 className="w-3 h-3" /> ICO
+                    <Building2 className="w-3 h-3" /> IČO
                   </label>
                   <input
                     type="text"
@@ -1164,7 +1164,7 @@ export default function ServiceSchedulesList() {
                 onChange={e => setForm({ ...form, deadline: e.target.value })}
                 className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20"
               />
-              <span className="text-[10px] text-slate-500 mt-1 block">Datum, do kdy ma byt servis proveden</span>
+              <span className="text-[10px] text-slate-500 mt-1 block">Datum, do kdy má byt servis proveden</span>
             </div>
           ) : (
             <>

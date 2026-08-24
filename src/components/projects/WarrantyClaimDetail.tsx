@@ -374,12 +374,12 @@ export default function WarrantyClaimDetail({ open, onClose, claimId, projectId 
                   <div className="flex items-center gap-1.5">
                     {claim.claim_type === 'repair'
                       ? <><Wrench className="w-3.5 h-3.5 text-blue-500" /><span className="text-sm font-semibold text-blue-400">Oprava</span></>
-                      : <><RefreshCw className="w-3.5 h-3.5 text-amber-500" /><span className="text-sm font-semibold text-amber-400">Vymena</span></>
+                      : <><RefreshCw className="w-3.5 h-3.5 text-amber-500" /><span className="text-sm font-semibold text-amber-400">Výměna</span></>
                     }
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Zaruka</div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Záruka</div>
                   <div className={`text-sm font-semibold ${claim.is_warranty ? 'text-emerald-400' : 'text-slate-300'}`}>
                     {claim.is_warranty ? 'Ano' : 'Ne'}
                   </div>
@@ -387,22 +387,22 @@ export default function WarrantyClaimDetail({ open, onClose, claimId, projectId 
               </div>
 
               <div className="mb-5 p-4 rounded-xl border border-white/[0.08]">
-                <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Puvodni zarizeni</div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Původní zařízení</div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div>
                     <div className="text-[10px] text-slate-400">Typ</div>
                     <div className="text-xs font-medium text-slate-300">{DEVICE_TYPE_LABELS[claim.original_device_type] || claim.original_device_type}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-slate-400">Nazev</div>
+                    <div className="text-[10px] text-slate-400">Název</div>
                     <div className="text-xs font-medium text-slate-300">{claim.original_device_name}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-slate-400">Vyrobce</div>
+                    <div className="text-[10px] text-slate-400">Výrobce</div>
                     <div className="text-xs font-medium text-slate-300">{claim.original_manufacturer || '-'}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-slate-400">Vyrobni cislo</div>
+                    <div className="text-[10px] text-slate-400">Výrobní číslo</div>
                     <div className="text-xs font-medium text-slate-300 font-mono">{claim.original_serial_number || '-'}</div>
                   </div>
                 </div>
@@ -411,19 +411,19 @@ export default function WarrantyClaimDetail({ open, onClose, claimId, projectId 
               {claim.claim_type === 'replacement' && claim.replacement_device_name && (
                 <div className="mb-5 p-4 rounded-xl border-2 border-amber-500/20 bg-amber-500/10">
                   <div className="text-[10px] font-bold text-amber-400 uppercase mb-2 flex items-center gap-1.5">
-                    <RefreshCw className="w-3 h-3" /> Nahradni zarizeni
+                    <RefreshCw className="w-3 h-3" /> Náhradní zařízení
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div>
-                      <div className="text-[10px] text-amber-500">Nazev</div>
+                      <div className="text-[10px] text-amber-500">Název</div>
                       <div className="text-xs font-medium text-amber-400">{claim.replacement_device_name}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-amber-500">Vyrobce</div>
+                      <div className="text-[10px] text-amber-500">Výrobce</div>
                       <div className="text-xs font-medium text-amber-400">{claim.replacement_manufacturer || '-'}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-amber-500">Vyrobni cislo</div>
+                      <div className="text-[10px] text-amber-500">Výrobní číslo</div>
                       <div className="text-xs font-medium text-amber-400 font-mono">{claim.replacement_serial_number || '-'}</div>
                     </div>
                   </div>
@@ -432,18 +432,18 @@ export default function WarrantyClaimDetail({ open, onClose, claimId, projectId 
 
               <div className="space-y-4 mb-5">
                 <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Popis zavady</div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Popis závady</div>
                   <div className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{claim.fault_description}</div>
                 </div>
                 {claim.resolution_description && (
                   <div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Provedene reseni</div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Provedené řešení</div>
                     <div className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{claim.resolution_description}</div>
                   </div>
                 )}
                 {claim.notes && (
                   <div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Poznamky</div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Poznámky</div>
                     <div className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{claim.notes}</div>
                   </div>
                 )}
@@ -451,17 +451,17 @@ export default function WarrantyClaimDetail({ open, onClose, claimId, projectId 
 
               {Number(claim.total_cost) > 0 && (
                 <div className="mb-5 p-4 rounded-xl bg-white/[0.04] border border-white/[0.08]">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Naklady</div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Náklady</div>
                   <div className="space-y-1">
                     {Number(claim.labor_cost) > 0 && (
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-500">Prace</span>
+                        <span className="text-slate-500">Práce</span>
                         <span className="font-medium text-slate-300">{Number(claim.labor_cost).toLocaleString('cs-CZ')} Kc</span>
                       </div>
                     )}
                     {Number(claim.material_cost) > 0 && (
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-500">Material</span>
+                        <span className="text-slate-500">Materiál</span>
                         <span className="font-medium text-slate-300">{Number(claim.material_cost).toLocaleString('cs-CZ')} Kc</span>
                       </div>
                     )}
@@ -470,7 +470,7 @@ export default function WarrantyClaimDetail({ open, onClose, claimId, projectId 
                       <span className="text-lg font-extrabold text-white">{Number(claim.total_cost).toLocaleString('cs-CZ')} Kc</span>
                     </div>
                     {claim.is_warranty && (
-                      <div className="text-[11px] text-emerald-400 font-medium text-right">Zarucni oprava - bez uctu</div>
+                      <div className="text-[11px] text-emerald-400 font-medium text-right">Záruční oprava - bez účtu</div>
                     )}
                   </div>
                 </div>
@@ -496,10 +496,10 @@ export default function WarrantyClaimDetail({ open, onClose, claimId, projectId 
 
                 <div className="p-4 rounded-xl border-2 border-emerald-500/20 bg-emerald-500/10">
                   <div className="text-[10px] font-bold text-emerald-400 uppercase mb-3 flex items-center gap-1.5">
-                    <PenTool className="w-3 h-3" /> Zakaznik
+                    <PenTool className="w-3 h-3" /> Zákazník
                   </div>
                   {claim.customer_signature ? (
-                    <img src={claim.customer_signature} alt="Podpis zakaznika" className="max-h-20 mb-2" />
+                    <img src={claim.customer_signature} alt="Podpis zákazníka" className="max-h-20 mb-2" />
                   ) : (
                     <div className="h-20 flex items-center justify-center text-xs text-slate-300">Bez podpisu</div>
                   )}
@@ -515,7 +515,7 @@ export default function WarrantyClaimDetail({ open, onClose, claimId, projectId 
               {claim.status === 'signed' && (
                 <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                   <PenTool className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs font-bold text-emerald-400">Protokol podepsan</span>
+                  <span className="text-xs font-bold text-emerald-400">Protokol podepsán</span>
                 </div>
               )}
             </div>

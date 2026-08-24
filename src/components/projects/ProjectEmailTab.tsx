@@ -36,9 +36,9 @@ interface Props {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof CheckCircle }> = {
-  sent: { label: 'Odeslano', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', icon: CheckCircle },
+  sent: { label: 'Odesláno', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', icon: CheckCircle },
   failed: { label: 'Selhalo', color: 'bg-red-500/10 text-red-400 border-red-500/20', icon: XCircle },
-  queued: { label: 'Ve fronte', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: Clock },
+  queued: { label: 'Ve frontě', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: Clock },
 };
 
 export default function ProjectEmailTab({ projectId, clientId }: Props) {
@@ -133,7 +133,7 @@ export default function ProjectEmailTab({ projectId, clientId }: Props) {
         <div className="flex items-center gap-2 p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
           <Users className="w-4 h-4 text-blue-500 shrink-0" />
           <span className="text-sm text-blue-400">
-            Klient projektu: <span className="font-semibold">{clientEmail}</span> (bude predvypln jako prijemce)
+            Klient projektu: <span className="font-semibold">{clientEmail}</span> (bude předvyplň jako příjemce)
           </span>
         </div>
       )}
@@ -141,8 +141,8 @@ export default function ProjectEmailTab({ projectId, clientId }: Props) {
       {logs.length === 0 ? (
         <div className="p-10 text-center bg-white/[0.04] rounded-2xl border border-white/[0.08]">
           <Inbox className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-slate-400">Zatim zadne emaily</p>
-          <p className="text-xs text-slate-400 mt-1">Emaily odeslane z tohoto projektu se zobrazi zde</p>
+          <p className="text-sm font-semibold text-slate-400">Zatím žádné emaily</p>
+          <p className="text-xs text-slate-400 mt-1">Emaily odesláné z tohoto projektu se zobrazí zde</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -211,7 +211,7 @@ export default function ProjectEmailTab({ projectId, clientId }: Props) {
                 <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Datum</div>
                 <div className="text-sm font-medium text-white">{formatDate(detailEntry.created_at)}</div>
                 {detailEntry.sent_at && (
-                  <div className="text-xs text-slate-500 mt-0.5">Odeslano: {formatDate(detailEntry.sent_at)}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Odesláno: {formatDate(detailEntry.sent_at)}</div>
                 )}
               </div>
             </div>
@@ -231,7 +231,7 @@ export default function ProjectEmailTab({ projectId, clientId }: Props) {
             </div>
 
             <div className="p-3 bg-white/[0.04] rounded-xl">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Predmet</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Předmět</div>
               <div className="text-sm font-semibold text-white">{detailEntry.subject}</div>
             </div>
 

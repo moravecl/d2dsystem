@@ -47,7 +47,7 @@ export default function FloorplanLegend({
       {floorPins.length === 0 ? (
         <div className="p-6 bg-white/[0.04] rounded-2xl border border-white/[0.06] text-center">
           <div className="text-sm font-extrabold text-white">Zatím žádné piny</div>
-          <div className="text-xs text-slate-500 mt-1">Vyber produkt a klikni na půdorys.</div>
+          <div className="text-xs text-slate-500 mt-1">Výběr produkt a klikni na půdorys.</div>
         </div>
       ) : (
         <div className="space-y-1.5">

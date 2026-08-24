@@ -173,7 +173,7 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
       }).eq('id', primaryId);
 
       if (updateErr) {
-        toast('Chyba pri slucovani', 'error');
+        toast('Chyba při slučování', 'error');
         setProcessing(false);
         return;
       }
@@ -191,10 +191,10 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
       }
 
       setMergedGroups(prev => new Set([...prev, group.key]));
-      toast(`Slouceno ${group.items.length} polozek do jedne`);
+      toast(`Sloučeno ${group.items.length} položek do jedné`);
       onRefresh();
     } catch {
-      toast('Chyba pri slucovani', 'error');
+      toast('Chyba při slučování', 'error');
     }
     setProcessing(false);
   };
@@ -223,10 +223,10 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
       }
 
       setMergedGroups(prev => new Set([...prev, group.key]));
-      toast(`Smazano ${otherIds.length} duplicit`);
+      toast(`Smazáno ${otherIds.length} duplicit`);
       onRefresh();
     } catch {
-      toast('Chyba pri mazani', 'error');
+      toast('Chyba při mazání', 'error');
     }
     setProcessing(false);
   };
@@ -234,10 +234,10 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
   const fmt = (n: number) => Math.round(n).toLocaleString('cs-CZ');
 
   return (
-    <Modal open={open} onClose={onClose} title="Sprava duplicit" size="xl" footer={
+    <Modal open={open} onClose={onClose} title="Správa duplicit" size="xl" footer={
       <>
         <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.04] rounded-lg transition">
-          Zavrit
+          Zavřít
         </button>
         {pendingGroups.length > 0 && (
           <button
@@ -246,7 +246,7 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
             className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50"
           >
             {processing ? <Loader2 className="w-4 h-4 animate-spin" /> : <GitMerge className="w-4 h-4" />}
-            Sloucit vse ({pendingGroups.length})
+            Sloučit vše ({pendingGroups.length})
           </button>
         )}
       </>
@@ -255,8 +255,8 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
         {duplicates.length === 0 ? (
           <div className="text-center py-16">
             <Package className="w-14 h-14 text-emerald-400 mx-auto mb-4 opacity-60" />
-            <p className="text-base font-semibold text-white mb-1">Zadne duplicity</p>
-            <p className="text-sm text-slate-500">Ve skladu nebyly nalezeny zadne duplicitni polozky.</p>
+            <p className="text-base font-semibold text-white mb-1">Žádné duplicity</p>
+            <p className="text-sm text-slate-500">Ve skladu nebyly nalezeny žádné duplicitní položky.</p>
           </div>
         ) : (
           <>
@@ -264,8 +264,8 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
               <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
               <div className="text-xs text-slate-300">
                 Nalezeno <span className="font-bold text-amber-400">{pendingGroups.length}</span> skupin duplicit
-                ({pendingGroups.reduce((s, g) => s + g.items.length, 0)} polozek celkem).
-                U kazde skupiny vyberte hlavni polozku a slucte nebo smazte duplicity.
+                ({pendingGroups.reduce((s, g) => s + g.items.length, 0)} položek celkem).
+                U každé skupiny vyberte hlavní položku a slučte nebo smažte duplicity.
               </div>
             </div>
 
@@ -305,7 +305,7 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
                           </span>
                           {isMerged && (
                             <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
-                              <Check className="w-3 h-3" /> Slouceno
+                              <Check className="w-3 h-3" /> Sloučeno
                             </span>
                           )}
                         </div>
@@ -340,15 +340,15 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
                                   <span className="text-xs font-semibold text-white truncate">{item.name}</span>
                                   {primaryId === item.id && (
                                     <span className="text-[9px] font-bold text-blue-400 bg-blue-500/20 px-1 py-0.5 rounded">
-                                      Hlavni
+                                      Hlavní
                                     </span>
                                   )}
                                 </div>
                                 <div className="flex items-center gap-3 mt-0.5 text-[11px] text-slate-500">
-                                  <span>Mnozstvi: <span className="text-slate-300 font-medium">{item.quantity} {item.unit}</span></span>
+                                  <span>Množství: <span className="text-slate-300 font-medium">{item.quantity} {item.unit}</span></span>
                                   <span>Cena: <span className="text-slate-300 font-medium">{fmt(item.price_per_unit)} Kc</span></span>
                                   {item.sku && <span>SKU: <span className="text-slate-300">{item.sku}</span></span>}
-                                  {item.location && <span>Umisteni: <span className="text-slate-300">{item.location}</span></span>}
+                                  {item.location && <span>Umístění: <span className="text-slate-300">{item.location}</span></span>}
                                   {item.catalog_source && (
                                     <span className="text-[10px] font-medium text-slate-400 bg-white/[0.06] px-1 py-0.5 rounded">
                                       {item.catalog_source === 'products' ? 'Katalog' : item.catalog_source === 'camera' ? 'Kamera' : item.catalog_source === 'eps' ? 'EPS' : 'Rucni'}
@@ -366,14 +366,14 @@ export default function DuplicateMergeModal({ open, onClose, items, onRefresh }:
                             disabled={processing}
                             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 transition disabled:opacity-50"
                           >
-                            <GitMerge className="w-3.5 h-3.5" /> Sloucit (secist mnozstvi)
+                            <GitMerge className="w-3.5 h-3.5" /> Sloučit (sečíst množství)
                           </button>
                           <button
                             onClick={() => handleDeleteDuplicates(group)}
                             disabled={processing}
                             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg hover:bg-red-500/20 transition disabled:opacity-50"
                           >
-                            <Trash2 className="w-3.5 h-3.5" /> Smazat duplicity (ponechat hlavni)
+                            <Trash2 className="w-3.5 h-3.5" /> Smazat duplicity (ponechat hlavní)
                           </button>
                         </div>
                       </div>

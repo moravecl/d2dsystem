@@ -6,28 +6,28 @@ import { useDesignSeriesLinks } from '../../hooks/useDesignSeriesLinks';
 import type { Product } from '../../types/database';
 
 const FRAME_ROLES = [
-  { key: 'frame_1', label: 'Ramecek 1R' },
-  { key: 'frame_2_horizontal', label: 'Ramecek 2R (vodorovny)' },
-  { key: 'frame_2_vertical', label: 'Ramecek 2R (svisly)' },
-  { key: 'frame_3_horizontal', label: 'Ramecek 3R (vodorovny)' },
-  { key: 'frame_3_vertical', label: 'Ramecek 3R (svisly)' },
-  { key: 'frame_4_horizontal', label: 'Ramecek 4R (vodorovny)' },
-  { key: 'frame_4_vertical', label: 'Ramecek 4R (svisly)' },
-  { key: 'frame_5_horizontal', label: 'Ramecek 5R (vodorovny)' },
-  { key: 'frame_5_vertical', label: 'Ramecek 5R (svisly)' },
+  { key: 'frame_1', label: 'Rámeček 1R' },
+  { key: 'frame_2_horizontal', label: 'Rámeček 2R (vodorovný)' },
+  { key: 'frame_2_vertical', label: 'Rámeček 2R (svislý)' },
+  { key: 'frame_3_horizontal', label: 'Rámeček 3R (vodorovný)' },
+  { key: 'frame_3_vertical', label: 'Rámeček 3R (svislý)' },
+  { key: 'frame_4_horizontal', label: 'Rámeček 4R (vodorovný)' },
+  { key: 'frame_4_vertical', label: 'Rámeček 4R (svislý)' },
+  { key: 'frame_5_horizontal', label: 'Rámeček 5R (vodorovný)' },
+  { key: 'frame_5_vertical', label: 'Rámeček 5R (svislý)' },
 ];
 
 const COMMON_MODULE_ROLES = [
-  { key: 'switch_single', label: 'Jednoduchy vypinac' },
-  { key: 'switch_double', label: 'Dvojity vypinac' },
-  { key: 'switch_dimmer', label: 'Stmivac' },
-  { key: 'socket_single', label: 'Zasuvka jednoducha' },
-  { key: 'socket_double', label: 'Zasuvka dvojita' },
-  { key: 'socket_usb', label: 'Zasuvka USB' },
-  { key: 'socket_data', label: 'Datova zasuvka' },
-  { key: 'socket_tv', label: 'TV zasuvka' },
+  { key: 'switch_single', label: 'Jednoduchý vypínač' },
+  { key: 'switch_double', label: 'Dvojitý vypínač' },
+  { key: 'switch_dimmer', label: 'Stmívač' },
+  { key: 'socket_single', label: 'Zásuvka jednoduchá' },
+  { key: 'socket_double', label: 'Zásuvka dvojitá' },
+  { key: 'socket_usb', label: 'Zásuvka USB' },
+  { key: 'socket_data', label: 'Datová zásuvka' },
+  { key: 'socket_tv', label: 'TV zásuvka' },
   { key: 'thermostat', label: 'Termostat' },
-  { key: 'blind_control', label: 'Ovladani zaluzii' },
+  { key: 'blind_control', label: 'Ovládání žaluzii' },
 ];
 
 export default function DesignSeriesLinksPage() {
@@ -148,7 +148,7 @@ export default function DesignSeriesLinksPage() {
 
   const handleAddLink = async () => {
     if (!selectedSeriesId || !addForm.roleKey || !addForm.productId) {
-      toast('Vyplnte vsechna pole');
+      toast('Vyplňte všechna pole');
       return;
     }
 
@@ -167,7 +167,7 @@ export default function DesignSeriesLinksPage() {
     } else {
       setShowAddModal(false);
       setAddForm({ roleKey: '', productId: '', isDefault: true, priority: 0, notes: '' });
-      toast('Mapovani pridano');
+      toast('Mapování přidáno');
     }
     setSaving(false);
   };
@@ -184,7 +184,7 @@ export default function DesignSeriesLinksPage() {
     if (result.error) {
       toast(`Chyba: ${result.error}`);
     } else {
-      toast('Mapovani odebrano');
+      toast('Mapování odebráno');
     }
   };
 
@@ -199,9 +199,9 @@ export default function DesignSeriesLinksPage() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Mapovani designovych rad</h1>
+        <h1 className="text-2xl font-bold text-white">Mapování designových rad</h1>
         <p className="text-sm text-slate-400 mt-1">
-          Prirazujte produkty k rolim (ramecky, moduly) v jednotlivych designovych radach
+          Přiřazujte produkty k rolím (rámečky, moduly) v jednotlivých designových řadách
         </p>
       </div>
 
@@ -214,7 +214,7 @@ export default function DesignSeriesLinksPage() {
                 <input
                   value={seriesSearch}
                   onChange={(e) => setSeriesSearch(e.target.value)}
-                  placeholder="Hledat designovou radu..."
+                  placeholder="Hledat designovou řadu..."
                   className="w-full pl-10 pr-4 py-2 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>
@@ -223,7 +223,7 @@ export default function DesignSeriesLinksPage() {
               {filteredSeries.length === 0 ? (
                 <div className="py-12 text-center">
                   <Layers className="w-10 h-10 text-slate-600 mx-auto mb-2" />
-                  <p className="text-slate-400 text-sm">Zadne designove rady</p>
+                  <p className="text-slate-400 text-sm">Žádné designové řady</p>
                 </div>
               ) : (
                 filteredSeries.map((series) => {
@@ -253,7 +253,7 @@ export default function DesignSeriesLinksPage() {
                       <div className="flex items-center gap-2">
                         {linkCount > 0 && (
                           <span className="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-400 text-[10px] font-bold">
-                            {linkCount} mapovani
+                            {linkCount} mapování
                           </span>
                         )}
                         <ChevronRight className={`w-4 h-4 transition ${isSelected ? 'text-teal-400' : 'text-slate-600'}`} />
@@ -291,7 +291,7 @@ export default function DesignSeriesLinksPage() {
                     className="flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-bold hover:bg-teal-700 transition"
                   >
                     <Plus className="w-4 h-4" />
-                    Pridat mapovani
+                    Přidat mapování
                   </button>
                 </div>
 
@@ -301,12 +301,12 @@ export default function DesignSeriesLinksPage() {
                       <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-bold text-amber-400">
-                          Chybi mapovani ({validationSummary.length})
+                          Chybí mapování ({validationSummary.length})
                         </div>
                         {missingFrameRoles.length > 0 && (
                           <div className="mt-1.5">
                             <div className="text-[10px] font-bold text-amber-400/80 uppercase tracking-wider mb-1">
-                              Ramecky ({missingFrameRoles.length})
+                              Rámečky ({missingFrameRoles.length})
                             </div>
                             <div className="flex flex-wrap gap-1">
                               {missingFrameRoles.map((r) => (
@@ -353,12 +353,12 @@ export default function DesignSeriesLinksPage() {
                 {allRoleKeys.length === 0 ? (
                   <div className="py-16 text-center">
                     <Package className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                    <p className="text-slate-400 text-sm">Zadne mapovani pro tuto designovou radu</p>
+                    <p className="text-slate-400 text-sm">Žádné mapování pro tuto designovou řadu</p>
                     <button
                       onClick={() => setShowAddModal(true)}
                       className="mt-4 px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-bold hover:bg-teal-700 transition"
                     >
-                      Pridat prvni mapovani
+                      Přidat první mapování
                     </button>
                   </div>
                 ) : (
@@ -435,7 +435,7 @@ export default function DesignSeriesLinksPage() {
           ) : (
             <div className="bg-navy-800/30 rounded-2xl border border-white/5 py-24 text-center">
               <Layers className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400 text-sm">Vyberte designovou radu v levem panelu</p>
+              <p className="text-slate-400 text-sm">Vyberte designovou řadu v levém panelu</p>
             </div>
           )}
         </div>
@@ -445,7 +445,7 @@ export default function DesignSeriesLinksPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-navy-900 rounded-2xl border border-white/10 w-full max-w-lg shadow-2xl">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-              <h3 className="text-base font-bold text-white">Pridat mapovani produktu</h3>
+              <h3 className="text-base font-bold text-white">Přidat mapování produktu</h3>
               <button
                 onClick={() => setShowAddModal(false)}
                 className="p-2 rounded-lg hover:bg-white/[0.06] transition"
@@ -456,7 +456,7 @@ export default function DesignSeriesLinksPage() {
             <div className="p-5 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                  Role (klic)
+                  Role (klíč)
                 </label>
                 <select
                   value={addForm.roleKey}
@@ -464,7 +464,7 @@ export default function DesignSeriesLinksPage() {
                   className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/30"
                 >
                   <option value="">-- Vyberte roli --</option>
-                  <optgroup label="Ramecky">
+                  <optgroup label="Rámečky">
                     {FRAME_ROLES.map((r) => (
                       <option key={r.key} value={r.key}>{r.label}</option>
                     ))}
@@ -480,7 +480,7 @@ export default function DesignSeriesLinksPage() {
                     type="text"
                     value={addForm.roleKey}
                     onChange={(e) => setAddForm((f) => ({ ...f, roleKey: e.target.value }))}
-                    placeholder="Nebo zadejte vlastni klic..."
+                    placeholder="Nebo zadejte vlastní klíč..."
                     className="w-full px-3 py-2 rounded-xl border border-white/10 bg-white/[0.04] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/30"
                   />
                 </div>
@@ -495,7 +495,7 @@ export default function DesignSeriesLinksPage() {
                   <input
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
-                    placeholder="Nazev, kod nebo vyrobce..."
+                    placeholder="Název, kód nebo výrobce..."
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/30"
                   />
                 </div>
@@ -536,7 +536,7 @@ export default function DesignSeriesLinksPage() {
                     onChange={(e) => setAddForm((f) => ({ ...f, isDefault: e.target.checked }))}
                     className="w-4 h-4 rounded border-white/20 bg-white/[0.06] text-teal-500 focus:ring-teal-500/30"
                   />
-                  <span className="text-sm text-slate-300">Nastavit jako vychozi</span>
+                  <span className="text-sm text-slate-300">Nastavit jako výchozí</span>
                 </label>
                 <div className="flex items-center gap-2">
                   <label className="text-xs text-slate-400">Priorita:</label>
@@ -551,13 +551,13 @@ export default function DesignSeriesLinksPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                  Poznamka (volitelne)
+                  Poznámka (volitelné)
                 </label>
                 <input
                   type="text"
                   value={addForm.notes}
                   onChange={(e) => setAddForm((f) => ({ ...f, notes: e.target.value }))}
-                  placeholder="Napiste poznamku..."
+                  placeholder="Napište poznámku..."
                   className="w-full px-3 py-2 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/30"
                 />
               </div>
@@ -567,7 +567,7 @@ export default function DesignSeriesLinksPage() {
                 onClick={() => setShowAddModal(false)}
                 className="px-4 py-2 rounded-xl border border-white/10 text-sm font-bold text-slate-400 hover:bg-white/[0.06] transition"
               >
-                Zrusit
+                Zrušit
               </button>
               <button
                 onClick={handleAddLink}

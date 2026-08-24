@@ -205,7 +205,7 @@ export default function SummaryFvPrint({ projectId }: Props) {
       {result && (
         <div className="grid grid-cols-4 gap-3 mb-5 print:gap-2 print:mb-3">
           <div className="bg-orange-500/10 rounded-xl p-3 print:p-2 print:rounded-lg">
-            <div className="text-[9px] font-extrabold uppercase tracking-widest text-orange-600">Vykon</div>
+            <div className="text-[9px] font-extrabold uppercase tracking-widest text-orange-600">Výkon</div>
             <div className="text-xl font-extrabold text-orange-700 print:text-base">{Math.round(totalKwp * 100) / 100} kWp</div>
             <div className="text-[10px] text-orange-500">{totalPanels} panelů</div>
           </div>
@@ -372,7 +372,7 @@ export default function SummaryFvPrint({ projectId }: Props) {
                         )}
                         {hook && (
                           <>
-                            <div className="text-slate-500">Haky:</div>
+                            <div className="text-slate-500">Háky:</div>
                             <div className="font-extrabold text-slate-300">{hook.name}</div>
                           </>
                         )}
@@ -384,7 +384,7 @@ export default function SummaryFvPrint({ projectId }: Props) {
                         )}
                         {rail && (
                           <>
-                            <div className="text-slate-500">Profil (lista):</div>
+                            <div className="text-slate-500">Profil (lišta):</div>
                             <div className="font-extrabold text-slate-300">{rail.name} ({rail.width_mm}x{rail.height_mm} mm, {rail.length_mm} mm)</div>
                           </>
                         )}
@@ -415,16 +415,16 @@ export default function SummaryFvPrint({ projectId }: Props) {
           <div className="bg-white/[0.04] rounded-xl border border-white/10 p-3 print:p-2 print:rounded-lg">
             <div className="flex items-center gap-1.5 mb-2">
               <Zap className="w-4 h-4 text-amber-500" />
-              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Stridac</h3>
+              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Střídač</h3>
             </div>
             <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
               <div className="text-slate-500">Model:</div>
               <div className="font-extrabold text-slate-300">{inverter.name}</div>
               <div className="text-slate-500">Výrobce:</div>
               <div className="font-extrabold text-slate-300">{inverter.manufacturer}</div>
-              <div className="text-slate-500">Vykon:</div>
+              <div className="text-slate-500">Výkon:</div>
               <div className="font-extrabold text-slate-300">{inverter.power_kw} kW</div>
-              <div className="text-slate-500">Faze / MPPT:</div>
+              <div className="text-slate-500">Fáze / MPPT:</div>
               <div className="font-extrabold text-slate-300">{inverter.phases}f / {inverter.mppt_count} MPPT</div>
               <div className="text-slate-500">Účinnost:</div>
               <div className="font-extrabold text-slate-300">{inverter.efficiency_pct}%</div>
@@ -444,17 +444,17 @@ export default function SummaryFvPrint({ projectId }: Props) {
               <div className="font-extrabold text-slate-300">{masterBat.name}</div>
               <div className="text-slate-500">Výrobce:</div>
               <div className="font-extrabold text-slate-300">{masterBat.manufacturer}</div>
-              <div className="text-slate-500">Pocet:</div>
+              <div className="text-slate-500">Počet:</div>
               <div className="font-extrabold text-slate-300">{masterCount}x ({masterBat.capacity_kwh} kWh/ks)</div>
               <div className="text-slate-500">Chemie:</div>
               <div className="font-extrabold text-slate-300">{CHEM_MAP[masterBat.chemistry] ?? masterBat.chemistry}</div>
               <div className="text-slate-500">Cyklu:</div>
               <div className="font-extrabold text-slate-300">{masterBat.cycles.toLocaleString('cs-CZ')}</div>
-              <div className="text-slate-500">Vykon:</div>
+              <div className="text-slate-500">Výkon:</div>
               <div className="font-extrabold text-slate-300">{masterBat.power_kw} kW</div>
               <div className="text-slate-500">DoD:</div>
               <div className="font-extrabold text-slate-300">{masterBat.dod_pct}%</div>
-              <div className="text-slate-500">Zaruka:</div>
+              <div className="text-slate-500">Záruka:</div>
               <div className="font-extrabold text-slate-300">{masterBat.warranty_years} let</div>
 
               {slaveBat && slaveCount > 0 && (
@@ -464,17 +464,17 @@ export default function SummaryFvPrint({ projectId }: Props) {
                   <div className="font-extrabold text-slate-300">{slaveBat.name}</div>
                   <div className="text-slate-500">Výrobce:</div>
                   <div className="font-extrabold text-slate-300">{slaveBat.manufacturer}</div>
-                  <div className="text-slate-500">Pocet:</div>
+                  <div className="text-slate-500">Počet:</div>
                   <div className="font-extrabold text-slate-300">{slaveCount}x ({slaveBat.capacity_kwh} kWh/ks)</div>
                   <div className="text-slate-500">Chemie:</div>
                   <div className="font-extrabold text-slate-300">{CHEM_MAP[slaveBat.chemistry] ?? slaveBat.chemistry}</div>
                   <div className="text-slate-500">Cyklu:</div>
                   <div className="font-extrabold text-slate-300">{slaveBat.cycles.toLocaleString('cs-CZ')}</div>
-                  <div className="text-slate-500">Vykon:</div>
+                  <div className="text-slate-500">Výkon:</div>
                   <div className="font-extrabold text-slate-300">{slaveBat.power_kw} kW</div>
                   <div className="text-slate-500">DoD:</div>
                   <div className="font-extrabold text-slate-300">{slaveBat.dod_pct}%</div>
-                  <div className="text-slate-500">Zaruka:</div>
+                  <div className="text-slate-500">Záruka:</div>
                   <div className="font-extrabold text-slate-300">{slaveBat.warranty_years} let</div>
                 </>
               )}
@@ -493,13 +493,13 @@ export default function SummaryFvPrint({ projectId }: Props) {
               <div className="font-extrabold text-slate-300">{wallbox.name}</div>
               <div className="text-slate-500">Výrobce:</div>
               <div className="font-extrabold text-slate-300">{wallbox.manufacturer}</div>
-              <div className="text-slate-500">Vykon:</div>
+              <div className="text-slate-500">Výkon:</div>
               <div className="font-extrabold text-slate-300">{wallbox.power_kw} kW / {wallbox.phases}f</div>
               <div className="text-slate-500">Konektor:</div>
               <div className="font-extrabold text-slate-300">{wallbox.connector_type.toUpperCase()}</div>
               {wallbox.smart_charging && (
                 <>
-                  <div className="text-slate-500">Smart nabijeni:</div>
+                  <div className="text-slate-500">Smart nabíjení:</div>
                   <div className="font-extrabold text-emerald-400">Ano</div>
                 </>
               )}
@@ -511,7 +511,7 @@ export default function SummaryFvPrint({ projectId }: Props) {
           <div className="bg-white/[0.04] rounded-xl border border-white/10 p-3 print:p-2 print:rounded-lg">
             <div className="flex items-center gap-1.5 mb-2">
               <Package className="w-4 h-4 text-slate-500" />
-              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Prislusenstvi</h3>
+              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Příslušenství</h3>
             </div>
             <div className="space-y-1">
               {cfgAccessories.map(a => {
@@ -532,7 +532,7 @@ export default function SummaryFvPrint({ projectId }: Props) {
       {panels.filter(p => roofs.some((r: RoofSurface) => r.panelId === p.id)).length > 0 && (
         <div className="mb-5 print:mb-3">
           <h3 className="text-sm font-extrabold text-slate-300 mb-2 flex items-center gap-1.5">
-            <Wrench className="w-4 h-4 text-slate-500" /> Prehled pouzitych panelů
+            <Wrench className="w-4 h-4 text-slate-500" /> Přehled použitých panelů
           </h3>
           <table className="w-full text-xs border border-white/10 rounded-lg overflow-hidden">
             <thead>
@@ -540,10 +540,10 @@ export default function SummaryFvPrint({ projectId }: Props) {
                 <th className="px-3 py-2 text-left font-extrabold text-slate-400">Panel</th>
                 <th className="px-3 py-2 text-left font-extrabold text-slate-400">Výrobce</th>
                 <th className="px-3 py-2 text-left font-extrabold text-slate-400">Technologie</th>
-                <th className="px-3 py-2 text-right font-extrabold text-slate-400">Vykon</th>
+                <th className="px-3 py-2 text-right font-extrabold text-slate-400">Výkon</th>
                 <th className="px-3 py-2 text-right font-extrabold text-slate-400">Rozměr</th>
                 <th className="px-3 py-2 text-right font-extrabold text-slate-400">Účinnost</th>
-                <th className="px-3 py-2 text-right font-extrabold text-slate-400">Zaruka</th>
+                <th className="px-3 py-2 text-right font-extrabold text-slate-400">Záruka</th>
               </tr>
             </thead>
             <tbody>

@@ -428,13 +428,13 @@ function EditFolderTree({
             <input
               value={f.name}
               onChange={(e) => onRename(f._tempId, e.target.value)}
-              placeholder="Nazev slozky..."
+              placeholder="Název složky..."
               className="flex-1 min-w-0 px-2 py-1 rounded-lg border border-transparent focus:border-white/10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-transparent hover:bg-white/[0.04]"
             />
             <button
               onClick={() => onAdd(f._tempId)}
               className="p-1 rounded text-slate-300 hover:text-blue-400 hover:bg-blue-500/100/10 transition opacity-0 group-hover:opacity-100"
-              title="Pridat podslozku"
+              title="Přidat podsložku"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>

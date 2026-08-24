@@ -166,7 +166,7 @@ export default function EditorProductForm({ categories, onClose, onSaved }: Prop
 
             <div>
               <label className={labelClass}>Lumeny (lm)</label>
-              <input type="number" value={form.lumens} onChange={(e) => set('lumens', e.target.value)} placeholder="0 = neni svetlo" className={`${inputClass} font-extrabold`} />
+              <input type="number" value={form.lumens} onChange={(e) => set('lumens', e.target.value)} placeholder="0 = není světlo" className={`${inputClass} font-extrabold`} />
             </div>
 
             <div>

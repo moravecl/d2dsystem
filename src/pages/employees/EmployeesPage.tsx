@@ -213,7 +213,7 @@ export default function EmployeesPage() {
               <div className="flex justify-end">
                 <SortControl
                   options={[
-                    { key: 'display_name', label: 'Jmeno' },
+                    { key: 'display_name', label: 'Jméno' },
                     { key: 'email', label: 'Email' },
                     { key: 'role', label: 'Role' },
                   ]}
@@ -252,7 +252,7 @@ export default function EmployeesPage() {
           {activeTab === 'certifications' && (
             <div className="space-y-4">
               <div className="flex justify-end">
-                <button onClick={() => { setCertForm({ profile_id: '', name: '', issuer: '', valid_from: '', valid_to: '', document_url: '' }); setShowCertModal(true); }} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition"><Plus className="w-4 h-4" /> Nova certifikace</button>
+                <button onClick={() => { setCertForm({ profile_id: '', name: '', issuer: '', valid_from: '', valid_to: '', document_url: '' }); setShowCertModal(true); }} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition"><Plus className="w-4 h-4" /> Nová certifikace</button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -364,16 +364,16 @@ export default function EmployeesPage() {
         <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Sériové číslo</label><input value={equipForm.serial_number} onChange={e => setEquipForm({ ...equipForm, serial_number: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06]/[0.06] text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40" /></div>
       </div></Modal>
 
-      <Modal open={showVacModal} onClose={() => setShowVacModal(false)} title="Novy zaznam dovolene" size="md" footer={
-        <><button onClick={() => setShowVacModal(false)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.04] rounded-lg transition">Zrusit</button>
-        <button onClick={handleAddVacation} disabled={!vacForm.start_date || !vacForm.end_date} className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50">Pridat</button></>
+      <Modal open={showVacModal} onClose={() => setShowVacModal(false)} title="Nový záznam dovolené" size="md" footer={
+        <><button onClick={() => setShowVacModal(false)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.04] rounded-lg transition">Zrušit</button>
+        <button onClick={handleAddVacation} disabled={!vacForm.start_date || !vacForm.end_date} className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50">Přidat</button></>
       }><div className="space-y-4">
         <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Typ</label><select value={vacForm.type} onChange={e => setVacForm({ ...vacForm, type: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40">{Object.entries(VACATION_TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
         <div className="grid grid-cols-2 gap-4">
           <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Od *</label><input type="date" value={vacForm.start_date} onChange={e => setVacForm({ ...vacForm, start_date: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40" /></div>
           <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Do *</label><input type="date" value={vacForm.end_date} onChange={e => setVacForm({ ...vacForm, end_date: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40" /></div>
         </div>
-        <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Poznamka</label><input value={vacForm.note} onChange={e => setVacForm({ ...vacForm, note: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40" /></div>
+        <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Poznámka</label><input value={vacForm.note} onChange={e => setVacForm({ ...vacForm, note: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40" /></div>
       </div></Modal>
 
     </div>

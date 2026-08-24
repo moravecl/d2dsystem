@@ -12,7 +12,7 @@ import CashTransactionModal, { type CashTransaction } from '../../components/fin
 
 const SOURCE_LABELS: Record<string, { label: string; icon: typeof Banknote }> = {
   manual: { label: 'Ruční', icon: Banknote },
-  invoice_payment: { label: 'Faktura (vydaná)', icon: FileText },
+  invoice_payment: { label: 'Faktura (vydáná)', icon: FileText },
   received_invoice_payment: { label: 'Faktura (přijatá)', icon: Receipt },
 };
 

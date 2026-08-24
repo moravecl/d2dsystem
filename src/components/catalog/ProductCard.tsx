@@ -27,7 +27,7 @@ export default memo(function ProductCard({ product, category, selected, qty, onT
       {selected && (
         <div className="absolute top-0 left-0 right-0 z-20 bg-emerald-600 text-white text-center py-1.5 text-xs font-extrabold tracking-wider flex items-center justify-center gap-1.5">
           <Check className="w-3.5 h-3.5" strokeWidth={3} />
-          VYBRANO
+          VYBRÁNO
           {qty > 0 && <span className="bg-white/[0.06] px-2 py-0.5 rounded-full ml-1">{qty} ks</span>}
         </div>
       )}

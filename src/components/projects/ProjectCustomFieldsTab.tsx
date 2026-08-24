@@ -204,7 +204,7 @@ export default function ProjectCustomFieldsTab({ projectId }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-white">Specifikace projektu</h3>
-          <p className="text-sm text-slate-500 mt-0.5">Vlastni pole a parametry projektu</p>
+          <p className="text-sm text-slate-500 mt-0.5">Vlastní pole a parametry projektu</p>
         </div>
         <div className="flex items-center gap-2">
           {hiddenCount > 0 && (
@@ -273,7 +273,7 @@ export default function ProjectCustomFieldsTab({ projectId }: Props) {
             <>
               <div className="flex items-center gap-3 pt-2">
                 <div className="h-px flex-1 bg-white/[0.08]" />
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Skryte sekce</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Skryté sekce</span>
                 <div className="h-px flex-1 bg-white/[0.08]" />
               </div>
               {hiddenSectionsList.map((section) => {

@@ -52,7 +52,7 @@ export default function ProjectWarehouseTab({ projectId }: { projectId: string }
     if (item) {
       await supabase.from('warehouse_items').update({ quantity: Math.max(0, item.quantity - form.quantity), updated_at: new Date().toISOString() }).eq('id', form.item_id);
     }
-    toast('Material vydan');
+    toast('Materiál vydán');
     setShowModal(false);
     load();
   };
@@ -66,7 +66,7 @@ export default function ProjectWarehouseTab({ projectId }: { projectId: string }
       <div className="flex items-center justify-between">
         <span className="text-sm text-slate-500">{totalItems} výdejek na tento projekt</span>
         <button onClick={() => { setForm({ item_id: '', quantity: 1, note: '' }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition">
-          <ArrowUpFromLine className="w-4 h-4" /> Vydat material
+          <ArrowUpFromLine className="w-4 h-4" /> Vydat materiál
         </button>
       </div>
 
@@ -89,7 +89,7 @@ export default function ProjectWarehouseTab({ projectId }: { projectId: string }
         )}
       </div>
 
-      <Modal open={showModal} onClose={() => setShowModal(false)} title="Vydat material" size="sm" footer={
+      <Modal open={showModal} onClose={() => setShowModal(false)} title="Vydat materiál" size="sm" footer={
         <>
           <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrušit</button>
           <button onClick={handleIssue} disabled={!form.item_id || form.quantity <= 0} className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50">Vydat</button>

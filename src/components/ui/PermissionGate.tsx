@@ -29,7 +29,7 @@ export default function PermissionGate({ permission, module, children, fallback,
   return (
     <div className="flex items-center gap-2 text-xs text-slate-400 italic">
       <Lock className="w-3 h-3" />
-      <span>Nedostatecna opravneni</span>
+      <span>Nedostatečná oprávnění</span>
     </div>
   );
 }

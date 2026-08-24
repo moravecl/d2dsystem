@@ -438,7 +438,7 @@ export default function AttendancePage() {
 
   async function exportToPDF() {
     if (!selectedMonth) {
-      toast('Pro PDF export vyberte mesic', 'error');
+      toast('Pro PDF export vyberte měsíc', 'error');
       return;
     }
     try {

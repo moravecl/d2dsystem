@@ -28,26 +28,26 @@ export default function AutomationConditionFields({
  <div className="space-y-3">
  <div className="grid grid-cols-2 gap-3">
  <div>
- <label className={labelClass}>Ze stavu (volitelne)</label>
+ <label className={labelClass}>Ze stavu (volitelné)</label>
  <select
  value={(conditions.from_status as string) ?? ''}
  onChange={e => onChange('from_status', e.target.value || undefined)}
  className={selectClass}
  >
- <option value="">Libovolny stav</option>
+ <option value="">Libovolný stav</option>
  {statuses.map(s => (
  <option key={s.key} value={s.key}>{s.label}</option>
  ))}
  </select>
  </div>
  <div>
- <label className={labelClass}>Do stavu (volitelne)</label>
+ <label className={labelClass}>Do stavu (volitelné)</label>
  <select
  value={(conditions.to_status as string) ?? ''}
  onChange={e => onChange('to_status', e.target.value || undefined)}
  className={selectClass}
  >
- <option value="">Libovolny stav</option>
+ <option value="">Libovolný stav</option>
  {statuses.map(s => (
  <option key={s.key} value={s.key}>{s.label}</option>
  ))}
@@ -69,7 +69,7 @@ export default function AutomationConditionFields({
  return (
  <div className="space-y-3">
  <div>
- <label className={labelClass}>Pocet dni pred terminem</label>
+ <label className={labelClass}>Počet dni před termínem</label>
  <input
  type="number"
  min={1}
@@ -81,13 +81,13 @@ export default function AutomationConditionFields({
  </div>
  {triggerEvent === 'due_item_approaching' && (
  <div>
- <label className={labelClass}>Typ polozky (volitelne)</label>
+ <label className={labelClass}>Typ položky (volitelné)</label>
  <select
  value={(conditions.due_item_type as string) ?? ''}
  onChange={e => onChange('due_item_type', e.target.value || undefined)}
  className={selectClass}
  >
- <option value="">Vsechny typy</option>
+ <option value="">Všechny typy</option>
  {DUE_ITEM_TYPES.map(t => (
  <option key={t.key} value={t.key}>{t.label}</option>
  ))}
@@ -102,7 +102,7 @@ export default function AutomationConditionFields({
  return (
  <div className="space-y-3">
  <div>
- <label className={labelClass}>Pocet dni po terminu (volitelne, 0 = hned)</label>
+ <label className={labelClass}>Počet dni po termínu (volitelné, 0 = hned)</label>
  <input
  type="number"
  min={0}
@@ -114,13 +114,13 @@ export default function AutomationConditionFields({
  </div>
  {(triggerEvent === 'due_item_overdue') && (
  <div>
- <label className={labelClass}>Typ polozky (volitelne)</label>
+ <label className={labelClass}>Typ položky (volitelné)</label>
  <select
  value={(conditions.due_item_type as string) ?? ''}
  onChange={e => onChange('due_item_type', e.target.value || undefined)}
  className={selectClass}
  >
- <option value="">Vsechny typy</option>
+ <option value="">Všechny typy</option>
  {DUE_ITEM_TYPES.map(t => (
  <option key={t.key} value={t.key}>{t.label}</option>
  ))}
@@ -134,7 +134,7 @@ export default function AutomationConditionFields({
  if (triggerEvent === 'assigned') {
  return (
  <div>
- <label className={labelClass}>Prirazen komu (volitelne)</label>
+ <label className={labelClass}>Přiřazen komu (volitelné)</label>
  <select
  value={(conditions.assigned_to as string) ?? ''}
  onChange={e => onChange('assigned_to', e.target.value || undefined)}
@@ -153,7 +153,7 @@ export default function AutomationConditionFields({
  return (
  <div className="grid grid-cols-2 gap-3">
  <div>
- <label className={labelClass}>Na prioritu (volitelne)</label>
+ <label className={labelClass}>Na prioritu (volitelné)</label>
  <select
  value={(conditions.to_priority as string) ?? ''}
  onChange={e => onChange('to_priority', e.target.value || undefined)}
@@ -172,7 +172,7 @@ export default function AutomationConditionFields({
  if (triggerEvent === 'severity_critical') {
  return (
  <div>
- <label className={labelClass}>Minimalni zavaznost</label>
+ <label className={labelClass}>Minimální závažnost</label>
  <select
  value={(conditions.min_severity as string) ?? 'critical'}
  onChange={e => onChange('min_severity', e.target.value)}
@@ -210,7 +210,7 @@ export default function AutomationConditionFields({
  if (triggerEvent === 'amount_threshold') {
  return (
  <div>
- <label className={labelClass}>Castka presahuje (Kc)</label>
+ <label className={labelClass}>Částka přesahuje (Kc)</label>
  <input
  type="number"
  min={0}
@@ -225,7 +225,7 @@ export default function AutomationConditionFields({
  if (triggerEvent === 'progress_threshold') {
  return (
  <div>
- <label className={labelClass}>Postup dosahne (%)</label>
+ <label className={labelClass}>Postup dosáhne (%)</label>
  <input
  type="number"
  min={0}
@@ -256,7 +256,7 @@ export default function AutomationConditionFields({
  if (triggerEvent === 'cost_overrun') {
  return (
  <div>
- <label className={labelClass}>Prekroceni rozpoctu o (%)</label>
+ <label className={labelClass}>Překročení rozpočtu o (%)</label>
  <input
  type="number"
  min={1}
@@ -272,7 +272,7 @@ export default function AutomationConditionFields({
  if (triggerEvent === 'low_stock') {
  return (
  <p className="text-[10px] text-blue-500 font-extrabold">
- Spusti se kdyz mnozstvi na sklade klesne pod nastavene minimum u dane polozky.
+ Spustí se když množství na skladě klesne pod nastavené minimum u dane položky.
  </p>
  );
  }
@@ -280,7 +280,7 @@ export default function AutomationConditionFields({
  if (triggerEvent === 'unplanned_material') {
  return (
  <p className="text-[10px] text-blue-500 font-extrabold">
- Spusti se kdyz je na projekt pouzit material, ktery nebyl v planu.
+ Spustí se když je na projekt použit materiál, který nebyl v plánu.
  </p>
  );
  }
@@ -288,7 +288,7 @@ export default function AutomationConditionFields({
  if (triggerEvent === 'created_from_portal') {
  return (
  <p className="text-[10px] text-blue-500 font-extrabold">
- Spusti se kdyz klient vytvori tiket pres klientsky portal.
+ Spustí se když klient vytvoří tiket přes klientský portál.
  </p>
  );
  }
@@ -296,7 +296,7 @@ export default function AutomationConditionFields({
  if (triggerEvent === 'paid') {
  return (
  <p className="text-[10px] text-blue-500 font-extrabold">
- Spusti se jakmile je faktura oznacena jako plne uhrazena.
+ Spustí se jakmile je faktura označena jako plne uhrazena.
  </p>
  );
  }

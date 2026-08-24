@@ -34,7 +34,7 @@ const STATUSES = [
   { value: 'draft', label: 'Koncept', icon: FileEdit },
   { value: 'in_progress', label: 'Rozpracovaný', icon: Clock },
   { value: 'completed', label: 'Dokončený', icon: CheckCircle2 },
-  { value: 'sent', label: 'Odeslaný', icon: Send },
+  { value: 'sent', label: 'Odesláný', icon: Send },
 ];
 
 interface SaveModalProps {

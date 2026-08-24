@@ -63,7 +63,7 @@ export default function QuoteNotesEditor({ value, onChange }: Props) {
               className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition">
               <Bold className="w-3.5 h-3.5" />
             </button>
-            <button type="button" onClick={() => exec('italic')} title="Kurziva"
+            <button type="button" onClick={() => exec('italic')} title="Kurzíva"
               className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition">
               <Italic className="w-3.5 h-3.5" />
             </button>

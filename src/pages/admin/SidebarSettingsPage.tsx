@@ -250,7 +250,7 @@ export default function SidebarSettingsPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-extrabold text-white">Nastavení sidebaru</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Organizujte polozky do sekci, mente jejich poradi a viditelnost. Pretazenim presunete polozky mezi sekcemi.
+          Organizujte položky do sekci, měňte jejich pořadí a viditelnost. Přetažením přesunete položky mezi sekcemi.
         </p>
       </div>
 
@@ -329,7 +329,7 @@ export default function SidebarSettingsPage() {
                     onClick={() => moveGroupDown(group.id)}
                     disabled={gIdx === groups.length - 1}
                     className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition disabled:opacity-20"
-                    title="Posunout sekci dolu"
+                    title="Posunout sekci dolů"
                   >
                     <ChevronDown className="w-3.5 h-3.5" />
                   </button>
@@ -356,7 +356,7 @@ export default function SidebarSettingsPage() {
                   onDragOver={(e) => handleItemDragOver(e, group.id, 0)}
                   onDrop={() => handleItemDrop(group.id, 0)}
                 >
-                  Pretahnete sem polozky
+                  Přetáhněte sem položky
                 </div>
               ) : (
                 <ItemList
@@ -384,7 +384,7 @@ export default function SidebarSettingsPage() {
         className="mt-4 flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-400 border border-dashed border-white/10 rounded-xl hover:border-blue-500/30 hover:text-blue-400 hover:bg-blue-500/5 transition w-full justify-center"
       >
         <Plus className="w-4 h-4" />
-        Pridat novou sekci
+        Přidat novou sekci
       </button>
 
       <div className="flex items-center gap-3 mt-8">
@@ -593,7 +593,7 @@ function ItemList({
                 onClick={(e) => { e.stopPropagation(); onMoveDown(item.key, groupId); }}
                 disabled={idx === items.length - 1}
                 className="p-1 rounded text-slate-600 hover:text-white hover:bg-white/[0.06] transition disabled:opacity-20"
-                title="Posunout dolu"
+                title="Posunout dolů"
               >
                 <ChevronDown className="w-3 h-3" />
               </button>

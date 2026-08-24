@@ -167,7 +167,7 @@ export function validateDesign(
 
   const hasSiren = designData.sirens.length > 0;
   if ((designData.detectors.length > 0 || (designData.motionSensors ?? []).length > 0) && !hasSiren) {
-    warnings.push({ type: 'warning', message: '\u017d\u00e1dn\u00e1 siren\u00e1 v n\u00e1vrhu' });
+    warnings.push({ type: 'warning', message: '\u017d\u00e1dn\u00e1 sirén\u00e1 v n\u00e1vrhu' });
   }
 
   if ((designData.keypads ?? []).length === 0) {

@@ -544,7 +544,7 @@ export default function ServiceTicketDetailDrawer({ ticketId, onClose, onUpdate 
               <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-500/20">
                 <div className="flex items-center gap-2 mb-3">
                   <FileText className="w-4 h-4 text-blue-400" />
-                  <span className="text-xs font-semibold text-blue-400">Data z formulare</span>
+                  <span className="text-xs font-semibold text-blue-400">Data z formuláře</span>
                 </div>
                 <div className="space-y-2">
                   {Object.entries(ticket.form_data).map(([key, value]) => {
@@ -554,7 +554,7 @@ export default function ServiceTicketDetailDrawer({ ticketId, onClose, onUpdate 
                       name: 'Jmeno a prijmeni',
                       email: 'E-mail',
                       phone: 'Telefon',
-                      message: 'Zprava',
+                      message: 'Zpráva',
                     }[key] || key.replace(/^field_\d+/, '').replace(/_/g, ' ') || key;
 
                     const isUrl = typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'));
@@ -569,7 +569,7 @@ export default function ServiceTicketDetailDrawer({ ticketId, onClose, onUpdate 
                             rel="noopener noreferrer"
                             className="text-sm text-blue-300 hover:text-blue-200 underline break-all"
                           >
-                            Zobrazit prilohu
+                            Zobrazit přílohu
                           </a>
                         ) : (
                           <span className="text-sm text-white break-all">{String(value)}</span>
@@ -590,7 +590,7 @@ export default function ServiceTicketDetailDrawer({ ticketId, onClose, onUpdate 
               </span>
               {ticket.reported_by_portal && (
                 <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-cyan-500/15 text-cyan-400">
-                  Z portalu
+                  Z portálu
                 </span>
               )}
             </div>
@@ -616,7 +616,7 @@ export default function ServiceTicketDetailDrawer({ ticketId, onClose, onUpdate 
                     <User className="w-5 h-5 text-cyan-400" />
                   </div>
                   <div>
-                    <p className="text-xs text-cyan-400/70">Nahlásil (z portalu)</p>
+                    <p className="text-xs text-cyan-400/70">Nahlásil (z portálu)</p>
                     <p className="text-sm font-semibold text-cyan-300">{portalUserName}</p>
                   </div>
                 </div>
@@ -630,11 +630,11 @@ export default function ServiceTicketDetailDrawer({ ticketId, onClose, onUpdate 
                     <Wrench className="w-5 h-5 text-amber-400" />
                   </div>
                   <div>
-                    <p className="text-xs text-amber-400/70">Planovany servis</p>
+                    <p className="text-xs text-amber-400/70">Plánovaný servis</p>
                     <p className="text-sm font-semibold text-amber-300">{scheduleInfo.type}</p>
                     {scheduleInfo.nextDate && (
                       <p className="text-xs text-amber-400/60 mt-0.5">
-                        Pristi termin: {new Date(scheduleInfo.nextDate).toLocaleDateString('cs-CZ')}
+                        Příští termín: {new Date(scheduleInfo.nextDate).toLocaleDateString('cs-CZ')}
                       </p>
                     )}
                   </div>
@@ -650,10 +650,10 @@ export default function ServiceTicketDetailDrawer({ ticketId, onClose, onUpdate 
                       <Link2 className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <p className="text-xs text-emerald-400/70">Propojeny servisni vyjezd</p>
+                      <p className="text-xs text-emerald-400/70">Propojeny servisní výjezd</p>
                       <p className="text-sm font-semibold text-emerald-300">{linkedServiceInfo.type_name}</p>
                       <p className="text-xs text-emerald-400/60 mt-0.5">
-                        Termin: {new Date(linkedServiceInfo.next_date).toLocaleDateString('cs-CZ')}
+                        Termín: {new Date(linkedServiceInfo.next_date).toLocaleDateString('cs-CZ')}
                       </p>
                     </div>
                   </div>

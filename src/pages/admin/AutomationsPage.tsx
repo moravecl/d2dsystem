@@ -115,7 +115,7 @@ export default function AutomationsPage() {
  toast('Chyba při vytváření.', 'error');
  return;
  }
- toast('Automatizace vytvorena.', 'success');
+ toast('Automatizace vytvořena.', 'success');
  }
 
  setShowForm(false);
@@ -134,7 +134,7 @@ export default function AutomationsPage() {
  await supabase.from('automation_logs').delete().eq('automation_id', id);
  await supabase.from('automations').delete().eq('id', id);
  setAutomations(prev => prev.filter(a => a.id !== id));
- toast('Automatizace smazana.', 'success');
+ toast('Automatizace smazána.', 'success');
  };
 
  const handleDuplicate = async (auto: AutomationRow) => {
@@ -152,7 +152,7 @@ export default function AutomationsPage() {
  created_by: (await supabase.auth.getUser()).data.user?.id,
  });
  if (!error) {
- toast('Automatizace duplikovana.', 'success');
+ toast('Automatizace duplikována.', 'success');
  loadAll();
  }
  };
@@ -235,7 +235,7 @@ export default function AutomationsPage() {
  !filterEntity ? 'bg-slate-700 text-white' : 'bg-white/[0.06] text-slate-500 hover:bg-white/[0.08]'
  }`}
  >
- Vse
+ Vše
  </button>
  {Object.entries(entityCounts).map(([entity, count]) => (
  <button

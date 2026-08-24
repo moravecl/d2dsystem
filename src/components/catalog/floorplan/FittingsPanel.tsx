@@ -239,7 +239,7 @@ export default function FittingsPanel({ circuits, cables, materials, scale, onUp
       >
         <Wrench className="w-3.5 h-3.5 text-amber-400" />
         <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 flex-1">
-          Tvarovky a prislusenstvi
+          Tvarovky a příslušenství
         </span>
         {totalItems > 0 && (
           <span className="text-[10px] font-extrabold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">
@@ -277,7 +277,7 @@ export default function FittingsPanel({ circuits, cables, materials, scale, onUp
 
           {autoFittings.length > 0 && (
             <div>
-              <div className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Vypoctene</div>
+              <div className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Vypočtené</div>
               <div className="space-y-1">
                 {Object.entries(groupedAuto).map(([trade, items]) => {
                   const info = CIRCUIT_TYPE_LABELS[trade as CircuitType];
@@ -320,7 +320,7 @@ export default function FittingsPanel({ circuits, cables, materials, scale, onUp
                             <button
                               onClick={() => { setEditingAutoId(f.materialId); setEditVal(f.quantity); }}
                               className="flex items-center gap-1 group"
-                              title="Upravit pocet"
+                              title="Upravit počet"
                             >
                               <span className="font-extrabold text-white group-hover:text-blue-400 transition">{f.quantity} {f.unit}</span>
                               {hasCorrection && (
@@ -334,7 +334,7 @@ export default function FittingsPanel({ circuits, cables, materials, scale, onUp
                               <button
                                 onClick={() => handleResetAutoQty(f.materialId)}
                                 className="p-0.5 text-slate-600 hover:text-amber-400 transition"
-                                title="Obnovit puvodni"
+                                title="Obnovit původní"
                               >
                                 <RotateCcw className="w-2.5 h-2.5" />
                               </button>
@@ -354,7 +354,7 @@ export default function FittingsPanel({ circuits, cables, materials, scale, onUp
 
           {allOverrides.length > 0 && (
             <div>
-              <div className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Rucne pridane</div>
+              <div className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Ručně přidané</div>
               <div className="space-y-1">
                 {allOverrides.map((f) => {
                   const info = CIRCUIT_TYPE_LABELS[f.trade as CircuitType];
@@ -413,7 +413,7 @@ export default function FittingsPanel({ circuits, cables, materials, scale, onUp
               {addingFor ? (
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 space-y-2">
                   <div className="text-[10px] font-extrabold text-amber-400">
-                    Pridat tvarovku k: {circuits.find((c) => c.id === addingFor)?.name}
+                    Přidat tvarovku k: {circuits.find((c) => c.id === addingFor)?.name}
                   </div>
                   <select
                     value={newName}
@@ -427,24 +427,24 @@ export default function FittingsPanel({ circuits, cables, materials, scale, onUp
                     }}
                     className="w-full px-2.5 py-1.5 rounded-lg border border-amber-300/30 bg-white/[0.06] text-xs font-extrabold focus:outline-none focus:ring-1 focus:ring-amber-400"
                   >
-                    <option value="">-- Vyber tvarovku --</option>
+                    <option value="">-- Výběr tvarovku --</option>
                     {materials
                       .filter((m) => m.material_type === 'fitting' && m.trade === circuits.find((c) => c.id === addingFor)?.type)
                       .map((m) => (
                         <option key={m.id} value={m.name}>{m.name} ({m.price_per_unit} Kc/{m.unit})</option>
                       ))}
-                    <option value="__custom">-- Vlastni --</option>
+                    <option value="__custom">-- Vlastní --</option>
                   </select>
                   {newName === '__custom' && (
                     <input
-                      placeholder="Nazev..."
+                      placeholder="Název..."
                       onChange={(e) => { if (e.target.value) setNewName(e.target.value); }}
                       className="w-full px-2.5 py-1.5 rounded-lg border border-amber-300/30 bg-white/[0.06] text-xs font-extrabold focus:outline-none focus:ring-1 focus:ring-amber-400"
                     />
                   )}
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <label className="text-[9px] text-slate-500 font-extrabold">Pocet</label>
+                      <label className="text-[9px] text-slate-500 font-extrabold">Počet</label>
                       <input
                         type="number"
                         min="1"
@@ -478,7 +478,7 @@ export default function FittingsPanel({ circuits, cables, materials, scale, onUp
                       disabled={!newName.trim() || newName === '__custom'}
                       className="flex-1 bg-amber-600 text-white py-1.5 rounded-lg font-extrabold text-xs hover:bg-amber-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1"
                     >
-                      <Check className="w-3 h-3" /> Pridat
+                      <Check className="w-3 h-3" /> Přidat
                     </button>
                     <button
                       onClick={() => { setAddingFor(null); setNewName(''); }}
@@ -500,7 +500,7 @@ export default function FittingsPanel({ circuits, cables, materials, scale, onUp
                       >
                         <Plus className="w-3 h-3" />
                         <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: info?.color }} />
-                        <span>Pridat tvarovku k {c.name}</span>
+                        <span>Přidat tvarovku k {c.name}</span>
                       </button>
                     );
                   })}

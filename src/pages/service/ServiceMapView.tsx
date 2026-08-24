@@ -389,9 +389,9 @@ export default function ServiceMapView() {
     setPlanSaving(false);
 
     if (anyError) {
-      toast('Nektery termin se nepodarilo ulozit', 'error');
+      toast('Některý termín se nepodařilo uložit', 'error');
     } else {
-      toast(`Naplanovan vyjezd na ${new Date(planDate).toLocaleDateString('cs-CZ')} pro ${ids.length} servis(u)`);
+      toast(`Naplánován výjezd na ${new Date(planDate).toLocaleDateString('cs-CZ')} pro ${ids.length} servis(u)`);
     }
 
     setShowPlanModal(false);
@@ -428,9 +428,9 @@ export default function ServiceMapView() {
     <div className="space-y-4">
       <div className="flex items-center gap-2 flex-wrap">
         {[
-          { key: 'all' as const, label: `Vsechny (${items.length})` },
-          { key: 'overdue' as const, label: `Po terminu (${items.filter(p => p.isOverdue).length})` },
-          { key: 'upcoming' as const, label: `Blizici se (${items.filter(p => p.isUpcoming).length})` },
+          { key: 'all' as const, label: `Všechny (${items.length})` },
+          { key: 'overdue' as const, label: `Po termínu (${items.filter(p => p.isOverdue).length})` },
+          { key: 'upcoming' as const, label: `Blížící se (${items.filter(p => p.isUpcoming).length})` },
         ].map(f => (
           <button
             key={f.key}
@@ -450,7 +450,7 @@ export default function ServiceMapView() {
               className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-cyan-600 text-white hover:bg-cyan-700 transition shadow-lg shadow-cyan-200 animate-fade-in"
             >
               <CalendarCheck className="w-4 h-4" />
-              Potvrdit vyber ({planSelectedProjectIds.size})
+              Potvrdit výběr ({planSelectedProjectIds.size})
             </button>
           )}
           <button
@@ -483,7 +483,7 @@ export default function ServiceMapView() {
           {planMode && (
             <div className="absolute top-3 left-3 z-20 px-3 py-1.5 rounded-lg bg-cyan-600 text-white text-xs font-bold shadow-lg flex items-center gap-1.5">
               <Truck className="w-3.5 h-3.5" />
-              PLANOVANI
+              PLÁNOVÁNÍ
               {planSelectedProjectIds.size > 0 && (
                 <span className="ml-1 px-1.5 py-0.5 rounded bg-white/20 text-[10px]">
                   {planSelectedProjectIds.size}
@@ -496,8 +496,8 @@ export default function ServiceMapView() {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
                 <MapPin className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-sm text-slate-400">Zadne servisy na mape</p>
-                <p className="text-xs text-slate-400 mt-1">Servisy musi mit vyplnenou adresu s GPS souradnicemi</p>
+                <p className="text-sm text-slate-400">Žádné servisy na mapě</p>
+                <p className="text-xs text-slate-400 mt-1">Servisy musí mít vyplněnou adresu s GPS souřadnicemi</p>
               </div>
             </div>
           ) : (
@@ -575,7 +575,7 @@ export default function ServiceMapView() {
                 <button onClick={() => handleZoom(-1)} className="w-8 h-8 bg-navy-800/60 rounded-lg shadow border border-white/10 flex items-center justify-center hover:bg-white/[0.04] transition">
                   <ZoomOut className="w-4 h-4 text-slate-300" />
                 </button>
-                <button onClick={handleFitAll} className="w-8 h-8 bg-navy-800/60 rounded-lg shadow border border-white/10 flex items-center justify-center hover:bg-white/[0.04] transition" title="Zobrazit vse">
+                <button onClick={handleFitAll} className="w-8 h-8 bg-navy-800/60 rounded-lg shadow border border-white/10 flex items-center justify-center hover:bg-white/[0.04] transition" title="Zobrazit vše">
                   <Locate className="w-4 h-4 text-slate-300" />
                 </button>
               </div>
@@ -592,17 +592,17 @@ export default function ServiceMapView() {
             <div className="bg-navy-800/60 rounded-xl border border-white/[0.08] p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <Truck className="w-5 h-5 text-cyan-600" />
-                <h3 className="text-sm font-bold text-cyan-800">Planovani vyjezdu</h3>
+                <h3 className="text-sm font-bold text-cyan-800">Plánování výjezdu</h3>
               </div>
 
               {selectedPlanItems.length === 0 ? (
                 <p className="text-xs text-slate-500">
-                  Klikejte na body v mape pro vyber servisu. Vybrane body zmeni barvu na azurovou.
+                  Klikejte na body v mapě pro výběr servisu. Vybrané body změní barvu na azurovou.
                 </p>
               ) : (
                 <div className="space-y-2">
                   <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                    Vybrane servisy ({selectedPlanItems.length})
+                    Vybrané servisy ({selectedPlanItems.length})
                   </div>
                   {selectedPlanItems.map(p => (
                     <div key={p.id} className="flex items-center gap-2 p-2 rounded-lg bg-cyan-500/10 border border-cyan-100">
@@ -625,7 +625,7 @@ export default function ServiceMapView() {
                     className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-cyan-600 hover:bg-cyan-700 rounded-xl transition mt-3"
                   >
                     <CalendarCheck className="w-4 h-4" />
-                    Naplanovat termin
+                    Naplánovat termín
                   </button>
                 </div>
               )}
@@ -640,11 +640,11 @@ export default function ServiceMapView() {
               <div className="grid grid-cols-3 gap-2">
                 <div className={`rounded-lg p-2 text-center ${selectedItem.isOverdue ? 'bg-red-500/10' : 'bg-white/[0.04]'}`}>
                   <div className={`text-lg font-extrabold ${selectedItem.isOverdue ? 'text-red-400' : 'text-slate-300'}`}>{selectedItem.isOverdue ? 1 : 0}</div>
-                  <div className="text-[10px] font-medium text-slate-500">Po terminu</div>
+                  <div className="text-[10px] font-medium text-slate-500">Po termínu</div>
                 </div>
                 <div className={`rounded-lg p-2 text-center ${selectedItem.isUpcoming ? 'bg-amber-500/10' : 'bg-white/[0.04]'}`}>
                   <div className={`text-lg font-extrabold ${selectedItem.isUpcoming ? 'text-amber-400' : 'text-slate-300'}`}>{selectedItem.isUpcoming ? 1 : 0}</div>
-                  <div className="text-[10px] font-medium text-slate-500">Blizici se</div>
+                  <div className="text-[10px] font-medium text-slate-500">Blížící se</div>
                 </div>
                 <div className={`rounded-lg p-2 text-center ${selectedItem.hasTicket ? 'bg-cyan-500/10' : 'bg-white/[0.04]'}`}>
                   <div className={`text-lg font-extrabold ${selectedItem.hasTicket ? 'text-cyan-600' : 'text-slate-300'}`}>{selectedItem.hasTicket ? 1 : 0}</div>
@@ -667,13 +667,13 @@ export default function ServiceMapView() {
                   onClick={() => navigate(`/projekty/${selectedItem.projectId}`)}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition"
                 >
-                  Otevrit projekt <ExternalLink className="w-3.5 h-3.5" />
+                  Otevřít projekt <ExternalLink className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
           ) : (
             <div className="bg-navy-800/60 rounded-xl border border-white/[0.08] p-5">
-              <p className="text-sm text-slate-400 text-center">Kliknete na bod na mape pro detail</p>
+              <p className="text-sm text-slate-400 text-center">Klikněte na bod na mapě pro detail</p>
             </div>
           )}
 
@@ -681,10 +681,10 @@ export default function ServiceMapView() {
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Legenda</h4>
             <div className="space-y-1.5">
               {[
-                { color: 'bg-red-500', label: 'Po terminu' },
-                { color: 'bg-orange-500', label: 'Blizici se (30 dni)' },
-                { color: 'bg-blue-500', label: 'V poradku' },
-                ...(planMode ? [{ color: 'bg-cyan-500', label: 'Vybrano k planovani' }] : []),
+                { color: 'bg-red-500', label: 'Po termínu' },
+                { color: 'bg-orange-500', label: 'Blížící se (30 dni)' },
+                { color: 'bg-blue-500', label: 'V pořádku' },
+                ...(planMode ? [{ color: 'bg-cyan-500', label: 'Vybráno k plánování' }] : []),
               ].map(item => (
                 <div key={item.label} className="flex items-center gap-2">
                   <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
@@ -723,11 +723,11 @@ export default function ServiceMapView() {
       <Modal
         open={showPlanModal}
         onClose={() => setShowPlanModal(false)}
-        title="Naplanovat servisni vyjezd"
+        title="Naplánovat servisní výjezd"
         size="lg"
         footer={
           <>
-            <button onClick={() => setShowPlanModal(false)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrusit</button>
+            <button onClick={() => setShowPlanModal(false)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrušit</button>
             <button
               onClick={handleSavePlan}
               disabled={planSaving || !planDate || planSelectedSchedules.size === 0}
@@ -736,7 +736,7 @@ export default function ServiceMapView() {
               {planSaving ? 'Ukladam...' : (
                 <>
                   <CalendarCheck className="w-4 h-4" />
-                  Ulozit do kalendare
+                  Uložit do kalendáře
                 </>
               )}
             </button>
@@ -760,12 +760,12 @@ export default function ServiceMapView() {
           ) : planSchedules.length === 0 ? (
             <div className="text-center py-6">
               <Calendar className="w-10 h-10 text-slate-200 mx-auto mb-2" />
-              <p className="text-sm text-slate-400">Vybrane projekty nemaji zadne aktivni servisy</p>
+              <p className="text-sm text-slate-400">Vybrané projekty nemají žádné aktivní servisy</p>
             </div>
           ) : (
             <>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2">Servisy pro vyjezd</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-2">Servisy pro výjezd</label>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {[...groupedSchedules.entries()].map(([projId, schedules]) => {
                     const projName = schedules[0]?.project_name || '';
@@ -796,11 +796,11 @@ export default function ServiceMapView() {
                                 <div className="text-sm font-semibold text-white">{s.service_type_name}</div>
                                 <div className="flex items-center gap-2 mt-0.5">
                                   <span className={`text-[11px] font-medium ${overdue ? 'text-red-400' : 'text-slate-500'}`}>
-                                    Termin: {new Date(s.next_date).toLocaleDateString('cs-CZ')}
+                                    Termín: {new Date(s.next_date).toLocaleDateString('cs-CZ')}
                                   </span>
                                   {s.scheduled_date && (
                                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-700 font-semibold">
-                                      Naplanovan: {new Date(s.scheduled_date).toLocaleDateString('cs-CZ')}
+                                      Naplánován: {new Date(s.scheduled_date).toLocaleDateString('cs-CZ')}
                                     </span>
                                   )}
                                 </div>
@@ -816,7 +816,7 @@ export default function ServiceMapView() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Datum vyjezdu *</label>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Datum výjezdu *</label>
                   <input
                     type="date"
                     value={planDate}
@@ -825,11 +825,11 @@ export default function ServiceMapView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Poznamka</label>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Poznámka</label>
                   <input
                     value={planNote}
                     onChange={e => setPlanNote(e.target.value)}
-                    placeholder="Cas, technik..."
+                    placeholder="Čas, technik..."
                     className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-200"
                   />
                 </div>

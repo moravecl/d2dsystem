@@ -53,7 +53,7 @@ export default function RolesPage() {
     if (error) {
       toast('Chyba: ' + error.message, 'error');
     } else {
-      toast('Role smazana');
+      toast('Role smazána');
       if (selectedRoleId === role.id) setSelectedRoleId(null);
       await loadRoles();
     }
@@ -357,10 +357,10 @@ function RoleDetailPanel({
             <h3 className="text-sm font-bold text-white">Přístup k modulům</h3>
             <div className="flex gap-1">
               <button onClick={() => toggleAllModules(true)} className="text-[10px] font-bold text-blue-400 hover:text-blue-400 px-2 py-1 rounded hover:bg-blue-500/100/10 transition">
-                Vse zapnout
+                Vše zapnout
               </button>
               <button onClick={() => toggleAllModules(false)} className="text-[10px] font-bold text-slate-400 hover:text-slate-400 px-2 py-1 rounded hover:bg-white/[0.04] transition">
-                Vse vypnout
+                Vše vypnout
               </button>
             </div>
           </div>
@@ -390,10 +390,10 @@ function RoleDetailPanel({
             <h3 className="text-sm font-bold text-white">Datová oprávnění</h3>
             <div className="flex gap-1">
               <button onClick={() => toggleAllData(true)} className="text-[10px] font-bold text-blue-400 hover:text-blue-400 px-2 py-1 rounded hover:bg-blue-500/100/10 transition">
-                Vse zapnout
+                Vše zapnout
               </button>
               <button onClick={() => toggleAllData(false)} className="text-[10px] font-bold text-slate-400 hover:text-slate-400 px-2 py-1 rounded hover:bg-white/[0.04] transition">
-                Vse vypnout
+                Vše vypnout
               </button>
             </div>
           </div>

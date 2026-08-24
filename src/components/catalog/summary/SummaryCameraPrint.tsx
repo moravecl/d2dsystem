@@ -240,7 +240,7 @@ export default function SummaryCameraPrint({ projectId }: Props) {
     <div className="page-break-before mt-10 print:mt-0">
       <div className="flex items-center gap-2 mb-4 border-b-2 border-blue-400 pb-2 print:mb-2">
         <Camera className="w-5 h-5 text-blue-500" />
-        <h2 className="text-lg font-extrabold text-white">Kamerovy system</h2>
+        <h2 className="text-lg font-extrabold text-white">Kamerový system</h2>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-5 print:gap-2 print:mb-3">
@@ -249,11 +249,11 @@ export default function SummaryCameraPrint({ projectId }: Props) {
           <div className="text-xl font-extrabold text-blue-400 print:text-base">{designData.cameras.length}</div>
         </div>
         <div className="bg-emerald-500/10 rounded-xl p-3 print:p-2 print:rounded-lg">
-          <div className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400">PoE prikon</div>
+          <div className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400">PoE příkon</div>
           <div className="text-xl font-extrabold text-emerald-400 print:text-base">{Math.round(totalPoe)} W</div>
         </div>
         <div className="bg-amber-500/10 rounded-xl p-3 print:p-2 print:rounded-lg">
-          <div className="text-[9px] font-extrabold uppercase tracking-widest text-amber-400">Uloziste</div>
+          <div className="text-[9px] font-extrabold uppercase tracking-widest text-amber-400">Úložiště</div>
           <div className="text-xl font-extrabold text-amber-400 print:text-base">{storage.totalStorageTb} TB</div>
           <div className="text-[10px] text-amber-500">{storage.recommendedHddCount}x{storage.recommendedHddSizeTb} TB HDD</div>
         </div>
@@ -265,7 +265,7 @@ export default function SummaryCameraPrint({ projectId }: Props) {
       </div>
 
       <div className="mb-5 print:mb-3">
-        <h3 className="text-sm font-extrabold text-slate-300 mb-2">Nahled rozmisteni</h3>
+        <h3 className="text-sm font-extrabold text-slate-300 mb-2">Náhled rozmístění</h3>
         <CameraDesignPreview designData={designData} catalog={catalog} />
       </div>
 
@@ -276,10 +276,10 @@ export default function SummaryCameraPrint({ projectId }: Props) {
         <table className="w-full text-xs border border-white/10 rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-white/[0.06]">
-              <th className="px-3 py-2 text-left font-extrabold text-slate-400">Oznaceni</th>
+              <th className="px-3 py-2 text-left font-extrabold text-slate-400">Označení</th>
               <th className="px-3 py-2 text-left font-extrabold text-slate-400">Model</th>
               <th className="px-3 py-2 text-left font-extrabold text-slate-400">Typ</th>
-              <th className="px-3 py-2 text-left font-extrabold text-slate-400">Rozliseni</th>
+              <th className="px-3 py-2 text-left font-extrabold text-slate-400">Rozlišení</th>
               <th className="px-3 py-2 text-right font-extrabold text-slate-400">FOV</th>
               <th className="px-3 py-2 text-right font-extrabold text-slate-400">IR</th>
             </tr>
@@ -313,7 +313,7 @@ export default function SummaryCameraPrint({ projectId }: Props) {
           <div className="bg-white/[0.04] rounded-xl border border-white/10 p-3 print:p-2 print:rounded-lg">
             <div className="flex items-center gap-1.5 mb-2">
               <HardDrive className="w-4 h-4 text-blue-500" />
-              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">NVR zaznamniky</h3>
+              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">NVR záznamníky</h3>
             </div>
             {designData.nvrs.map(nvr => {
               const model = nvrs.find(n => n.id === nvr.nvrId);
@@ -322,9 +322,9 @@ export default function SummaryCameraPrint({ projectId }: Props) {
                 <div key={nvr.id} className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs mb-2 last:mb-0">
                   <div className="text-slate-500">Model:</div>
                   <div className="font-extrabold text-slate-300">{model.name}</div>
-                  <div className="text-slate-500">Vyrobce:</div>
+                  <div className="text-slate-500">Výrobce:</div>
                   <div className="font-extrabold text-slate-300">{model.manufacturer}</div>
-                  <div className="text-slate-500">Kanaly / PoE:</div>
+                  <div className="text-slate-500">Kanály / PoE:</div>
                   <div className="font-extrabold text-slate-300">{model.channels} / {model.poe_ports} portu</div>
                   <div className="text-slate-500">HDD sloty:</div>
                   <div className="font-extrabold text-slate-300">{model.hdd_bays} (max {model.max_hdd_tb} TB)</div>
@@ -360,22 +360,22 @@ export default function SummaryCameraPrint({ projectId }: Props) {
         <div className="bg-white/[0.04] rounded-xl border border-white/10 p-3 print:p-2 print:rounded-lg">
           <div className="flex items-center gap-1.5 mb-2">
             <HardDrive className="w-4 h-4 text-amber-500" />
-            <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Uloziste</h3>
+            <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Úložiště</h3>
           </div>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
             <div className="text-slate-500">Kodek:</div>
             <div className="font-extrabold text-slate-300">{designData.storageConfig.codec.toUpperCase()}</div>
-            <div className="text-slate-500">Nahravani:</div>
+            <div className="text-slate-500">Nahrávání:</div>
             <div className="font-extrabold text-slate-300">{designData.storageConfig.recordingHoursPerDay}h / den</div>
             <div className="text-slate-500">Retence:</div>
             <div className="font-extrabold text-slate-300">{designData.storageConfig.retentionDays} dni</div>
             <div className="text-slate-500">Detekce pohybu:</div>
             <div className="font-extrabold text-slate-300">{designData.storageConfig.motionOnlyPct}%</div>
-            <div className="text-slate-500">Denni objem:</div>
+            <div className="text-slate-500">Denní objem:</div>
             <div className="font-extrabold text-slate-300">{storage.dailyStorageGb} GB</div>
-            <div className="text-slate-500">Celkovy objem:</div>
+            <div className="text-slate-500">Celkový objem:</div>
             <div className="font-extrabold text-slate-300">{storage.totalStorageTb} TB</div>
-            <div className="text-slate-500">Doporuceny HDD:</div>
+            <div className="text-slate-500">Doporučený HDD:</div>
             <div className="font-extrabold text-blue-400">{storage.recommendedHddCount}x {storage.recommendedHddSizeTb} TB</div>
           </div>
         </div>
@@ -384,7 +384,7 @@ export default function SummaryCameraPrint({ projectId }: Props) {
           <div className="bg-white/[0.04] rounded-xl border border-white/10 p-3 print:p-2 print:rounded-lg">
             <div className="flex items-center gap-1.5 mb-2">
               <Package className="w-4 h-4 text-slate-500" />
-              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Prislusenstvi</h3>
+              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Příslušenství</h3>
             </div>
             <div className="space-y-1">
               {designData.accessoryItems.map(ai => {

@@ -77,10 +77,10 @@ export interface SidebarGroup {
 
 export const DEFAULT_GROUPS: SidebarGroup[] = [
   { id: 'obchod', name: 'Obchod', description: 'CRM, leady a projekty' },
-  { id: 'realizace', name: 'Realizace', description: 'Stavba, ukoly a servis' },
-  { id: 'planovani', name: 'Planovani', description: 'Cas, kalendar a porady' },
+  { id: 'realizace', name: 'Realizace', description: 'Stavba, úkoly a servis' },
+  { id: 'planovani', name: 'Planovani', description: 'Čas, kalendář a porady' },
   { id: 'provoz', name: 'Provoz', description: 'Sklad, majetek a finance' },
-  { id: 'ostatni', name: 'Ostatni', description: 'Dokumenty, znalosti a dalsi' },
+  { id: 'ostatni', name: 'Ostatni', description: 'Dokumenty, znalosti a další' },
 ];
 
 const DEFAULT_GROUP_MAP: Record<string, string> = {

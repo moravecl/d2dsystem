@@ -40,7 +40,7 @@ export default function PortalLayout() {
       <div className="min-h-screen deep-bg flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
-          <span className="text-sm text-slate-400 font-medium">Nacitani...</span>
+          <span className="text-sm text-slate-400 font-medium">Načítání...</span>
         </div>
       </div>
     );
@@ -71,7 +71,7 @@ export default function PortalLayout() {
                     HouseSmart
                   </div>
                   <div className="text-[10px] font-medium text-slate-400 leading-tight">
-                    Klientsky portal
+                    Klientský portál
                   </div>
                 </div>
               </button>
@@ -105,7 +105,7 @@ export default function PortalLayout() {
               <button
                 onClick={signOut}
                 className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
-                title="Odhlasit se"
+                title="Odhlásit se"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -124,7 +124,7 @@ export default function PortalLayout() {
             HouseSmart &copy; {new Date().getFullYear()}
           </span>
           <span className="text-[11px] text-slate-500 font-medium">
-            Klientsky portal
+            Klientský portál
           </span>
         </div>
       </footer>

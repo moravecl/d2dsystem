@@ -203,7 +203,7 @@ export function ManualEntryModal({ open, onClose, onSaved, entry }: ManualProps)
               <input
                 value={clientSearch}
                 onChange={e => setClientSearch(e.target.value)}
-                placeholder="Hledat podle jmena, emailu nebo ICO..."
+                placeholder="Hledat podle jména, emailu nebo IČO..."
                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-white/10 bg-white/[0.04] text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
             </div>
@@ -230,7 +230,7 @@ export function ManualEntryModal({ open, onClose, onSaved, entry }: ManualProps)
             )}
             {showClientDropdown && clientSearch.length >= 2 && clientResults.length === 0 && !searchingClients && (
               <div className="absolute z-20 left-0 right-0 mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-xl px-3 py-2 text-sm text-slate-400">
-                Zadny klient nenalezen
+                Žádný klient nenalezen
               </div>
             )}
           </div>
@@ -243,7 +243,7 @@ export function ManualEntryModal({ open, onClose, onSaved, entry }: ManualProps)
                   onClick={() => setForm(f => ({ ...f, client_name: '', client_address: '', client_email: '', client_phone: '', client_ico: '', client_dic: '' }))}
                   className="text-xs text-slate-400 hover:text-red-400 transition"
                 >
-                  Zrusit
+                  Zrušit
                 </button>
               </div>
               <div className="text-sm text-white font-medium">{form.client_name}</div>
@@ -251,7 +251,7 @@ export function ManualEntryModal({ open, onClose, onSaved, entry }: ManualProps)
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
                 {form.client_email && <span>{form.client_email}</span>}
                 {form.client_phone && <span>{form.client_phone}</span>}
-                {form.client_ico && <span>ICO: {form.client_ico}</span>}
+                {form.client_ico && <span>IČO: {form.client_ico}</span>}
                 {form.client_dic && <span>DIC: {form.client_dic}</span>}
               </div>
             </div>

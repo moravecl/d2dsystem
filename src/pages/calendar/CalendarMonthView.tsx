@@ -180,7 +180,7 @@ export default function CalendarMonthView({ currentDate, events, spanningEvents 
                           onClick={() => onDayClick(dateStr)}
                           className="text-[9px] text-blue-500 font-semibold px-1 hover:underline"
                         >
-                          +{dayEvents.length - 3} dalsich
+                          +{dayEvents.length - 3} dalších
                         </button>
                       )}
                     </div>

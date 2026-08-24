@@ -13,7 +13,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   draft: { label: 'Koncept', color: 'text-slate-400', bg: 'bg-white/[0.06]', icon: <FileEdit className="w-3 h-3" /> },
   in_progress: { label: 'Rozpracovaný', color: 'text-amber-400', bg: 'bg-amber-500/10', icon: <Clock className="w-3 h-3" /> },
   completed: { label: 'Dokončený', color: 'text-emerald-400', bg: 'bg-emerald-500/10', icon: <CheckCircle2 className="w-3 h-3" /> },
-  sent: { label: 'Odeslaný', color: 'text-blue-400', bg: 'bg-blue-500/10', icon: <Send className="w-3 h-3" /> },
+  sent: { label: 'Odesláný', color: 'text-blue-400', bg: 'bg-blue-500/10', icon: <Send className="w-3 h-3" /> },
 };
 
 interface ProjectGroup {
@@ -213,7 +213,7 @@ export default function ProjectsDashboard() {
               { key: 'draft', label: 'Koncepty' },
               { key: 'in_progress', label: 'Rozpracované' },
               { key: 'completed', label: 'Dokončené' },
-              { key: 'sent', label: 'Odeslané' },
+              { key: 'sent', label: 'Odesláné' },
             ].map((f) => (
               <button
                 key={f.key}
@@ -352,7 +352,7 @@ export default function ProjectsDashboard() {
                                   <option value="draft">Koncept</option>
                                   <option value="in_progress">Rozpracovaný</option>
                                   <option value="completed">Dokončený</option>
-                                  <option value="sent">Odeslaný</option>
+                                  <option value="sent">Odesláný</option>
                                 </select>
                                 <button
                                   onClick={(e) => { e.stopPropagation(); handleOpenVersion(version.id); }}

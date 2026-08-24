@@ -233,7 +233,7 @@ export default function DesignerConfigPage() {
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             <Layers className="w-5 h-5" />
-            Schéma
+            Schémá
           </button>
         </div>
       </div>

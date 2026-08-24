@@ -140,7 +140,7 @@ export default function CameraDesignerPage() {
       return;
     }
     if (imageLayerNeedsScale && newMode !== 'navigate' && newMode !== 'set_scale') {
-      toast('Nejdrive nastavte meritko pro obrazek', 'error');
+      toast('Nejdříve nastavte měřítko pro obrázek', 'error');
       setMode('set_scale');
       return;
     }
@@ -170,7 +170,7 @@ export default function CameraDesignerPage() {
   const handlePlaceCamera = useCallback((x: number, y: number) => {
     if (!selectedCameraModelId) return;
     if (imageLayerNeedsScale) {
-      toast('Nejdrive nastavte meritko', 'error');
+      toast('Nejdříve nastavte měřítko', 'error');
       return;
     }
     const modelId = selectedCameraModelId;
@@ -220,7 +220,7 @@ export default function CameraDesignerPage() {
     setDrawingRoute([]);
     setActiveRouteSetup(null);
     setMode('navigate');
-    toast('Trasa ulozena');
+    toast('Trasa uložena');
   }, [drawingRoute, activeRouteSetup, activeLayerIndex, updateDesignData, toast]);
 
   const handlePlaceNvr = useCallback((x: number, y: number) => {
@@ -271,7 +271,7 @@ export default function CameraDesignerPage() {
     setShowScaleInput(false);
     setPendingScaleForImage(false);
     setMode('navigate');
-    toast('Meritko nastaveno');
+    toast('Měřítko nastaveno');
   };
 
   const handleDeletePlacedCamera = useCallback((id: string) => {
@@ -350,7 +350,7 @@ export default function CameraDesignerPage() {
     setSelectedCameraModelId(id);
     if (id) {
       if (imageLayerNeedsScale) {
-        toast('Nejdrive nastavte meritko pro obrazek', 'error');
+        toast('Nejdříve nastavte měřítko pro obrázek', 'error');
         setMode('set_scale');
         return;
       }
@@ -363,7 +363,7 @@ export default function CameraDesignerPage() {
     setSelectedNvrId(id);
     if (id) {
       if (imageLayerNeedsScale) {
-        toast('Nejdrive nastavte meritko pro obrazek', 'error');
+        toast('Nejdříve nastavte měřítko pro obrázek', 'error');
         setMode('set_scale');
         return;
       }
@@ -376,7 +376,7 @@ export default function CameraDesignerPage() {
     setSelectedSwitchId(id);
     if (id) {
       if (imageLayerNeedsScale) {
-        toast('Nejdrive nastavte meritko pro obrazek', 'error');
+        toast('Nejdříve nastavte měřítko pro obrázek', 'error');
         setMode('set_scale');
         return;
       }
@@ -388,7 +388,7 @@ export default function CameraDesignerPage() {
   const handleImageLayerNeedsScale = useCallback(() => {
     setPendingScaleForImage(true);
     setMode('set_scale');
-    toast('Nastavte meritko - kliknete na dva body se znamou vzdalenosti');
+    toast('Nastavte měřítko - klikněte na dva body se známou vzdálenosti');
   }, [toast]);
 
   const handleExportPdf = () => {
@@ -407,7 +407,7 @@ export default function CameraDesignerPage() {
       if (key === 'v') { setMode('navigate'); setActiveRouteSetup(null); setDrawingRoute([]); }
       if (key === 'c') {
         if (imageLayerNeedsScale) {
-          toast('Nejdrive nastavte meritko pro obrazek', 'error');
+          toast('Nejdříve nastavte měřítko pro obrázek', 'error');
           setMode('set_scale');
         } else {
           setMode('place_camera');
@@ -471,9 +471,9 @@ export default function CameraDesignerPage() {
       summaryTotalPrice: Math.round(price),
     });
     if (result) {
-      toast('Verze ulozena');
+      toast('Verze uložena');
     } else {
-      toast('Chyba pri ukladani verze');
+      toast('Chyba při ukládání verze');
     }
   }, [design, saveDesign, createVersion, catalog, getDesignData, toast]);
 
@@ -498,7 +498,7 @@ export default function CameraDesignerPage() {
         </button>
         <div className="flex items-center gap-2">
           <Camera className="w-5 h-5 text-blue-400" />
-          <h1 className="text-sm font-bold text-white">Kamerovy system</h1>
+          <h1 className="text-sm font-bold text-white">Kamerový system</h1>
         </div>
         {saving && <Loader2 className="w-4 h-4 animate-spin text-blue-400 ml-2" />}
 
@@ -536,7 +536,7 @@ export default function CameraDesignerPage() {
 
       {showScaleInput && (
         <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-navy-800/60 rounded-xl shadow-2xl border border-white/10 p-4 flex items-center gap-3">
-          <span className="text-sm font-semibold text-slate-300">Realna vzdalenost:</span>
+          <span className="text-sm font-semibold text-slate-300">Reálná vzdálenost:</span>
           <input
             type="number"
             step={0.1}
@@ -550,13 +550,13 @@ export default function CameraDesignerPage() {
           />
           <span className="text-sm text-slate-500">m</span>
           <button onClick={confirmScale} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition">OK</button>
-          <button onClick={() => { setScalePoints([]); setShowScaleInput(false); setMode('navigate'); }} className="px-3 py-2 text-sm text-slate-500 hover:text-slate-300">Zrusit</button>
+          <button onClick={() => { setScalePoints([]); setShowScaleInput(false); setMode('navigate'); }} className="px-3 py-2 text-sm text-slate-500 hover:text-slate-300">Zrušit</button>
         </div>
       )}
 
       {pendingScaleForImage && !showScaleInput && mode === 'set_scale' && (
         <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-amber-500/10 rounded-xl shadow-lg border border-amber-300 px-4 py-3 text-sm font-semibold text-amber-800">
-          Kliknete na prvni bod meritka na obrazku
+          Klikněte na první bod měřítka na obrázku
         </div>
       )}
 
@@ -566,7 +566,7 @@ export default function CameraDesignerPage() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <Cable className="w-5 h-5 text-amber-500" />
-                <h3 className="text-sm font-bold text-white">Nova trasa kabelu</h3>
+                <h3 className="text-sm font-bold text-white">Nová trasa kabelu</h3>
               </div>
               <button onClick={() => setShowRouteSetup(false)} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-white/[0.06] transition">
                 <X className="w-4 h-4" />
@@ -574,12 +574,12 @@ export default function CameraDesignerPage() {
             </div>
             <div className="p-5 space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase block mb-1.5">Nazev trasy</label>
+                <label className="text-xs font-bold text-slate-400 uppercase block mb-1.5">Název trasy</label>
                 <input
                   type="text"
                   value={routeSetup.name}
                   onChange={e => setRouteSetup(p => ({ ...p, name: e.target.value }))}
-                  placeholder="napr. Hlavni trasa, Garaz, Vstup..."
+                  placeholder="např. Hlavní trasa, Garáž, Vstup..."
                   className="w-full border border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
                   autoFocus
                 />
@@ -588,7 +588,7 @@ export default function CameraDesignerPage() {
                 <label className="text-xs font-bold text-slate-400 uppercase block mb-1.5">Typ kabelu</label>
                 {catalog.cables.length === 0 ? (
                   <p className="text-xs text-red-500 bg-red-500/10 border border-red-200 rounded-xl px-3 py-2">
-                    Zadne kabely v katalogu. Pridejte je v Admin / Kamerovy katalog.
+                    Žádné kabely v katalogu. Přidejte je v Admin / Kamerový katalog.
                   </p>
                 ) : (
                   <div className="space-y-1.5">
@@ -615,14 +615,14 @@ export default function CameraDesignerPage() {
             </div>
             <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-white/[0.06] bg-white/[0.04]/50 rounded-b-2xl">
               <button onClick={() => setShowRouteSetup(false)} className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-300 transition">
-                Zrusit
+                Zrušit
               </button>
               <button
                 onClick={confirmRouteSetup}
                 disabled={!routeSetup.cableTypeId}
                 className="flex items-center gap-2 px-5 py-2.5 bg-amber-500/100 text-white rounded-xl text-xs font-bold hover:bg-amber-600 disabled:opacity-40 transition"
               >
-                <Cable className="w-3.5 h-3.5" /> Zacit kreslit
+                <Cable className="w-3.5 h-3.5" /> Začít kreslit
               </button>
             </div>
           </div>
@@ -679,7 +679,7 @@ export default function CameraDesignerPage() {
                   {activeRouteSetup.name && <span className="text-amber-400 ml-1">({activeRouteSetup.name})</span>}
                   <span className="text-slate-400 ml-1">
                     · {catalog.cables.find(c => c.id === activeRouteSetup.cableTypeId)?.name ?? 'kabel'}
-                    · Dvojklik pro dokonceni
+                    · Dvojklik pro dokončení
                   </span>
                 </>
               )}
@@ -687,7 +687,7 @@ export default function CameraDesignerPage() {
               {mode === 'place_switch' && 'Kliknete na mapu pro umisteni switche'}
               {mode === 'set_scale' && `Kliknete na ${scalePoints.length === 0 ? 'prvni' : 'druhy'} bod meritka`}
               {mode === 'measure' && 'Kliknete na dva body pro mereni vzdalenosti'}
-              <span className="text-slate-400 ml-2">· ESC pro zruseni</span>
+              <span className="text-slate-400 ml-2">· ESC pro zrušení</span>
             </div>
           )}
         </div>

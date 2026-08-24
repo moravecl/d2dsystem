@@ -727,7 +727,7 @@ function DiaryEntryForm({
           ))}
         </div>
         {entryTempWorkers.length > 0 && (
-          <p className="text-[10px] text-slate-500 mt-1">Brigádníci z výkazu jsou automaticky zahrnuti</p>
+          <p className="text-[10px] text-slate-500 mt-1">Brigádníci z výkazu jsou automaticky zahrnutí</p>
         )}
       </div>
       <div>

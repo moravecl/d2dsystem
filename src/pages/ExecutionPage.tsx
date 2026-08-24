@@ -47,11 +47,11 @@ function loadSavedFilters(): Set<JobStatus> {
 }
 
 const sortOptions: { key: SortKey; label: string }[] = [
-  { key: 'updated', label: 'Posledni aktivita' },
-  { key: 'name', label: 'Nazev A-Z' },
+  { key: 'updated', label: 'Poslední aktivita' },
+  { key: 'name', label: 'Název A-Z' },
   { key: 'deadline', label: 'Deadline' },
-  { key: 'hours', label: 'Odpracovano' },
-  { key: 'budget', label: 'Rozpocet' },
+  { key: 'hours', label: 'Odpracováno' },
+  { key: 'budget', label: 'Rozpočet' },
 ];
 
 function sortProjects(projects: ExecutionProject[], key: SortKey): ExecutionProject[] {
@@ -195,7 +195,7 @@ export default function ExecutionPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Hledat zakazku..."
+              placeholder="Hledat zakázku..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 bg-navy-800/60 border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
@@ -275,8 +275,8 @@ export default function ExecutionPage() {
       ) : filtered.length === 0 && projects.length > 0 ? (
         <div className="bg-navy-800/60 rounded-xl border border-white/[0.08] p-12 text-center">
           <Search className="w-10 h-10 text-slate-200 mx-auto mb-3" />
-          <p className="text-sm font-medium text-slate-500">Zadna zakazka neodpovida hledani</p>
-          <p className="text-xs text-slate-400 mt-1">Zkuste zmenit vyhledavaci dotaz</p>
+          <p className="text-sm font-medium text-slate-500">Žádná zakázka neodpovídá hledání</p>
+          <p className="text-xs text-slate-400 mt-1">Zkuste změnit vyhledávací dotaz</p>
           <button
             onClick={() => setSearch('')}
             className="mt-4 px-4 py-2 text-sm font-medium text-teal-600 hover:text-teal-700 hover:bg-teal-500/10 rounded-lg transition-colors"
@@ -289,15 +289,15 @@ export default function ExecutionPage() {
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-teal-100/50">
             <HardHat className="w-10 h-10 text-teal-600" />
           </div>
-          <p className="text-lg font-bold text-slate-300 mb-2">Zadne bezici zakazky</p>
+          <p className="text-lg font-bold text-slate-300 mb-2">Žádné běžící zakázky</p>
           <p className="text-sm text-slate-500 max-w-md mx-auto">
-            Projekty ve stavu "Realizace" se zobrazi na tomto prehledu. Presunte projekt do faze realizace pro jeho zobrazeni.
+            Projekty ve stavu "Realizace" se zobrazí na tomto přehledu. Přesuňte projekt do fáze realizace pro jeho zobrazení.
           </p>
           <button
             onClick={() => navigate('/projekty')}
             className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-medium hover:bg-teal-700 transition-colors "
           >
-            Zobrazit vsechny projekty
+            Zobrazit všechny projekty
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -318,12 +318,12 @@ export default function ExecutionPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-white/[0.04] border-b border-white/10">
-                  <th className="text-left py-3 px-4 font-semibold text-slate-400">Zakazka</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-400">Zakázka</th>
                   <th className="text-left py-3 px-4 font-semibold text-slate-400 hidden md:table-cell">Adresa</th>
-                  <th className="text-center py-3 px-4 font-semibold text-slate-400">Cas</th>
-                  <th className="text-center py-3 px-4 font-semibold text-slate-400 hidden sm:table-cell">Rozpocet</th>
-                  <th className="text-center py-3 px-4 font-semibold text-slate-400 hidden sm:table-cell">Denik</th>
-                  <th className="text-center py-3 px-4 font-semibold text-slate-400 hidden lg:table-cell">Ukoly</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-400">Čas</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-400 hidden sm:table-cell">Rozpočet</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-400 hidden sm:table-cell">Deník</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-400 hidden lg:table-cell">Úkoly</th>
                   <th className="text-left py-3 px-4 font-semibold text-slate-400 hidden lg:table-cell">Deadline</th>
                   <th className="text-center py-3 px-4 font-semibold text-slate-400 w-10"></th>
                 </tr>
@@ -422,7 +422,7 @@ export default function ExecutionPage() {
 
       {!loading && filtered.length > 0 && (
         <p className="text-xs text-slate-400 text-center pb-2">
-          Zobrazeno {filtered.length} z {projects.length} zakazek
+          Zobrazeno {filtered.length} z {projects.length} zakázek
         </p>
       )}
     </div>

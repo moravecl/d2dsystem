@@ -76,7 +76,7 @@ interface LinkedDoc {
 
 const STATUS_CFG: Record<string, { label: string; color: string; bg: string; icon: typeof CheckCircle2 }> = {
   draft: { label: 'Koncept', color: 'text-slate-400', bg: 'bg-white/[0.06]', icon: FileText },
-  sent: { label: 'Odeslaná', color: 'text-blue-400', bg: 'bg-blue-500/10', icon: Send },
+  sent: { label: 'Odesláná', color: 'text-blue-400', bg: 'bg-blue-500/10', icon: Send },
   partial: { label: 'Částečně uhrazena', color: 'text-amber-400', bg: 'bg-amber-500/10', icon: Clock },
   paid: { label: 'Zaplacená', color: 'text-emerald-400', bg: 'bg-emerald-500/10', icon: CheckCircle2 },
   overdue: { label: 'Po splatnosti', color: 'text-red-400', bg: 'bg-red-500/10', icon: AlertCircle },

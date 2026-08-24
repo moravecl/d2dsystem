@@ -101,7 +101,7 @@ export default function CategoriesPage() {
  if (!confirm('Opravdu smazat kategorii? Smaže se i všechny položky v ní.')) return;
  const { error } = await supabase.from('categories').delete().eq('id', id);
  if (error) toast(error.message, 'error');
- else { toast('Smazano'); load(); }
+ else { toast('Smazáno'); load(); }
  };
 
  const moveOrder = async (cat: Category, dir: -1 | 1) => {
@@ -310,7 +310,7 @@ export default function CategoriesPage() {
  value={subForm.name}
  onChange={(e) => setSubForm({ name: e.target.value, slug: slugify(e.target.value) })}
  className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/[0.06]/[0.06] text-white placeholder:text-slate-500 font-semibold text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500/50"
- placeholder="Nazev podkategorie"
+ placeholder="Název podkategorie"
  autoFocus
  />
  </div>
@@ -341,7 +341,7 @@ export default function CategoriesPage() {
 
  {subs.length === 0 && showSubForm !== cat.id && (
  <div className="text-xs text-slate-500 py-2 px-4">
- Zadne podkategorie
+ Žádné podkategorie
  </div>
  )}
  </div>

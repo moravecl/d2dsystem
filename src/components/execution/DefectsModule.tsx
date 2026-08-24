@@ -20,16 +20,16 @@ interface Defect {
 }
 
 const SEVERITY: Record<string, { label: string; color: string }> = {
-  low: { label: 'Nizka', color: 'text-slate-500 bg-white/[0.06]' },
-  medium: { label: 'Stredni', color: 'text-amber-400 bg-amber-500/10' },
-  high: { label: 'Vysoka', color: 'text-orange-600 bg-orange-500/10' },
-  critical: { label: 'Kriticka', color: 'text-red-400 bg-red-500/10' },
+  low: { label: 'Nízká', color: 'text-slate-500 bg-white/[0.06]' },
+  medium: { label: 'Střední', color: 'text-amber-400 bg-amber-500/10' },
+  high: { label: 'Vysoká', color: 'text-orange-600 bg-orange-500/10' },
+  critical: { label: 'Kritická', color: 'text-red-400 bg-red-500/10' },
 };
 
 const STATUS: Record<string, { label: string; color: string }> = {
-  open: { label: 'Otevrena', color: 'text-red-400 bg-red-500/10' },
-  in_progress: { label: 'Reseno', color: 'text-blue-400 bg-blue-500/10' },
-  resolved: { label: 'Vyresena', color: 'text-emerald-400 bg-emerald-500/10' },
+  open: { label: 'Otevřena', color: 'text-red-400 bg-red-500/10' },
+  in_progress: { label: 'Řešeno', color: 'text-blue-400 bg-blue-500/10' },
+  resolved: { label: 'Vyřešena', color: 'text-emerald-400 bg-emerald-500/10' },
 };
 
 export default function DefectsModule({ projectId }: { projectId: string }) {
@@ -89,7 +89,7 @@ export default function DefectsModule({ projectId }: { projectId: string }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-sm text-slate-500">{defects.length} vad celkem</span>
-          {openCount > 0 && <span className="text-xs font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded">{openCount} otevrenych</span>}
+          {openCount > 0 && <span className="text-xs font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded">{openCount} otevřených</span>}
         </div>
         <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition">
           <Plus className="w-4 h-4" /> Nahlásit vadu
@@ -111,8 +111,8 @@ export default function DefectsModule({ projectId }: { projectId: string }) {
                 </div>
                 {d.description && <p className="text-xs text-slate-500 mt-1">{d.description}</p>}
                 <div className="flex items-center gap-3 mt-2 text-[10px] text-slate-400">
-                  <span>Nahlasil: {getProfileName(d.reported_by)}</span>
-                  {d.assigned_to && <span>Resitel: {getProfileName(d.assigned_to)}</span>}
+                  <span>Nahlásil: {getProfileName(d.reported_by)}</span>
+                  {d.assigned_to && <span>Řešitel: {getProfileName(d.assigned_to)}</span>}
                   <span>{new Date(d.created_at).toLocaleDateString('cs-CZ')}</span>
                 </div>
               </div>
@@ -142,8 +142,8 @@ export default function DefectsModule({ projectId }: { projectId: string }) {
           <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Název vady *</label><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20" /></div>
           <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Popis</label><textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none" /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Zavaznost</label><select value={form.severity} onChange={e => setForm({ ...form, severity: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20">{Object.entries(SEVERITY).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></div>
-            <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Resitel</label><select value={form.assigned_to} onChange={e => setForm({ ...form, assigned_to: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"><option value="">-</option>{profiles.map(p => <option key={p.id} value={p.id}>{p.display_name || p.email}</option>)}</select></div>
+            <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Závažnost</label><select value={form.severity} onChange={e => setForm({ ...form, severity: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20">{Object.entries(SEVERITY).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></div>
+            <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">Řešitel</label><select value={form.assigned_to} onChange={e => setForm({ ...form, assigned_to: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"><option value="">-</option>{profiles.map(p => <option key={p.id} value={p.id}>{p.display_name || p.email}</option>)}</select></div>
           </div>
           <div><label className="block text-xs font-semibold text-slate-400 mb-1.5">URL fotky</label><input value={form.photo_url} onChange={e => setForm({ ...form, photo_url: e.target.value })} placeholder="https://..." className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20" /></div>
         </div>

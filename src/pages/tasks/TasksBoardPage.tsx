@@ -317,11 +317,11 @@ export default function TasksBoardPage() {
           <table className="w-full">
             <thead className="bg-white/[0.04] border-b border-white/[0.08]">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Nazev</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Název</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider w-32">Stav</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider w-28">Priorita</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider w-40">Prirazeno</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider w-32">Termin</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider w-40">Přiřazeno</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider w-32">Termín</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider w-40">Projekt</th>
                 <th className="px-4 py-3 w-24"></th>
               </tr>
@@ -329,7 +329,7 @@ export default function TasksBoardPage() {
             <tbody className="divide-y divide-white/[0.06]">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-sm text-slate-500">Zadne ukoly</td>
+                  <td colSpan={7} className="px-4 py-12 text-center text-sm text-slate-500">Žádné úkoly</td>
                 </tr>
               ) : (
                 filtered.map(task => {

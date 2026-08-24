@@ -63,16 +63,16 @@ interface WarehouseItem {
 const TRADE_META: Record<string, { label: string; accent: string; bg: string; Icon: typeof Zap }> = {
   electric: { label: 'Elektro', accent: '#eab308', bg: '#1a1500', Icon: Zap },
   water: { label: 'Voda', accent: '#3b82f6', bg: '#0d1a2d', Icon: Droplets },
-  heating: { label: 'Topeni', accent: '#ef4444', bg: '#1a0d0d', Icon: Flame },
+  heating: { label: 'Topení', accent: '#ef4444', bg: '#1a0d0d', Icon: Flame },
   recuperation: { label: 'Rekuperace', accent: '#22c55e', bg: '#0d1a10', Icon: Wind },
-  lighting: { label: 'Osvetleni', accent: '#f59e0b', bg: '#1a1400', Icon: Lightbulb },
+  lighting: { label: 'Osvětlení', accent: '#f59e0b', bg: '#1a1400', Icon: Lightbulb },
 };
 
 const STATUS_BADGE: Record<string, { label: string; cls: string; Icon: typeof CheckCircle2 }> = {
-  approved: { label: 'Schvaleno', cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', Icon: CheckCircle2 },
-  presented: { label: 'Predlozeno', cls: 'text-blue-400 bg-blue-500/10 border-blue-500/20', Icon: Eye },
-  returned: { label: 'Vraceno', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/20', Icon: RotateCcw },
-  draft: { label: 'Rozpracovana', cls: 'text-slate-400 bg-white/[0.06] border-white/[0.08]', Icon: FileText },
+  approved: { label: 'Schváleno', cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', Icon: CheckCircle2 },
+  presented: { label: 'Předloženo', cls: 'text-blue-400 bg-blue-500/10 border-blue-500/20', Icon: Eye },
+  returned: { label: 'Vráceno', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/20', Icon: RotateCcw },
+  draft: { label: 'Rozpracována', cls: 'text-slate-400 bg-white/[0.06] border-white/[0.08]', Icon: FileText },
 };
 
 type AddMode = 'quote' | 'catalog' | 'custom';
@@ -215,8 +215,8 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
     if (!user) return;
     const amount = qty * unitPrice;
     const { data: vp } = await supabase.from('viceprace').insert({
-      project_id: projectId, title: `Viceprace: ${name}`,
-      description: `Automaticky vytvoreno ze spotreby materialu mimo plan`,
+      project_id: projectId, title: `Vícepráce: ${name}`,
+      description: `Automaticky vytvořeno ze spotřeby materialu mimo plán`,
       status: 'pending', requested_by: '', amount, created_by: user.id,
     }).select('id').maybeSingle();
     if (vp) {
@@ -288,7 +288,7 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Smazat zaznam?')) return;
+    if (!confirm('Smazat záznam?')) return;
     const entry = entries.find(e => e.id === id);
     await supabase.from('job_material_entries').delete().eq('id', id);
     if (entry) await returnToWarehouse(entry);
@@ -501,7 +501,7 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
           <div className="rounded-2xl border border-white/[0.08] bg-navy-800/60 backdrop-blur-sm p-4">
             <div className="flex items-center gap-2 mb-1">
               <DollarSign className="w-4 h-4 text-slate-400" />
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Předpokládané náklady</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Předpokládaňé náklady</span>
             </div>
             <p className="text-xl font-extrabold text-white tabular-nums">
               {fmtPrice(overallCosts.expected)} Kc
@@ -589,7 +589,7 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
                 </div>
                 {(expected > 0 || actual > 0) && (
                   <div className="flex items-center gap-3 text-[10px] font-bold tabular-nums">
-                    <span className="text-slate-400">{fmtPrice(expected)} Kc plan</span>
+                    <span className="text-slate-400">{fmtPrice(expected)} Kc plán</span>
                     <span className="text-slate-300">{fmtPrice(actual)} Kc skut.</span>
                     {groupDiff !== 0 && (
                       <span className={groupDiff > 0 ? 'text-red-400' : 'text-emerald-400'}>
@@ -608,8 +608,8 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
                   <th className="px-4 py-2 text-right font-semibold w-20">Plán</th>
                   <th className="px-4 py-2 text-right font-semibold w-20">Skutečnost</th>
                   <th className="px-4 py-2 text-center font-semibold w-28">Postup</th>
-                  <th className="px-4 py-2 text-right font-semibold w-24">Nakl. plán</th>
-                  <th className="px-4 py-2 text-right font-semibold w-24">Nakl. skut.</th>
+                  <th className="px-4 py-2 text-right font-semibold w-24">Nákl. plán</th>
+                  <th className="px-4 py-2 text-right font-semibold w-24">Nákl. skut.</th>
                   <th className="px-4 py-2 text-right font-semibold w-20">Odch.</th>
                 </tr>
               </thead>
@@ -643,7 +643,7 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
                                 <span className="font-medium text-slate-300">{name}</span>
                                 {data.isUnplanned && (
                                   <span className="inline-flex items-center gap-0.5 text-[9px] font-extrabold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full">
-                                    <AlertTriangle className="w-2.5 h-2.5" /> Viceprace
+                                    <AlertTriangle className="w-2.5 h-2.5" /> Vícepráce
                                   </span>
                                 )}
                               </div>
@@ -711,7 +711,7 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
                   <span className="text-slate-400 ml-2">{e.actual_qty} {e.unit}</span>
                   {e.is_unplanned && (
                     <span className="ml-2 text-[9px] font-extrabold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-full border border-amber-500/20">
-                      Viceprace
+                      Vícepráce
                     </span>
                   )}
                   {srcQuote && (

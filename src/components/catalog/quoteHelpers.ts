@@ -808,7 +808,7 @@ export function buildQuoteSectionsFromMountingGroups(
       warnings.push({
         type: 'missing_frame',
         severity: 'warning',
-        message: `Viceramecek${locationHint ? ` "${locationHint}"` : ''} nema prirazenou designovou radu`,
+        message: `Vícerámeček${locationHint ? ` "${locationHint}"` : ''} nemá přiřazenou designovou řadu`,
       });
       continue;
     }
@@ -839,7 +839,7 @@ export function buildQuoteSectionsFromMountingGroups(
       warnings.push({
         type: 'missing_frame',
         severity: 'info',
-        message: `Rada "${dsProduct.name}" nema mapovani pro ${frameRoleKey} - pouzivam fallback`,
+        message: `Řada "${dsProduct.name}" nemá mapování pro ${frameRoleKey} - používám fallback`,
       });
     }
 
@@ -873,7 +873,7 @@ export function buildQuoteSectionsFromMountingGroups(
         warnings.push({
           type: 'unassigned_element',
           severity: 'warning',
-          message: `Modul "${moduleName}" nema prirazeny produkt v designove rade`,
+          message: `Modul "${moduleName}" nemá přiřazeny produkt v designové řadě`,
         });
         continue;
       }
@@ -930,7 +930,7 @@ export function buildQuoteSectionsFromMountingGroups(
       warnings.push({
         type: 'no_price',
         severity: 'warning',
-        message: `Ramecek ${entry.size}R${orientationLabel} nema nastavenou cenu`,
+        message: `Rámeček ${entry.size}R${orientationLabel} nemá nastavenou cenu`,
         productId: productIdForItem,
       });
     }
@@ -955,7 +955,7 @@ export function buildQuoteSectionsFromMountingGroups(
       warnings.push({
         type: 'no_price',
         severity: 'info',
-        message: `Produkt "${product.name}" nema nastavenou prodejni cenu`,
+        message: `Produkt "${product.name}" nemá nastavenou prodejní cenu`,
         productId: product.id,
       });
     }
@@ -1087,7 +1087,7 @@ export function validateQuoteSections(
         warnings.push({
           type: 'no_price',
           severity: 'warning',
-          message: `Polozka "${item.name}" nema nastavenou cenu`,
+          message: `Položka "${item.name}" nemá nastavenou cenu`,
           productId: item.productId,
         });
       }

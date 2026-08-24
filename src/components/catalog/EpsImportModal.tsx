@@ -382,7 +382,7 @@ export default function EpsImportModal({ open, onClose, projectId, onImport }: P
   }, [design]);
 
   return (
-    <Modal open={open} onClose={onClose} title="Importovat EPS/EZS do nabidky" size="lg">
+    <Modal open={open} onClose={onClose} title="Importovat EPS/EZS do nabídky" size="lg">
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
@@ -390,9 +390,9 @@ export default function EpsImportModal({ open, onClose, projectId, onImport }: P
       ) : !design ? (
         <div className="text-center py-10">
           <Shield className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <div className="text-sm font-extrabold text-slate-300">Zadny EPS/EZS navrh</div>
+          <div className="text-sm font-extrabold text-slate-300">Žádný EPS/EZS návrh</div>
           <div className="text-xs text-slate-400 mt-1">
-            Tento projekt nema zadny navrh zabezpecovaciho systemu. Nejprve jej vytvorte v zalozce EPS.
+            Tento projekt nemá žádný návrh zabezpečovacího systému. Nejprve jej vytvořte v záložce EPS.
           </div>
         </div>
       ) : (
@@ -406,11 +406,11 @@ export default function EpsImportModal({ open, onClose, projectId, onImport }: P
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-extrabold text-white">
-                Aktualni konfigurace
+                Aktuální konfigurace
               </div>
               <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-3 flex-wrap">
                 <span className="flex items-center gap-1">
-                  <Layers className="w-3 h-3" /> {currentDeviceCount} zarizeni
+                  <Layers className="w-3 h-3" /> {currentDeviceCount} zařízení
                 </span>
               </div>
             </div>
@@ -420,7 +420,7 @@ export default function EpsImportModal({ open, onClose, projectId, onImport }: P
           {versions.length > 0 && (
             <div>
               <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 px-1">
-                Ulozene verze ({versions.length})
+                Uložené verze ({versions.length})
               </div>
               <div className="space-y-1.5 max-h-[40vh] overflow-y-auto">
                 {versions.map(v => (

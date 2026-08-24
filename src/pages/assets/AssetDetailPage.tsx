@@ -92,7 +92,7 @@ export default function AssetDetailPage() {
       .update({ is_active: false, status: 'inactive', updated_at: new Date().toISOString() })
       .eq('id', id);
     if (error) { toast('Chyba', 'error'); return; }
-    toast('Majetek deaktivovan');
+    toast('Majetek deaktivován');
     navigate('/majetek');
   };
 

@@ -58,7 +58,7 @@ export default function CompleteDueItemModal({ item, assetName, onClose, onCompl
       setRenewDate(nextDate);
       setStep('renew');
     } else {
-      toast('Termin splnen');
+      toast('Termín splněn');
       onCompleted();
     }
   };
@@ -82,12 +82,12 @@ export default function CompleteDueItemModal({ item, assetName, onClose, onCompl
     });
 
     setSaving(false);
-    toast('Termin obnoven');
+    toast('Termín obnoven');
     onCompleted();
   };
 
   const handleSkipRenew = () => {
-    toast('Termin splnen');
+    toast('Termín splněn');
     onCompleted();
   };
 
@@ -99,16 +99,16 @@ export default function CompleteDueItemModal({ item, assetName, onClose, onCompl
           <div className="px-6 py-4 border-b border-white/10">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               <RefreshCw className="w-5 h-5 text-blue-400" />
-              Obnovit periodicky termin
+              Obnovit periodicky termín
             </h2>
             <p className="text-sm text-slate-500 mt-1">{item.label} - {assetName}</p>
           </div>
           <div className="p-6 space-y-4">
             <p className="text-sm text-slate-300">
-              Termin byl splnen. Chcete vytvorit dalsi periodicky termin?
+              Termín byl splněn. Chcete vytvořit další periodicky termín?
             </p>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">Datum dalsiho terminu</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1">Datum dalšího termínu</label>
               <input
                 type="date"
                 value={renewDate}
@@ -117,7 +117,7 @@ export default function CompleteDueItemModal({ item, assetName, onClose, onCompl
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">Interval (mesice)</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1">Interval (měsíce)</label>
               <input
                 type="number"
                 min={1}
@@ -128,7 +128,7 @@ export default function CompleteDueItemModal({ item, assetName, onClose, onCompl
             </div>
             <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
               <p className="text-xs text-blue-300">
-                Vypocet: {eventDate} + {renewInterval} mesicu = {computeNextDate(eventDate, renewInterval)}
+                Výpočet: {eventDate} + {renewInterval} měsíců = {computeNextDate(eventDate, renewInterval)}
               </p>
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function CompleteDueItemModal({ item, assetName, onClose, onCompl
               onClick={handleSkipRenew}
               className="px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/[0.08] rounded-xl transition"
             >
-              Preskocit
+              Přeskočit
             </button>
             <button
               onClick={handleRenew}
@@ -158,12 +158,12 @@ export default function CompleteDueItemModal({ item, assetName, onClose, onCompl
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-navy-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-white/10">
         <div className="px-6 py-4 border-b border-white/10">
-          <h2 className="text-lg font-bold text-white">Oznacit jako splneno</h2>
+          <h2 className="text-lg font-bold text-white">Označit jako splněno</h2>
           <p className="text-sm text-slate-500 mt-1">{item.label} - {assetName}</p>
         </div>
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Datum provedeni</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-1">Datum provedení</label>
             <input
               type="date"
               value={eventDate}
@@ -172,7 +172,7 @@ export default function CompleteDueItemModal({ item, assetName, onClose, onCompl
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Poznamka</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-1">Poznámka</label>
             <textarea
               value={note}
               onChange={e => setNote(e.target.value)}
@@ -183,13 +183,13 @@ export default function CompleteDueItemModal({ item, assetName, onClose, onCompl
           {isPeriodic && (
             <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
               <p className="text-xs text-blue-300">
-                Toto je periodicky termin (interval: {item.interval_months} mesicu). Po splneni budete vyzváni k vytvoreni dalsiho terminu.
+                Toto je periodicky termín (interval: {item.interval_months} měsíců). Po splnění budete vyzváni k vytvoření dalšího termínu.
               </p>
             </div>
           )}
         </div>
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/10 bg-white/[0.02]">
-          <button onClick={onClose} className="px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/[0.08] rounded-xl transition">Zrusit</button>
+          <button onClick={onClose} className="px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/[0.08] rounded-xl transition">Zrušit</button>
           <button onClick={handleComplete} disabled={saving} className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition disabled:opacity-50">
             <CheckCircle2 className="w-4 h-4" />
             {saving ? 'Ukladam...' : 'Splnit'}

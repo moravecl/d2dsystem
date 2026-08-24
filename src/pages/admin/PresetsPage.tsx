@@ -73,7 +73,7 @@ export default function PresetsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('Opravdu smazat preset?')) return;
     const { error } = await supabase.from('design_presets').delete().eq('id', id);
-    if (error) toast(error.message, 'error'); else { toast('Smazano'); load(); }
+    if (error) toast(error.message, 'error'); else { toast('Smazáno'); load(); }
   };
 
   if (loading) return <div className="p-8 text-slate-500">Načítám...</div>;

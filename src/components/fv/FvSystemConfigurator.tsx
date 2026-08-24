@@ -541,7 +541,7 @@ export default function FvSystemConfigurator({ catalog, config, result, totalPow
           </div>
         ) : (
           <div className="text-[10px] text-slate-400 mb-2">
-            Zadne dotacni programy. Pridejte je v Admin &rarr; FV katalog &rarr; Dotace.
+            Žádné dotační programy. Přidejte je v Admin &rarr; FV katalog &rarr; Dotace.
           </div>
         )}
         <button
@@ -559,7 +559,7 @@ export default function FvSystemConfigurator({ catalog, config, result, totalPow
               : 'bg-white/[0.06] text-slate-400 border-white/10 hover:border-emerald-300'
           }`}
         >
-          Vlastni castka
+          Vlastní částka
         </button>
         {isCustomSubsidy && (
           <div className="flex items-center gap-2">

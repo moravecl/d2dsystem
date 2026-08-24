@@ -335,8 +335,8 @@ export default function EpsCanvas({
       {scaleLocked && mode !== 'set_scale' && mode !== 'navigate' && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-[1px] pointer-events-none">
           <div className="bg-slate-900/95 border border-red-500/30 rounded-2xl px-6 py-4 text-center shadow-2xl">
-            <div className="text-red-400 text-sm font-extrabold mb-1">Nastav meritko</div>
-            <div className="text-slate-400 text-xs">Pred vlozenim prvku je nutne nakalibrovat meritko pudorysu (M)</div>
+            <div className="text-red-400 text-sm font-extrabold mb-1">Nastav měřítko</div>
+            <div className="text-slate-400 text-xs">Před vložením prvku je nutné nakalibrovat měřítko půdorysu (M)</div>
           </div>
         </div>
       )}

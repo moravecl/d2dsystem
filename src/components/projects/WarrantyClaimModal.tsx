@@ -99,11 +99,11 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
 
   const handleSave = async () => {
     if (!device || !faultDescription.trim() || !technicianName.trim()) {
-      toast('Vyplnte popis zavady a jmeno technika', 'error');
+      toast('Vyplňte popis závady a jméno technika', 'error');
       return;
     }
     if (claimType === 'replacement' && !replacementName.trim()) {
-      toast('Vyplnte nazev nahradniho zarizeni', 'error');
+      toast('Vyplňte název náhradního zařízení', 'error');
       return;
     }
 
@@ -141,7 +141,7 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
     });
 
     if (error) {
-      toast('Chyba pri ukladani reklamace', 'error');
+      toast('Chyba při ukládání reklamace', 'error');
       setSaving(false);
       return;
     }
@@ -166,13 +166,13 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
 
   const tabs: { key: TabKey; label: string; icon: typeof Wrench }[] = [
     { key: 'claim', label: 'Reklamace', icon: AlertTriangle },
-    ...(claimType === 'replacement' ? [{ key: 'replacement' as TabKey, label: 'Nahrada', icon: RefreshCw }] : []),
-    { key: 'costs', label: 'Naklady', icon: DollarSign },
+    ...(claimType === 'replacement' ? [{ key: 'replacement' as TabKey, label: 'Náhrada', icon: RefreshCw }] : []),
+    { key: 'costs', label: 'Náklady', icon: DollarSign },
     { key: 'signature', label: 'Podpis', icon: PenTool },
   ];
 
   return (
-    <Modal open={open} onClose={onClose} title="Reklamace / Vymena zarizeni" size="xl" footer={
+    <Modal open={open} onClose={onClose} title="Reklamace / Výměna zařízení" size="xl" footer={
       <>
         <div className="flex-1 flex items-center gap-3">
           {totalCost > 0 && (
@@ -181,10 +181,10 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
             </span>
           )}
           {customerSignature && (
-            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg">Podepsano</span>
+            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg">Podepsáno</span>
           )}
         </div>
-        <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrusit</button>
+        <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrušit</button>
         <button
           onClick={handleSave}
           disabled={saving || !faultDescription.trim() || !technicianName.trim()}
@@ -209,9 +209,9 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
               </div>
             </div>
             {warrantyActive ? (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0">V zaruce</span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0">V záruce</span>
             ) : device.warranty_end_date ? (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-red-500/20 text-red-400 shrink-0">Po zaruce</span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-red-500/20 text-red-400 shrink-0">Po záruce</span>
             ) : null}
           </div>
         </div>
@@ -256,7 +256,7 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
  : 'border-white/[0.08] text-slate-500 hover:border-white/[0.12]'
  }`}
                   >
-                    <RefreshCw className="w-4 h-4" />Vymena
+                    <RefreshCw className="w-4 h-4" />Výměna
                   </button>
                 </div>
               </div>
@@ -294,29 +294,29 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Popis zavady / duvod reklamace *</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Popis závady / důvod reklamace *</label>
               <textarea
                 value={faultDescription}
                 onChange={e => setFaultDescription(e.target.value)}
                 rows={3}
-                placeholder="Popiste zavadu, okolnosti, jak se projevuje..."
+                placeholder="Popište závadu, okolnosti, jak se projevuje..."
                 className="w-full px-3 py-2.5 rounded-xl border border-white/[0.08] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Popis provedene opravy / reseni</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Popis provedené opravy / řešení</label>
               <textarea
                 value={resolutionDescription}
                 onChange={e => setResolutionDescription(e.target.value)}
                 rows={2}
-                placeholder="Co bylo provedeno, jake dily pouzity..."
+                placeholder="Co bylo provedeno, jaké díly použity..."
                 className="w-full px-3 py-2.5 rounded-xl border border-white/[0.08] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Poznamky</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Poznámky</label>
               <textarea
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
@@ -330,26 +330,26 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
         {activeTab === 'replacement' && claimType === 'replacement' && (
           <div className="space-y-4">
             <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-              <div className="text-xs font-semibold text-amber-400 mb-1">Puvodni zarizeni</div>
+              <div className="text-xs font-semibold text-amber-400 mb-1">Původní zařízení</div>
               <div className="text-sm text-amber-400">{device.name} | {device.manufacturer} | S/N: {device.serial_number}</div>
             </div>
 
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-              <RefreshCw className="w-3.5 h-3.5" /> Nahradni zarizeni
+              <RefreshCw className="w-3.5 h-3.5" /> Náhradní zařízení
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Nazev / Model *</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Název / Model *</label>
               <input
                 value={replacementName}
                 onChange={e => setReplacementName(e.target.value)}
-                placeholder="Nazev noveho zarizeni"
+                placeholder="Název nového zařízení"
                 className="w-full px-3 py-2.5 rounded-xl border border-white/[0.08] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Vyrobce</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Výrobce</label>
                 <input
                   value={replacementManufacturer}
                   onChange={e => setReplacementManufacturer(e.target.value)}
@@ -358,11 +358,11 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Vyrobni cislo</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Výrobní číslo</label>
                 <input
                   value={replacementSerial}
                   onChange={e => setReplacementSerial(e.target.value)}
-                  placeholder="S/N noveho zarizeni"
+                  placeholder="S/N nového zařízení"
                   className="w-full px-3 py-2.5 rounded-xl border border-white/[0.08] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>
@@ -374,7 +374,7 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Naklady na praci (Kc)</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Náklady na práci (Kc)</label>
                 <input
                   type="number"
                   min={0}
@@ -384,7 +384,7 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Naklady na material (Kc)</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Náklady na materiál (Kc)</label>
                 <input
                   type="number"
                   min={0}
@@ -396,14 +396,14 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
             </div>
 
             <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.04] border border-white/[0.08]">
-              <span className="text-sm text-slate-500">Celkove naklady</span>
+              <span className="text-sm text-slate-500">Celkové náklady</span>
               <span className="text-lg font-extrabold text-white">{totalCost.toLocaleString('cs-CZ')} Kc</span>
             </div>
 
             {isWarranty && totalCost > 0 && (
               <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                 <AlertTriangle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-xs text-emerald-400">Zarucni oprava - naklady nebudou uctovany zakaznikovi</span>
+                <span className="text-xs text-emerald-400">Záruční oprava - náklady nebudou účtovány zákazníkovi</span>
               </div>
             )}
           </div>
@@ -413,14 +413,14 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
           <div className="space-y-5">
             <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
               <div className="text-xs text-blue-400">
-                Podpisem obe strany potvrzuji provedeni opravy/vymeny a souhlas s popsanym resenim.
+                Podpisem obě strany potvrzuji provedení opravy/výměny a souhlas s popsaným řešením.
               </div>
             </div>
 
             <div className="p-4 rounded-xl border-2 border-white/[0.08] space-y-3">
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Technik</div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Jmeno technika</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Jméno technika</label>
                 <input
                   value={technicianName}
                   onChange={e => setTechnicianName(e.target.value)}
@@ -439,9 +439,9 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
             </div>
 
             <div className="p-4 rounded-xl border-2 border-white/[0.08] space-y-3">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Zakaznik</div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Zákazník</div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Jmeno zakaznika</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Jméno zákazníka</label>
                 <input
                   value={customerName}
                   onChange={e => setCustomerName(e.target.value)}
@@ -449,7 +449,7 @@ export default function WarrantyClaimModal({ open, onClose, projectId, device, o
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Podpis zakaznika</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Podpis zákazníka</label>
                 <SignaturePad
                   value={customerSignature}
                   onChange={setCustomerSignature}

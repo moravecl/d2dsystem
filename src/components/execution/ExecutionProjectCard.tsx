@@ -121,7 +121,7 @@ export default function ExecutionProjectCard({ project, index, onClick }: Props)
           {project.pending_extras > 0 && (
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/25">
               <Wrench className="w-3 h-3" />
-              {project.pending_extras} viceprace
+              {project.pending_extras} vícepráce
             </span>
           )}
         </div>
@@ -150,19 +150,19 @@ export default function ExecutionProjectCard({ project, index, onClick }: Props)
       <div className="px-5 py-3 border-t border-white/[0.06] grid grid-cols-2 sm:grid-cols-4 gap-3">
         <MetricItem
           icon={<Clock className="w-3.5 h-3.5" />}
-          label="Cas"
+          label="Čas"
           value={formatHours(project.total_work_minutes)}
           color="text-blue-400"
         />
         <MetricItem
           icon={<Banknote className="w-3.5 h-3.5" />}
-          label="Rozpocet"
+          label="Rozpočet"
           value={formatCurrency(project.approved_budget)}
           color="text-emerald-400"
         />
         <MetricItem
           icon={<BookOpen className="w-3.5 h-3.5" />}
-          label="Denik"
+          label="Deník"
           value={`${project.diary_entries}`}
           color="text-slate-400"
         />
@@ -177,14 +177,14 @@ export default function ExecutionProjectCard({ project, index, onClick }: Props)
         ) : project.total_tasks > 0 ? (
           <MetricItem
             icon={<CheckCircle2 className="w-3.5 h-3.5" />}
-            label="Ukoly"
+            label="Úkoly"
             value={`${project.completed_tasks}/${project.total_tasks}`}
             color="text-teal-600"
           />
         ) : (
           <MetricItem
             icon={<Timer className="w-3.5 h-3.5" />}
-            label="Material"
+            label="Materiál"
             value={formatCurrency(project.actual_material_cost)}
             color="text-slate-400"
           />

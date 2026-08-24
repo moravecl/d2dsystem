@@ -153,7 +153,7 @@ export default function WorklogModule({ jobId, isMobile, onTimerChange }: { jobI
       toast('Chyba', 'error');
     } else {
       await logAudit('job_worklog', jobId, 'timer_started', { activity });
-      toast('Timer spusten');
+      toast('Timer spuštěn');
       setShowStartModal(false);
       setNote('');
       setWorkers([]);

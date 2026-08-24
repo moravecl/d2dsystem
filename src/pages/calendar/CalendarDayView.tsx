@@ -102,13 +102,13 @@ export default function CalendarDayView({ currentDate, events, onDayClick, onDra
             className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition"
           >
             <Plus className="w-3.5 h-3.5" />
-            Novy zaznam
+            Nový záznam
           </button>
         </div>
 
         {allDayEvents.length > 0 && (
           <div className="border-b border-white/[0.06] bg-white/[0.06] p-3">
-            <div className="text-[10px] font-semibold text-slate-400 uppercase mb-2">Celodeni / bez casu ({allDayEvents.length})</div>
+            <div className="text-[10px] font-semibold text-slate-400 uppercase mb-2">Celodenní / bez času ({allDayEvents.length})</div>
             <div className="flex flex-wrap gap-1.5">
               {allDayEvents.map(evt => {
                 const Icon = TYPE_ICONS[evt.type] || CalendarIcon;
@@ -236,12 +236,12 @@ export default function CalendarDayView({ currentDate, events, onDayClick, onDra
         {dayEvents.length === 0 && (
           <div className="py-12 text-center">
             <CalendarIcon className="w-10 h-10 text-slate-200 mx-auto mb-2" />
-            <p className="text-sm text-slate-400">Zadne udalosti pro tento den</p>
+            <p className="text-sm text-slate-400">Žádné udalosti pro tento den</p>
             <button
               onClick={() => onDayClick(dateStr)}
               className="mt-3 text-xs font-semibold text-blue-400 hover:text-blue-400"
             >
-              Vytvorit zaznam
+              Vytvořit záznam
             </button>
           </div>
         )}

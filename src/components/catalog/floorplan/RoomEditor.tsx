@@ -91,7 +91,7 @@ export default function RoomEditor({
                 />
                 <div className="flex gap-2">
                   <button onClick={handleFinish} className="flex-1 bg-teal-600 text-white py-2 rounded-xl font-extrabold text-sm hover:bg-teal-700 transition flex items-center justify-center gap-1.5">
-                    <Check className="w-3.5 h-3.5" /> Uzavrit
+                    <Check className="w-3.5 h-3.5" /> Uzavřít
                   </button>
                   <button onClick={onCancelDraw} className="bg-white/[0.06] border border-teal-200 text-teal-700 py-2 px-3 rounded-xl font-extrabold text-sm hover:bg-teal-500/10 transition">
                     <X className="w-3.5 h-3.5" />

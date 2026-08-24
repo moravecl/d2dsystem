@@ -287,10 +287,10 @@ export default function CameraSidebar({
               </div>
               <div className="flex gap-2">
                 <button onClick={handleAddMapLayer} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-500/10 text-blue-400 rounded-xl text-[11px] font-bold hover:bg-blue-500/20 transition border border-blue-200">
-                  <Map className="w-3.5 h-3.5" /> Satelitni mapa
+                  <Map className="w-3.5 h-3.5" /> Satelitní mapa
                 </button>
                 <label className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-[11px] font-bold hover:bg-emerald-500/20 transition border border-emerald-200 cursor-pointer">
-                  <Upload className="w-3.5 h-3.5" /> Nahrat foto
+                  <Upload className="w-3.5 h-3.5" /> Nahrát foto
                   <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                 </label>
               </div>
@@ -299,7 +299,7 @@ export default function CameraSidebar({
             {designData.layers.length === 0 ? (
               <div className="text-center py-8 text-slate-400">
                 <Layers className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                <p className="text-xs font-medium">Pridejte vrstvu</p>
+                <p className="text-xs font-medium">Přidejte vrstvu</p>
                 <p className="text-[10px] mt-1">Zadejte adresu nebo nahrajte fotku z dronu</p>
               </div>
             ) : (
@@ -367,7 +367,7 @@ export default function CameraSidebar({
             )}
 
             <div className="border-t border-white/[0.06] mt-4 pt-3">
-              <SectionHeader id="placed-cameras" label="Kamery na vrstve" icon={Camera} count={camerasOnActiveLayer.length} />
+              <SectionHeader id="placed-cameras" label="Kamery na vrstvě" icon={Camera} count={camerasOnActiveLayer.length} />
               {expandedSections.has('placed-cameras') && (
                 <div className="space-y-1 mt-1">
                   {camerasOnActiveLayer.map(cam => {
@@ -393,11 +393,11 @@ export default function CameraSidebar({
                       </div>
                     );
                   })}
-                  {camerasOnActiveLayer.length === 0 && <p className="text-[10px] text-slate-400 py-1 pl-5">Zadne kamery na teto vrstve</p>}
+                  {camerasOnActiveLayer.length === 0 && <p className="text-[10px] text-slate-400 py-1 pl-5">Žádné kamery na této vrstvě</p>}
                 </div>
               )}
 
-              <SectionHeader id="placed-routes" label="Trasy na vrstve" icon={Cable} count={routesOnActiveLayer.length} />
+              <SectionHeader id="placed-routes" label="Trasy na vrstvě" icon={Cable} count={routesOnActiveLayer.length} />
               {expandedSections.has('placed-routes') && (
                 <div className="space-y-1 mt-1">
                   {routesOnActiveLayer.map(route => {
@@ -422,7 +422,7 @@ export default function CameraSidebar({
                       </div>
                     );
                   })}
-                  {routesOnActiveLayer.length === 0 && <p className="text-[10px] text-slate-400 py-1 pl-5">Zadne trasy na teto vrstve</p>}
+                  {routesOnActiveLayer.length === 0 && <p className="text-[10px] text-slate-400 py-1 pl-5">Žádné trasy na této vrstvě</p>}
                 </div>
               )}
             </div>
@@ -449,7 +449,7 @@ export default function CameraSidebar({
                     </div>
                   </button>
                 ))}
-                {catalog.cameras.length === 0 && <p className="text-[10px] text-slate-400 py-2 text-center">Pridejte kamery v Admin / Kamerovy katalog</p>}
+                {catalog.cameras.length === 0 && <p className="text-[10px] text-slate-400 py-2 text-center">Přidejte kamery v Admin / Kamerový katalog</p>}
               </div>
             )}
 
@@ -502,11 +502,11 @@ export default function CameraSidebar({
               </div>
               <div className="bg-emerald-500/10 rounded-xl p-3 text-center">
                 <div className="text-lg font-extrabold text-emerald-400">{totalCableLengthM.toFixed(0)} m</div>
-                <div className="text-[10px] font-bold text-emerald-500 uppercase">Kabelaz</div>
+                <div className="text-[10px] font-bold text-emerald-500 uppercase">Kabeláž</div>
               </div>
               <div className="bg-amber-500/10 rounded-xl p-3 text-center">
                 <div className="text-lg font-extrabold text-amber-400">{totalPoe.toFixed(0)} W</div>
-                <div className="text-[10px] font-bold text-amber-500 uppercase">PoE prikon</div>
+                <div className="text-[10px] font-bold text-amber-500 uppercase">PoE příkon</div>
               </div>
               <div className="bg-white/[0.06] rounded-xl p-3 text-center">
                 <div className="text-lg font-extrabold text-slate-300">{totalPrice.toLocaleString('cs-CZ')}</div>
@@ -516,7 +516,7 @@ export default function CameraSidebar({
 
             <div className="bg-white/[0.04] rounded-xl p-3 space-y-3">
               <h4 className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                <HardDrive className="w-3.5 h-3.5" /> Vypocet uloziste
+                <HardDrive className="w-3.5 h-3.5" /> Výpočet úložiště
               </h4>
               <div className="space-y-2">
                 <div>
@@ -569,15 +569,15 @@ export default function CameraSidebar({
 
               <div className="bg-navy-800/60 rounded-xl p-3 border border-white/10 space-y-1.5">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">Denni objem</span>
+                  <span className="text-slate-500">Denní objem</span>
                   <span className="font-bold text-slate-300">{storage.dailyStorageGb.toFixed(1)} GB</span>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">Celkovy objem ({designData.storageConfig.retentionDays}d)</span>
+                  <span className="text-slate-500">Celkový objem ({designData.storageConfig.retentionDays}d)</span>
                   <span className="font-bold text-slate-300">{storage.totalStorageTb.toFixed(2)} TB</span>
                 </div>
                 <div className="border-t border-white/[0.06] pt-1.5 flex justify-between text-xs">
-                  <span className="text-slate-400 font-bold">Navrzeny HDD</span>
+                  <span className="text-slate-400 font-bold">Navrženy HDD</span>
                   <span className="font-extrabold text-blue-400">{storage.recommendedHddCount}x {storage.recommendedHddSizeTb} TB</span>
                 </div>
                 <div className="flex justify-between text-xs">
@@ -585,7 +585,7 @@ export default function CameraSidebar({
                   <span className="font-bold text-slate-300">{storage.recommendedHddCount * storage.recommendedHddSizeTb} TB</span>
                 </div>
                 <div className="border-t border-white/[0.06] pt-1.5 flex justify-between text-xs">
-                  <span className="text-green-400 font-bold">Vydrz zaznamu</span>
+                  <span className="text-green-400 font-bold">Výdrž zaznamu</span>
                   <span className="font-extrabold text-green-400">
                     {storage.dailyStorageGb > 0
                       ? Math.floor(storage.recommendedHddCount * storage.recommendedHddSizeTb * 1024 / storage.dailyStorageGb)
@@ -597,7 +597,7 @@ export default function CameraSidebar({
 
             <div className="bg-white/[0.04] rounded-xl p-3 space-y-2">
               <h4 className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                <Package className="w-3.5 h-3.5" /> Prislusenstvi
+                <Package className="w-3.5 h-3.5" /> Příslušenství
               </h4>
               {catalog.accessories.map(acc => {
                 const existing = designData.accessoryItems.find(a => a.accessoryId === acc.id);

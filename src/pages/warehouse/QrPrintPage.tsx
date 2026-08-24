@@ -73,7 +73,7 @@ export default function QrPrintPage() {
     setConfig({
       breadcrumbs: [
         { label: 'Sklad', href: '/sklad' },
-        { label: 'Tisk QR kodu' },
+        { label: 'Tisk QR kódu' },
       ],
     });
   }, [setConfig]);
@@ -233,7 +233,7 @@ export default function QrPrintPage() {
           className="flex items-center gap-2 px-3 py-2 text-sm text-slate-400 hover:text-white transition"
         >
           <ArrowLeft className="w-4 h-4" />
-          Zpet na sklad
+          Zpět na sklad
         </button>
       </div>
 
@@ -242,20 +242,20 @@ export default function QrPrintPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               <Filter className="w-5 h-5 text-slate-400" />
-              Vyber polozek
+              Výběr položek
             </h2>
             <div className="flex items-center gap-2 text-sm">
               <button
                 onClick={selectAll}
                 className="px-3 py-1.5 text-blue-400 hover:bg-blue-500/10 rounded-lg transition"
               >
-                Vybrat vse ({filteredItems.length})
+                Vybrat vše ({filteredItems.length})
               </button>
               <button
                 onClick={deselectAll}
                 className="px-3 py-1.5 text-slate-400 hover:bg-white/[0.04] rounded-lg transition"
               >
-                Zrusit vyber
+                Zrušit výběr
               </button>
             </div>
           </div>
@@ -279,7 +279,7 @@ export default function QrPrintPage() {
                   : 'bg-white/[0.06] border-white/10 text-slate-300'
               }`}
             >
-              <option value="">Vse kategorie</option>
+              <option value="">Vše kategorie</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -296,7 +296,7 @@ export default function QrPrintPage() {
                     : 'bg-white/[0.06] border-white/10 text-slate-300'
                 }`}
               >
-                <option value="">Vse podkategorie</option>
+                <option value="">Vše podkategorie</option>
                 {filteredSubs.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
@@ -313,7 +313,7 @@ export default function QrPrintPage() {
                 className="flex items-center gap-1 px-3 py-2 text-xs text-red-400 hover:bg-white/[0.04] rounded-xl transition"
               >
                 <X className="w-3.5 h-3.5" />
-                Zrusit filtry
+                Zrušit filtry
               </button>
             )}
           </div>
@@ -321,7 +321,7 @@ export default function QrPrintPage() {
           <div className="max-h-[400px] overflow-y-auto space-y-1">
             {filteredItems.length === 0 ? (
               <div className="text-center py-8 text-slate-500 text-sm">
-                Zadne polozky odpovidajici filtru
+                Žádné položky odpovídající filtru
               </div>
             ) : (
               filteredItems.map((item) => (
@@ -369,13 +369,13 @@ export default function QrPrintPage() {
           <div className="bg-navy-800/60 backdrop-blur-sm rounded-xl border border-white/[0.08] p-5">
             <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <Grid3X3 className="w-5 h-5 text-slate-400" />
-              Nastaveni tisku
+              Nastavení tisku
             </h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-2">
-                  Velikost QR kodu
+                  Velikost QR kódu
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {(Object.entries(LABEL_SIZES) as [LabelSize, { qr: number; name: string }][]).map(
@@ -398,7 +398,7 @@ export default function QrPrintPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-2">
-                  Pocet sloupcu
+                  Počet sloupců
                 </label>
                 <div className="grid grid-cols-4 gap-2">
                   {([2, 3, 4, 5] as ColumnsCount[]).map((n) => (
@@ -421,7 +421,7 @@ export default function QrPrintPage() {
 
           <div className="bg-navy-800/60 backdrop-blur-sm rounded-xl border border-white/[0.08] p-5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-white">Vybrano</h3>
+              <h3 className="text-sm font-semibold text-white">Vybráno</h3>
               <span className="text-2xl font-bold text-blue-400">
                 {selectedItems.size}
               </span>
@@ -441,7 +441,7 @@ export default function QrPrintPage() {
               ) : (
                 <Printer className="w-4 h-4" />
               )}
-              Tisknout QR kody
+              Tisknout QR kódy
             </button>
           </div>
         </div>
@@ -504,7 +504,7 @@ export default function QrPrintPage() {
       {selectedItems.size > 0 && Object.keys(qrDataUrls).length === 0 && (
         <div className="no-print bg-navy-800/60 backdrop-blur-sm rounded-xl border border-white/[0.08] p-5">
           <h3 className="text-sm font-semibold text-white mb-4">
-            Nahled ({selectedItems.size} stitku)
+            Náhled ({selectedItems.size} štítku)
           </h3>
           <div
             className="grid gap-3"
@@ -536,7 +536,7 @@ export default function QrPrintPage() {
             ))}
             {selectedItemsList.length > 12 && (
               <div className="bg-white/[0.04] border border-white/10 rounded-lg p-3 flex items-center justify-center text-slate-500 text-sm">
-                +{selectedItemsList.length - 12} dalsich
+                +{selectedItemsList.length - 12} dalších
               </div>
             )}
           </div>

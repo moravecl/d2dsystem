@@ -15,7 +15,7 @@ export default function ExecutionStatsBar({ projects }: Props) {
   const stats = [
     {
       icon: <HardHat className="w-5 h-5" />,
-      label: 'Aktivnich zakazek',
+      label: 'Aktivních zakázek',
       value: totalProjects.toString(),
       sub: activeTimers > 0 ? `${activeTimers} bezici timer${activeTimers > 1 ? 'y' : ''}` : undefined,
       color: 'from-teal-500 to-teal-600',
@@ -34,7 +34,7 @@ export default function ExecutionStatsBar({ projects }: Props) {
     },
     {
       icon: <Banknote className="w-5 h-5" />,
-      label: 'Celkovy rozpocet',
+      label: 'Celkový rozpočet',
       value: totalBudget >= 1000000
         ? `${(totalBudget / 1000000).toFixed(1)}M Kc`
         : totalBudget >= 1000
@@ -47,7 +47,7 @@ export default function ExecutionStatsBar({ projects }: Props) {
     },
     {
       icon: <AlertTriangle className="w-5 h-5" />,
-      label: 'Otevrenych vad',
+      label: 'Otevřených vad',
       value: openDefects.toString(),
       color: openDefects > 0 ? 'from-red-500 to-red-600' : 'from-slate-400 to-slate-500',
       textColor: openDefects > 0 ? 'text-red-400' : 'text-slate-400',

@@ -89,14 +89,14 @@ export default function AssetDashboardPage() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
             <h2 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-red-500" />
-              Po terminu ({overdueItems.length})
+              Po termínu ({overdueItems.length})
             </h2>
             <Link to="/majetek/terminy?status=overdue" className="text-xs text-blue-400 hover:text-blue-400 font-semibold flex items-center gap-1">
-              Zobrazit vse <ArrowRight className="w-3 h-3" />
+              Zobrazit vše <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
           {overdueItems.length === 0 ? (
-            <div className="p-8 text-center text-sm text-slate-400">Zadne polozky po terminu</div>
+            <div className="p-8 text-center text-sm text-slate-400">Žádné položky po termínu</div>
           ) : (
             <div className="divide-y divide-white/[0.06]">
               {overdueItems.map(item => (
@@ -110,14 +110,14 @@ export default function AssetDashboardPage() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
             <h2 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
               <CalendarClock className="w-4 h-4 text-amber-500" />
-              Blizi se (do 30 dni) ({upcomingItems.length})
+              Blíží se (do 30 dni) ({upcomingItems.length})
             </h2>
             <Link to="/majetek/terminy?status=upcoming" className="text-xs text-blue-400 hover:text-blue-400 font-semibold flex items-center gap-1">
-              Zobrazit vse <ArrowRight className="w-3 h-3" />
+              Zobrazit vše <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
           {upcomingItems.length === 0 ? (
-            <div className="p-8 text-center text-sm text-slate-400">Zadne blizici se terminy</div>
+            <div className="p-8 text-center text-sm text-slate-400">Žádné blížící se termíny</div>
           ) : (
             <div className="divide-y divide-white/[0.06]">
               {upcomingItems.map(item => (
@@ -132,14 +132,14 @@ export default function AssetDashboardPage() {
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
           <h2 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
             <List className="w-4 h-4 text-blue-400" />
-            Vsechny terminy ({allDueItems.length})
+            Všechny termíny ({allDueItems.length})
           </h2>
           <Link to="/majetek/terminy" className="text-xs text-blue-400 hover:text-blue-400 font-semibold flex items-center gap-1">
-            Zobrazit vse <ArrowRight className="w-3 h-3" />
+            Zobrazit vše <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
         {allDueItems.length === 0 ? (
-          <div className="p-8 text-center text-sm text-slate-400">Zadne aktivni terminy</div>
+          <div className="p-8 text-center text-sm text-slate-400">Žádné aktivní termíny</div>
         ) : (
           <div className="divide-y divide-white/[0.06] max-h-[400px] overflow-y-auto">
             {allDueItems.map(item => (

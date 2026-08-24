@@ -67,7 +67,7 @@ export default function RoleFormModal({ role, duplicateFrom, organizationId, onC
         setSaving(false);
         return;
       }
-      toast('Role aktualizovana');
+      toast('Role aktualizována');
     } else {
       const permissions = duplicateFrom ? duplicateFrom.permissions : getDefaultPermissions();
       const { error } = await supabase.from('custom_roles').insert({
@@ -134,7 +134,7 @@ export default function RoleFormModal({ role, duplicateFrom, organizationId, onC
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5">Slug (identifikator)</label>
+          <label className="block text-xs font-semibold text-slate-400 mb-1.5">Slug (identifikátor)</label>
           <input
             value={slug}
             onChange={(e) => setSlug(e.target.value)}

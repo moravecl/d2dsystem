@@ -558,7 +558,7 @@ export default function ProjectDesignTab({ projectId, onViewVersion }: Props) {
 
         <DesignerCard
           title="EPS / EZS"
-          subtitle="Pozarni signalizace a elektronicke zabezpeceni"
+          subtitle="Požární signalizace a elektronické zabezpečení"
           icon={<ShieldAlert className="w-6 h-6 text-red-400" />}
           variant="eps"
           onClick={() => navigate(`/projekty/${projectId}/eps-navrh`)}

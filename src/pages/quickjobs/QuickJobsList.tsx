@@ -93,7 +93,7 @@ export default function QuickJobsList({ onAdd, refreshKey }: Props) {
     }
     await supabase.from('quick_jobs').update(updates).eq('id', jobId);
     setJobs(prev => prev.map(j => j.id === jobId ? { ...j, status: newStatus } : j));
-    toast('Status aktualizovan');
+    toast('Status aktualizován');
   };
 
   const filtered = jobs.filter(j => {

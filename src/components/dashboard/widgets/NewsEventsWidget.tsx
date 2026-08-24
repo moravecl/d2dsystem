@@ -38,7 +38,7 @@ export default function NewsEventsWidget({ data, editMode }: Props) {
             <Newspaper className="w-4 h-4 text-blue-400" />Nástěnka
           </h2>
           <Link to="/nastenka" className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 group transition-colors">
-            Vse <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            Vše <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
         {newsPosts.length === 0 ? (
@@ -85,7 +85,7 @@ export default function NewsEventsWidget({ data, editMode }: Props) {
             <CalendarDays className="w-4 h-4 text-rose-400" />Události
           </h2>
           <Link to="/udalosti" className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 group transition-colors">
-            Vse <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            Vše <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
         {upcomingEvents.length === 0 ? (

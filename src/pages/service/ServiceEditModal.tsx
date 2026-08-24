@@ -495,7 +495,7 @@ export default function ServiceEditModal({ open, scheduleId, onClose, onSaved, o
                     {form.client_ico && (
                       <div className="flex items-center gap-1.5">
                         <Building2 className="w-3 h-3 text-slate-500" />
-                        ICO: {form.client_ico}
+                        IČO: {form.client_ico}
                       </div>
                     )}
                     {form.client_dic && (
@@ -566,7 +566,7 @@ export default function ServiceEditModal({ open, scheduleId, onClose, onSaved, o
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
-                    <Building2 className="w-3 h-3" /> ICO
+                    <Building2 className="w-3 h-3" /> IČO
                   </label>
                   <input
                     type="text"

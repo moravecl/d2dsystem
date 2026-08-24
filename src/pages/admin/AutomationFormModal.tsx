@@ -89,23 +89,23 @@ export default function AutomationFormModal({
  >
  <div className="space-y-5 max-h-[70vh] overflow-y-auto px-1">
  <div>
- <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Nazev automatizace</label>
+ <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Název automatizace</label>
  <input
  type="text"
  value={rule.name}
  onChange={e => update({ name: e.target.value })}
- placeholder="Napr. Pri dokonceni projektu odeslat email klientovi"
+ placeholder="Např. Při dokončení projektu odeslat email klientovi"
  className="w-full border border-white/10 rounded-xl px-3 py-2.5 text-sm font-extrabold text-slate-300 bg-white/[0.06] focus:outline-none focus:border-blue-400"
  />
  </div>
 
  <div>
- <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Popis (volitelny)</label>
+ <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Popis (volitelný)</label>
  <textarea
  value={rule.description}
  onChange={e => update({ description: e.target.value })}
  rows={2}
- placeholder="Co tato automatizace dela?"
+ placeholder="Co tato automatizace dělá?"
  className="w-full border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-300 bg-white/[0.06] focus:outline-none focus:border-blue-400 resize-none"
  />
  </div>
@@ -113,7 +113,7 @@ export default function AutomationFormModal({
  <div className="bg-blue-500/10 border-2 border-blue-200 rounded-xl p-4 space-y-3">
  <div className="text-[10px] font-extrabold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
  <span className="w-5 h-5 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-extrabold">1</span>
- Kdyz... (Trigger)
+ Když... (Trigger)
  </div>
 
  <div className="grid grid-cols-2 gap-3">
@@ -134,7 +134,7 @@ export default function AutomationFormModal({
  </select>
  </div>
  <div>
- <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Udalost</label>
+ <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Událost</label>
  <select
  value={rule.trigger_event}
  onChange={e => update({ trigger_event: e.target.value, trigger_conditions: {} })}
@@ -166,19 +166,19 @@ export default function AutomationFormModal({
  <div className="flex items-center justify-between">
  <div className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
  <span className="w-5 h-5 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-extrabold">2</span>
- Pak proved... (Akce)
+ Pak proveď... (Akce)
  </div>
  <button
  onClick={addAction}
  className="flex items-center gap-1 text-[10px] font-extrabold text-emerald-400 hover:text-emerald-700 bg-emerald-500/20 hover:bg-emerald-200 px-2 py-1 rounded-lg transition"
  >
- <Plus className="w-3 h-3"/> Pridat akci
+ <Plus className="w-3 h-3"/> Přidat akci
  </button>
  </div>
 
  {rule.actions.length === 0 && (
  <div className="text-center py-6 text-xs font-extrabold text-emerald-400">
- Zatim zadne akce. Kliknete "Pridat akci".
+ Zatím žádné akce. Klikněte "Přidat akci".
  </div>
  )}
 
@@ -240,7 +240,7 @@ export default function AutomationFormModal({
  onChange={e => update({ is_active: e.target.checked })}
  className="rounded border-slate-300 text-blue-400 focus:ring-blue-400"
  />
- <span className="text-xs font-extrabold text-slate-400">Aktivni</span>
+ <span className="text-xs font-extrabold text-slate-400">Aktivní</span>
  </label>
  <div className="flex items-center gap-2">
  <button

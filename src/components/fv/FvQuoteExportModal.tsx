@@ -180,7 +180,7 @@ export default function FvQuoteExportModal({ catalog, config, roofs, roofSnapsho
       <div className="relative bg-navy-800/60 rounded-2xl shadow-2xl shadow-slate-900/10 w-full max-w-lg animate-modal-enter overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <div>
-            <h2 className="text-lg font-bold text-white">Generovat nabidku FVE</h2>
+            <h2 className="text-lg font-bold text-white">Generovat nabídku FVE</h2>
             <p className="text-xs text-slate-500 mt-0.5">Vyberte položky, které chcete zahrnout</p>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-400 hover:bg-white/[0.06] transition">

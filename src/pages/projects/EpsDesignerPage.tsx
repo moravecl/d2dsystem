@@ -359,14 +359,14 @@ export default function EpsDesignerPage() {
           onClick={() => navigate(`/projekty/${projectId}`)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition text-sm font-bold"
         >
-          <ArrowLeft className="w-4 h-4" /> Zpet
+          <ArrowLeft className="w-4 h-4" /> Zpět
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-sm font-extrabold text-white truncate">EPS / EZS Navrhar — {projectName}</h1>
-          <p className="text-[10px] text-slate-500 font-medium">Elektronicka pozarni signalizace a zabezpeceni · Jablotron 100+</p>
+          <h1 className="text-sm font-extrabold text-white truncate">EPS / EZS Návrhář — {projectName}</h1>
+          <p className="text-[10px] text-slate-500 font-medium">Elektronická požární signalizace a zabezpečení · Jablotron 100+</p>
         </div>
         <div className="flex items-center gap-2">
-          {saving && <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500"><Loader2 className="w-3 h-3 animate-spin" /> Ukladani...</span>}
+          {saving && <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500"><Loader2 className="w-3 h-3 animate-spin" /> Ukládání...</span>}
           <SaveVersionButton
             onSave={() => handleSaveVersion('')}
             onOpenVersions={() => setVersionDrawerOpen(true)}
@@ -479,15 +479,15 @@ export default function EpsDesignerPage() {
       {scaleModalOpen && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-80 shadow-2xl">
-            <h3 className="text-sm font-extrabold text-white mb-3">Nastavit meritko</h3>
-            <p className="text-xs text-slate-400 mb-4">Zadejte skutecnou vzdalenost mezi dvema body (v metrech).</p>
+            <h3 className="text-sm font-extrabold text-white mb-3">Nastavit měřítko</h3>
+            <p className="text-xs text-slate-400 mb-4">Zadejte skutečnou vzdálenost mezi dvěmá body (v metrech).</p>
             <input
               autoFocus
               type="number"
               value={scaleDistance}
               onChange={e => setScaleDistance(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleConfirmScale(); }}
-              placeholder="napr. 5"
+              placeholder="např. 5"
               step="0.1"
               min="0.1"
               className="w-full px-3 py-2.5 text-sm font-medium bg-white/[0.06] border border-white/[0.1] rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-red-500/50 mb-4"
@@ -497,7 +497,7 @@ export default function EpsDesignerPage() {
                 onClick={() => { setScaleModalOpen(false); setScalePoints([]); setMode('navigate'); }}
                 className="flex-1 px-4 py-2 text-xs font-bold text-slate-400 hover:bg-white/[0.06] rounded-xl transition"
               >
-                Zrusit
+                Zrušit
               </button>
               <button
                 onClick={handleConfirmScale}

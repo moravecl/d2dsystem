@@ -69,13 +69,13 @@ function DesignStepContext({ stats }: { stats: WorkflowContextStats }) {
         <ContextStatBadge icon={Layers} value={stats.totalElements} label="prvku" color="blue" />
       )}
       {stats.elementsWithoutRoom !== undefined && stats.elementsWithoutRoom > 0 && (
-        <ContextStatBadge icon={MapPin} value={stats.elementsWithoutRoom} label="bez mistnosti" color="amber" />
+        <ContextStatBadge icon={MapPin} value={stats.elementsWithoutRoom} label="bez místnosti" color="amber" />
       )}
       {stats.elementsInGroup !== undefined && stats.elementsInGroup > 0 && (
-        <ContextStatBadge icon={Users} value={stats.elementsInGroup} label="ve viceramecku" color="teal" />
+        <ContextStatBadge icon={Users} value={stats.elementsInGroup} label="ve vícerámečku" color="teal" />
       )}
       {stats.unassignedCount !== undefined && stats.unassignedCount > 0 && (
-        <ContextStatBadge icon={AlertTriangle} value={stats.unassignedCount} label="bez prirazeni" color="amber" />
+        <ContextStatBadge icon={AlertTriangle} value={stats.unassignedCount} label="bez přiřazení" color="amber" />
       )}
     </div>
   );
@@ -85,16 +85,16 @@ function AssignStepContext({ stats }: { stats: WorkflowContextStats }) {
   return (
     <div className="flex flex-wrap items-center gap-2 mt-2">
       {stats.assignedCount !== undefined && (
-        <ContextStatBadge icon={CheckCircle} value={stats.assignedCount} label="prirazeno" color="emerald" />
+        <ContextStatBadge icon={CheckCircle} value={stats.assignedCount} label="přiřazeno" color="emerald" />
       )}
       {stats.inheritedCount !== undefined && stats.inheritedCount > 0 && (
-        <ContextStatBadge icon={Package} value={stats.inheritedCount} label="zdedeno" color="blue" />
+        <ContextStatBadge icon={Package} value={stats.inheritedCount} label="zděděno" color="blue" />
       )}
       {stats.unassignedCount !== undefined && stats.unassignedCount > 0 && (
-        <ContextStatBadge icon={AlertTriangle} value={stats.unassignedCount} label="neprirazeno" color="amber" />
+        <ContextStatBadge icon={AlertTriangle} value={stats.unassignedCount} label="nepřiřazeno" color="amber" />
       )}
       {stats.warningCount !== undefined && stats.warningCount > 0 && (
-        <ContextStatBadge icon={AlertTriangle} value={stats.warningCount} label="varovani" color="amber" />
+        <ContextStatBadge icon={AlertTriangle} value={stats.warningCount} label="varování" color="amber" />
       )}
     </div>
   );
@@ -104,13 +104,13 @@ function SummaryStepContext({ stats }: { stats: WorkflowContextStats }) {
   return (
     <div className="flex flex-wrap items-center gap-2 mt-2">
       {stats.warningCount !== undefined && stats.warningCount > 0 && (
-        <ContextStatBadge icon={AlertTriangle} value={stats.warningCount} label="varovani" color="amber" />
+        <ContextStatBadge icon={AlertTriangle} value={stats.warningCount} label="varování" color="amber" />
       )}
       {stats.fallbackCount !== undefined && stats.fallbackCount > 0 && (
         <ContextStatBadge icon={Info} value={stats.fallbackCount} label="fallback" color="slate" />
       )}
       {stats.mountingGroupWarnings !== undefined && stats.mountingGroupWarnings > 0 && (
-        <ContextStatBadge icon={Layers} value={stats.mountingGroupWarnings} label="viceram. varovani" color="amber" />
+        <ContextStatBadge icon={Layers} value={stats.mountingGroupWarnings} label="viceram. varování" color="amber" />
       )}
     </div>
   );
@@ -123,7 +123,7 @@ function QuoteStepContext({ stats }: { stats: WorkflowContextStats }) {
         <ContextStatBadge icon={FileText} value={stats.quotesCount} label={stats.quotesCount === 1 ? 'nabidka' : stats.quotesCount < 5 ? 'nabidky' : 'nabidek'} color="emerald" />
       )}
       {stats.warningCount !== undefined && stats.warningCount > 0 && (
-        <ContextStatBadge icon={AlertTriangle} value={stats.warningCount} label="nereseno" color="amber" />
+        <ContextStatBadge icon={AlertTriangle} value={stats.warningCount} label="neřešeno" color="amber" />
       )}
     </div>
   );
@@ -143,7 +143,7 @@ export default function WorkflowCtaBanner({
       <div className={`flex items-center gap-3 ${variant === 'compact' ? 'px-3 py-2' : 'px-4 py-3'} rounded-xl bg-emerald-500/10 border border-emerald-500/20`}>
         <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
         <span className={`${variant === 'compact' ? 'text-xs' : 'text-sm'} font-medium text-emerald-300`}>
-          Workflow dokoncen - vsechny kroky jsou kompletni
+          Workflow dokončen - všechny kroky jsou kompletní
         </span>
       </div>
     );
@@ -206,7 +206,7 @@ export default function WorkflowCtaBanner({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className={`text-sm font-bold ${textColor}`}>
-              Doporuceny dalsi krok: {label}
+              Doporučený další krok: {label}
             </span>
             {status.missingCount > 0 && (
               <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">

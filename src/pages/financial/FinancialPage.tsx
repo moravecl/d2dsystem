@@ -65,7 +65,7 @@ interface BillingServiceSchedule {
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> = {
   draft: { label: 'Koncept', color: 'text-slate-400', bg: 'bg-white/[0.06]/[0.08]' },
-  sent: { label: 'Odeslaná', color: 'text-blue-300', bg: 'bg-blue-500/100/15' },
+  sent: { label: 'Odesláná', color: 'text-blue-300', bg: 'bg-blue-500/100/15' },
   partial: { label: 'Částečně uhrazena', color: 'text-amber-300', bg: 'bg-amber-500/100/15' },
   paid: { label: 'Zaplacená', color: 'text-emerald-300', bg: 'bg-emerald-500/100/15' },
   overdue: { label: 'Po splatnosti', color: 'text-red-300', bg: 'bg-red-500/100/15' },
@@ -75,7 +75,7 @@ const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> =
 const filterTabs = [
   { key: 'all', label: 'Všechny' },
   { key: 'draft', label: 'Koncepty' },
-  { key: 'sent', label: 'Odeslané' },
+  { key: 'sent', label: 'Odesláné' },
   { key: 'partial', label: 'Částečně uhrazené' },
   { key: 'paid', label: 'Zaplacené' },
   { key: 'overdue', label: 'Po splatnosti' },
@@ -403,7 +403,7 @@ export default function FinancialPage() {
                   : 'border-transparent text-slate-500 hover:text-slate-300'
               }`}
             >
-              Rucni zaznamy ({manualEntries.length})
+              Ruční záznamy ({manualEntries.length})
             </button>
             <button
               onClick={() => setMainTab('billing')}
@@ -698,13 +698,13 @@ export default function FinancialPage() {
             projects={projects}
             onMarkInvoiced={async (jobId: string) => {
               await supabase.from('quick_jobs').update({ billing_status: 'invoiced', updated_at: new Date().toISOString() }).eq('id', jobId);
-              toast('Oznaceno jako vyfakturovano');
+              toast('Označeno jako vyfakturováno');
               loadData();
             }}
             onCreateInvoice={(jobId: string) => navigate(`/finance/faktura/nova?qj=${jobId}`)}
             onMarkServiceInvoiced={async (serviceId: string) => {
               await supabase.from('service_schedules').update({ billing_status: 'invoiced', updated_at: new Date().toISOString() }).eq('id', serviceId);
-              toast('Servis oznacen jako vyfakturovany');
+              toast('Servis označen jako vyfakturovany');
               loadData();
             }}
             onCreateServiceInvoice={(serviceId: string) => navigate(`/finance/faktura/nova?ss=${serviceId}`)}

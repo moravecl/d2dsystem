@@ -96,7 +96,7 @@ export default function RoleAssignmentSection({ roles }: Props) {
         if (error) {
           toast('Chyba: ' + error.message, 'error');
         } else {
-          toast('Role odebrana');
+          toast('Role odebrána');
         }
       }
     } else if (member.assignmentId) {
@@ -107,7 +107,7 @@ export default function RoleAssignmentSection({ roles }: Props) {
       if (error) {
         toast('Chyba: ' + error.message, 'error');
       } else {
-        toast('Role aktualizovana');
+        toast('Role aktualizována');
       }
     } else {
       const { error } = await supabase.from('user_role_assignments').insert({
@@ -119,7 +119,7 @@ export default function RoleAssignmentSection({ roles }: Props) {
       if (error) {
         toast('Chyba: ' + error.message, 'error');
       } else {
-        toast('Role prirazena');
+        toast('Role přiřazena');
       }
     }
 

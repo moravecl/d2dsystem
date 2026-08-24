@@ -148,7 +148,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
   const handleSubmit = async () => {
     const validWork = workRows.filter(r => r.worker_name.trim() && parseFloat(r.hours) > 0);
     if (validWork.length === 0) {
-      toast('Vyplnte alespon jednoho pracovnika a hodiny', 'error');
+      toast('Vyplňte alespoň jednoho pracovníka a hodiny', 'error');
       return;
     }
 
@@ -177,7 +177,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
 
     const { error: workError } = await supabase.from('quick_job_work_entries').insert(workInserts);
     if (workError) {
-      toast('Chyba pri ukladani pracovnich zaznamu', 'error');
+      toast('Chyba při ukládání pracovních zaznamu', 'error');
       setSaving(false);
       return;
     }
@@ -185,7 +185,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
     if (materialInserts.length > 0) {
       const { error: matError } = await supabase.from('quick_job_material_entries').insert(materialInserts);
       if (matError) {
-        toast('Chyba pri ukladani materialu', 'error');
+        toast('Chyba při ukládání materialu', 'error');
         setSaving(false);
         return;
       }
@@ -208,7 +208,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
 
     await syncToAttendanceOrProject(validWork, workInserts);
 
-    toast('Zakazka dokoncena s vykazem prace');
+    toast('Zakázka dokončena s výkazem práce');
     setSaving(false);
     onCompleted();
   };
@@ -263,16 +263,16 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
   };
 
   return (
-    <Modal open={open} onClose={onClose} title="Dokonceni zakazky s vykazem" size="xl" footer={
+    <Modal open={open} onClose={onClose} title="Dokončení zakázky s výkazem" size="xl" footer={
       <>
         <div className="flex-1 text-left">
           <div className="text-xs text-slate-400">
-            <span className="font-bold text-white">{totalWorkHours}h</span> prace
+            <span className="font-bold text-white">{totalWorkHours}h</span> práce
             {totalWorkCost > 0 && <span className="ml-2 font-bold text-blue-400">{totalWorkCost.toLocaleString('cs-CZ')} Kc</span>}
-            {totalMaterialCost > 0 && <span className="ml-2 font-bold text-amber-400">+ {totalMaterialCost.toLocaleString('cs-CZ')} Kc material</span>}
+            {totalMaterialCost > 0 && <span className="ml-2 font-bold text-amber-400">+ {totalMaterialCost.toLocaleString('cs-CZ')} Kc materiál</span>}
           </div>
         </div>
-        <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrusit</button>
+        <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrušit</button>
         <button onClick={handleSubmit} disabled={saving} className="px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 rounded-xl shadow-sm shadow-emerald-500/20 transition disabled:opacity-50 flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4" />
           {saving ? 'Ukladam...' : 'Dokoncit zakazku'}
@@ -289,16 +289,16 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5">Poznamky k dokonceni</label>
+          <label className="block text-xs font-semibold text-slate-400 mb-1.5">Poznámky k dokončení</label>
           <textarea value={completionNotes} onChange={e => setCompletionNotes(e.target.value)} rows={2} placeholder="Co bylo provedeno..." className={`${inputCls} resize-none`} />
         </div>
 
         <div className="flex gap-1 bg-white/[0.04] rounded-lg p-0.5">
           <button onClick={() => setActiveTab('work')} className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold transition ${activeTab === 'work' ? 'bg-white/[0.08] text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>
-            <Clock className="w-3.5 h-3.5" /> Vykaz prace ({workRows.length})
+            <Clock className="w-3.5 h-3.5" /> Výkaz práce ({workRows.length})
           </button>
           <button onClick={() => setActiveTab('material')} className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold transition ${activeTab === 'material' ? 'bg-white/[0.08] text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>
-            <Package className="w-3.5 h-3.5" /> Material ({materialRows.length})
+            <Package className="w-3.5 h-3.5" /> Materiál ({materialRows.length})
           </button>
         </div>
 
@@ -307,7 +307,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
             {workRows.map((row, idx) => (
               <div key={row.key} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pracovnik {idx + 1}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pracovník {idx + 1}</span>
                   {workRows.length > 1 && (
                     <button onClick={() => removeWork(idx)} className="p-1 rounded hover:bg-red-500/15 text-slate-500 hover:text-red-400 transition">
                       <Trash2 className="w-3.5 h-3.5" />
@@ -359,7 +359,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
                                 </button>
                               ))}
                               {employees.filter(e => !empSearch || e.name.toLowerCase().includes(empSearch.toLowerCase())).length === 0 && (
-                                <div className="px-3 py-3 text-xs text-slate-500 text-center">Zadny zamestnanec</div>
+                                <div className="px-3 py-3 text-xs text-slate-500 text-center">Žádný zaměstnanec</div>
                               )}
                             </div>
                           </div>
@@ -386,11 +386,11 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
                     </div>
                   </div>
                 </div>
-                <input value={row.description} onChange={e => updateWork(idx, 'description', e.target.value)} placeholder="Popis prace..." className={inputCls} />
+                <input value={row.description} onChange={e => updateWork(idx, 'description', e.target.value)} placeholder="Popis práce..." className={inputCls} />
               </div>
             ))}
             <button onClick={() => setWorkRows(prev => [...prev, makeWorkRow()])} className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-dashed border-white/10 text-xs font-bold text-slate-400 hover:border-blue-500/30 hover:text-blue-400 transition">
-              <Plus className="w-3.5 h-3.5" /> Pridat pracovnika
+              <Plus className="w-3.5 h-3.5" /> Přidat pracovníka
             </button>
           </div>
         )}
@@ -400,13 +400,13 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
             {materialRows.length === 0 && (
               <div className="text-center py-6">
                 <Package className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-                <p className="text-xs text-slate-500">Zadny material</p>
+                <p className="text-xs text-slate-500">Žádný materiál</p>
               </div>
             )}
             {materialRows.map((row, idx) => (
               <div key={row.key} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Polozka {idx + 1}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Položka {idx + 1}</span>
                   <button onClick={() => removeMaterial(idx)} className="p-1 rounded hover:bg-red-500/15 text-slate-500 hover:text-red-400 transition">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -424,7 +424,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
                         setActiveProductRow(null);
                       }
                     }}
-                    placeholder="Nazev materialu nebo hledat v katalogu..."
+                    placeholder="Název materialu nebo hledat v katalogu..."
                     className={inputCls}
                   />
                   {activeProductRow === idx && productResults.length > 0 && (
@@ -454,7 +454,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
                     <input type="number" min="0" value={row.unit_price} onChange={e => updateMaterial(idx, 'unit_price', e.target.value)} placeholder="0" className={inputCls} />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-semibold text-slate-500 mb-1">Nakup. cena</label>
+                    <label className="block text-[10px] font-semibold text-slate-500 mb-1">Nákup. cena</label>
                     <input type="number" min="0" value={row.purchase_price} onChange={e => updateMaterial(idx, 'purchase_price', e.target.value)} placeholder="0" className={inputCls} />
                   </div>
                   <div className="flex items-end">
@@ -466,7 +466,7 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
               </div>
             ))}
             <button onClick={() => setMaterialRows(prev => [...prev, makeMaterialRow()])} className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-dashed border-white/10 text-xs font-bold text-slate-400 hover:border-amber-500/30 hover:text-amber-400 transition">
-              <Plus className="w-3.5 h-3.5" /> Pridat material
+              <Plus className="w-3.5 h-3.5" /> Přidat materiál
             </button>
           </div>
         )}
@@ -476,11 +476,11 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
             <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-2">Souhrn</div>
             <div className="grid grid-cols-3 gap-3 text-xs">
               <div>
-                <div className="text-slate-400">Prace</div>
+                <div className="text-slate-400">Práce</div>
                 <div className="font-bold text-white">{totalWorkCost.toLocaleString('cs-CZ')} Kc</div>
               </div>
               <div>
-                <div className="text-slate-400">Material (prodejni)</div>
+                <div className="text-slate-400">Materiál (prodejní)</div>
                 <div className="font-bold text-white">{totalMaterialCost.toLocaleString('cs-CZ')} Kc</div>
               </div>
               <div>
@@ -490,17 +490,17 @@ export default function QuickJobCompletionModal({ open, job, onClose, onComplete
             </div>
             {totalMaterialPurchase > 0 && (
               <div className="text-[10px] text-slate-500 mt-1.5">
-                Nakupni cena materialu: {totalMaterialPurchase.toLocaleString('cs-CZ')} Kc | Marze: {(totalMaterialCost - totalMaterialPurchase).toLocaleString('cs-CZ')} Kc
+                Nákupní cena materialu: {totalMaterialPurchase.toLocaleString('cs-CZ')} Kc | Marže: {(totalMaterialCost - totalMaterialPurchase).toLocaleString('cs-CZ')} Kc
               </div>
             )}
             {job.project_id && (
               <div className="text-[10px] text-blue-400 mt-1.5 font-semibold">
-                Hodiny budou propsany do nadrazeneho projektu a dochazky
+                Hodiny budou propsany do nadřazeného projektu a docházky
               </div>
             )}
             {!job.project_id && (
               <div className="text-[10px] text-cyan-400 mt-1.5 font-semibold">
-                Hodiny budou propsany do dochazky
+                Hodiny budou propsany do docházky
               </div>
             )}
           </div>

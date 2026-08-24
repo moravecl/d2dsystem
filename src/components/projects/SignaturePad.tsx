@@ -120,7 +120,7 @@ export default function SignaturePad({ value, onChange, width = 500, height = 20
       />
       {!hasStrokes && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-sm text-slate-300 font-medium">Podepiste se zde</span>
+          <span className="text-sm text-slate-300 font-medium">Podepište se zde</span>
         </div>
       )}
       {hasStrokes && (

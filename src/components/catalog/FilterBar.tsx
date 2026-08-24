@@ -9,9 +9,9 @@ export interface CustomFilter {
 
 const FILTER_FIELDS: { key: string; label: string; getter: (p: Product) => string }[] = [
   { key: 'tag', label: 'Tag', getter: (p) => p.tag },
-  { key: 'trade', label: 'Remeslo', getter: (p) => p.trade },
+  { key: 'trade', label: 'Řemeslo', getter: (p) => p.trade },
   { key: 'kind', label: 'Typ', getter: (p) => p.kind },
-  { key: 'code', label: 'Kod', getter: (p) => p.code },
+  { key: 'code', label: 'Kód', getter: (p) => p.code },
 ];
 
 interface Props {
@@ -58,7 +58,7 @@ function AddFilterDropdown({ products, onAdd, onClose }: { products: Product[]; 
         onChange={(e) => { setField(e.target.value); setValue(''); }}
         className="w-full px-3 py-2 rounded-lg border border-white/10 text-sm font-extrabold focus:outline-none focus:ring-2 focus:ring-blue-500/20 mb-2"
       >
-        <option value="">Vyber pole...</option>
+        <option value="">Výběr pole...</option>
         {FILTER_FIELDS.map((f) => (
           <option key={f.key} value={f.key}>{f.label}</option>
         ))}
@@ -72,7 +72,7 @@ function AddFilterDropdown({ products, onAdd, onClose }: { products: Product[]; 
               onChange={(e) => setValue(e.target.value)}
               className="w-full px-3 py-2 rounded-lg border border-white/10 text-sm font-extrabold focus:outline-none focus:ring-2 focus:ring-blue-500/20 mb-2"
             >
-              <option value="">Vyber hodnotu...</option>
+              <option value="">Výběr hodnotu...</option>
               {availableValues.map((v) => (
                 <option key={v} value={v}>{v}</option>
               ))}
@@ -152,7 +152,7 @@ export default function FilterBar({
               : 'bg-navy-800/60 border border-white/[0.08] text-slate-300 hover:bg-white/[0.04]'
           }`}
         >
-          Vse
+          Vše
         </button>
         {categories.map((cat) => (
           <button
@@ -180,7 +180,7 @@ export default function FilterBar({
                 : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.08]'
             }`}
           >
-            Vse
+            Vše
           </button>
           {visibleSubcategories.map((sub) => (
             <button
@@ -214,7 +214,7 @@ export default function FilterBar({
           onChange={(e) => onBrandChange(e.target.value)}
           className="px-3 py-2 rounded-xl border border-white/10 bg-white/[0.06] focus:outline-none focus:ring-4 focus:ring-blue-500/20 font-extrabold text-sm w-full sm:w-auto"
         >
-          <option value="vse">Znacka: Vse</option>
+          <option value="vse">Značka: Vše</option>
           {brands.map((b) => (
             <option key={b} value={b}>{b}</option>
           ))}
@@ -225,7 +225,7 @@ export default function FilterBar({
           onChange={(e) => onPowerChange(e.target.value)}
           className="px-3 py-2 rounded-xl border border-white/10 bg-white/[0.06] focus:outline-none focus:ring-4 focus:ring-blue-500/20 font-extrabold text-sm w-full sm:w-auto"
         >
-          <option value="vse">Napajeni: Vse</option>
+          <option value="vse">Napájení: Vše</option>
           <option value="24V">24V</option>
           <option value="230V">230V</option>
           <option value="Tree/Air">Tree/Air</option>
@@ -277,7 +277,7 @@ export default function FilterBar({
             onClick={() => onCustomFiltersChange([])}
             className="text-xs font-extrabold text-slate-400 hover:text-slate-400 transition px-2 py-1.5"
           >
-            Smazat vse
+            Smazat vše
           </button>
         </div>
       )}

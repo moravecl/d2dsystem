@@ -219,7 +219,7 @@ export default function RecipientAutocomplete({ emails, onChange, placeholder }:
         <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-navy-800/60 rounded-xl border border-white/[0.08] shadow-lg">
           <div className="flex items-center gap-2 px-4 py-3 text-sm text-slate-500">
             <Search className="w-4 h-4 text-slate-300" />
-            Zadna shoda - stisknete Enter pro pridani rucne
+            Žádná shoda - stiskněte Enter pro přidání ručně
           </div>
         </div>
       )}

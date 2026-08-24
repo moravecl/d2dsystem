@@ -608,7 +608,7 @@ export default function ProductAssignmentPage() {
               {assignmentStats.unassigned === 0 && assignmentStats.total > 0 && (
                 <div className="ml-auto flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
                   <Check className="w-4 h-4 text-emerald-500" />
-                  <span className="text-sm font-bold text-emerald-400">Kompletni</span>
+                  <span className="text-sm font-bold text-emerald-400">Kompletní</span>
                 </div>
               )}
             </div>
@@ -631,7 +631,7 @@ export default function ProductAssignmentPage() {
               secondaryAction={
                 assignmentStats.assigned > 0
                   ? {
-                      label: 'Vytvorit nabidku',
+                      label: 'Vytvořit nabídku',
                       onClick: () => navigate(`/projekty/${id}?tab=quotes`),
                     }
                   : undefined
@@ -661,11 +661,11 @@ export default function ProductAssignmentPage() {
             <Filter className="w-3.5 h-3.5 text-slate-500" />
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Filtr:</span>
             {([
-              { key: 'all', label: 'Vse' },
-              { key: 'unassigned', label: 'Neprirazene' },
-              { key: 'assigned', label: 'Prirazene' },
-              { key: 'inherited', label: 'Zdedene' },
-              { key: 'in_group', label: 'Ve viceramecku' },
+              { key: 'all', label: 'Vše' },
+              { key: 'unassigned', label: 'Nepřiřazené' },
+              { key: 'assigned', label: 'Přiřazené' },
+              { key: 'inherited', label: 'Zděděné' },
+              { key: 'in_group', label: 'Ve vícerámečku' },
             ] as { key: typeof filterMode; label: string }[]).map((f) => (
               <button
                 key={f.key}
@@ -682,11 +682,11 @@ export default function ProductAssignmentPage() {
           </div>
           <div className="flex items-center gap-2 lg:ml-auto">
             <button onClick={expandAll} className="text-xs text-blue-400 hover:text-blue-300 font-bold">
-              Rozbalit vse
+              Rozbalit vše
             </button>
             <span className="text-slate-600">|</span>
             <button onClick={collapseAll} className="text-xs text-blue-400 hover:text-blue-300 font-bold">
-              Sbalit vse
+              Sbalit vše
             </button>
           </div>
         </div>
@@ -822,8 +822,8 @@ export default function ProductAssignmentPage() {
                 <Grid className="w-5 h-5 text-teal-400" />
               </div>
               <div>
-                <h3 className="font-extrabold text-white">Automaticky generovane ramecky</h3>
-                <p className="text-xs text-slate-400">Na zaklade viceramecku a designovych rad</p>
+                <h3 className="font-extrabold text-white">Automaticky generované rámečky</h3>
+                <p className="text-xs text-slate-400">Na základě vícerámečku a designových rad</p>
               </div>
             </div>
 
@@ -945,7 +945,7 @@ export default function ProductAssignmentPage() {
 
             <div className="flex-1 overflow-auto p-2">
               {sortedAndFilteredProducts.length === 0 ? (
-                <div className="text-center py-8 text-sm text-slate-400">Zadne produkty nenalezeny</div>
+                <div className="text-center py-8 text-sm text-slate-400">Žádné produkty nenalezeny</div>
               ) : (
                 <div className="space-y-1">
                   {sortedAndFilteredProducts.slice(0, 50).map((product) => {
@@ -987,17 +987,17 @@ export default function ProductAssignmentPage() {
                             <span className="text-sm font-bold text-white truncate">{product.name}</span>
                             {isRecommended && (
                               <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">
-                                Doporuceno
+                                Doporučeno
                               </span>
                             )}
                             {isCompatible && (
                               <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400">
-                                Kompatibilni
+                                Kompatibilní
                               </span>
                             )}
                             {isIncompatible && (
                               <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400">
-                                Nekompatibilni
+                                Nekompatibilní
                               </span>
                             )}
                           </div>

@@ -243,7 +243,7 @@ export default function TeamPage() {
     if (error) {
       toast('Chyba: ' + error.message, 'error');
     } else {
-      toast('Role aktualizovana.', 'success');
+      toast('Role aktualizována.', 'success');
       await loadMembers();
     }
     setChangingRole(null);
@@ -474,7 +474,7 @@ export default function TeamPage() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleInvite()}
-                placeholder="email@uzivatele.cz"
+                placeholder="email@uživatele.cz"
                 className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-white/10 bg-white/[0.06] text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition"
               />
             </div>

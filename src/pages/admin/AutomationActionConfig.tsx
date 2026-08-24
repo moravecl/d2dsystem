@@ -25,7 +25,7 @@ export default function AutomationActionConfig({
  return (
  <div className="space-y-3">
  <div>
- <label className={labelClass}>Nazev ukolu</label>
+ <label className={labelClass}>Název ukolu</label>
  <input
  type="text"
  value={(config.title as string) ?? ''}
@@ -65,8 +65,8 @@ export default function AutomationActionConfig({
  className={selectClass}
  >
  <option value="">Nikomu</option>
- <option value="__trigger_assignee__">Prirazena osoba (z triggeru)</option>
- <option value="__trigger_creator__">Tvurce entity</option>
+ <option value="__trigger_assignee__">Přiřazena osoba (z triggeru)</option>
+ <option value="__trigger_creator__">Tvůrce entity</option>
  {teamMembers.map(m => (
  <option key={m.id} value={m.id}>{m.display_name || m.email}</option>
  ))}
@@ -74,20 +74,20 @@ export default function AutomationActionConfig({
  </div>
  </div>
  <div>
- <label className={labelClass}>Termin (pocet dni od spusteni)</label>
+ <label className={labelClass}>Termín (počet dni od spuštění)</label>
  <input
  type="number"
  min={0}
  max={365}
  value={(config.due_in_days as number) ?? ''}
  onChange={e => onConfigChange('due_in_days', e.target.value ? parseInt(e.target.value) : undefined)}
- placeholder="Napr. 7"
+ placeholder="Např. 7"
  className="w-32 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-300 bg-white/[0.06] focus:outline-none focus:border-blue-400"
  />
  </div>
  <div className="bg-white/[0.04] rounded-lg p-2">
  <p className="text-[10px] text-slate-400 font-extrabold">
- Promenne: {'{{project_name}}'}, {'{{client_name}}'}, {'{{entity_name}}'}, {'{{new_status}}'}, {'{{old_status}}'}
+ Proměnné: {'{{project_name}}'}, {'{{client_name}}'}, {'{{entity_name}}'}, {'{{new_status}}'}, {'{{old_status}}'}
  </p>
  </div>
  </div>
@@ -97,21 +97,21 @@ export default function AutomationActionConfig({
  return (
  <div className="space-y-3">
  <div>
- <label className={labelClass}>Cilova entita</label>
+ <label className={labelClass}>Cílová entita</label>
  <select
  value={(config.target_entity as string) ?? triggerEntity}
  onChange={e => onConfigChange('target_entity', e.target.value)}
  className={selectClass}
  >
- <option value={triggerEntity}>Stejna entita (trigger)</option>
- {triggerEntity === 'task' && <option value="project">Nadrazeny projekt</option>}
- {triggerEntity === 'milestone' && <option value="project">Nadrazeny projekt</option>}
- {triggerEntity === 'invoice' && <option value="project">Souvisejici projekt</option>}
- {triggerEntity === 'quote' && <option value="project">Souvisejici projekt</option>}
+ <option value={triggerEntity}>Stejná entita (trigger)</option>
+ {triggerEntity === 'task' && <option value="project">Nadřazený projekt</option>}
+ {triggerEntity === 'milestone' && <option value="project">Nadřazený projekt</option>}
+ {triggerEntity === 'invoice' && <option value="project">Související projekt</option>}
+ {triggerEntity === 'quote' && <option value="project">Související projekt</option>}
  </select>
  </div>
  <div>
- <label className={labelClass}>Novy stav</label>
+ <label className={labelClass}>Nový stav</label>
  <select
  value={(config.new_status as string) ?? ''}
  onChange={e => onConfigChange('new_status', e.target.value)}
@@ -138,7 +138,7 @@ export default function AutomationActionConfig({
  value={(config.message as string) ?? ''}
  onChange={e => onConfigChange('message', e.target.value)}
  rows={2}
- placeholder="Napr. Projekt {{project_name}} byl zmenen na stav {{new_status}}"
+ placeholder="Např. Projekt {{project_name}} byl změněn na stav {{new_status}}"
  className={textareaClass}
  />
  </div>
@@ -149,11 +149,11 @@ export default function AutomationActionConfig({
  onChange={e => onConfigChange('notify_target', e.target.value)}
  className={selectClass}
  >
- <option value="assignee">Prirazena osoba</option>
- <option value="creator">Tvurce entity</option>
+ <option value="assignee">Přiřazena osoba</option>
+ <option value="creator">Tvůrce entity</option>
  <option value="project_manager">Odpovědná osoba projektu</option>
- <option value="all_admins">Vsichni admini</option>
- <option value="specific">Konkretni uzivatel</option>
+ <option value="all_admins">Všichni admini</option>
+ <option value="specific">Konkrétní uživatel</option>
  </select>
  </div>
  {(config.notify_target as string) === 'specific' && (
@@ -172,7 +172,7 @@ export default function AutomationActionConfig({
  )}
  <div className="bg-white/[0.04] rounded-lg p-2">
  <p className="text-[10px] text-slate-400 font-extrabold">
- Promenne: {'{{project_name}}'}, {'{{client_name}}'}, {'{{entity_name}}'}, {'{{new_status}}'}, {'{{old_status}}'}, {'{{assigned_to}}'}, {'{{due_date}}'}
+ Proměnné: {'{{project_name}}'}, {'{{client_name}}'}, {'{{entity_name}}'}, {'{{new_status}}'}, {'{{old_status}}'}, {'{{assigned_to}}'}, {'{{due_date}}'}
  </p>
  </div>
  </div>
@@ -182,42 +182,42 @@ export default function AutomationActionConfig({
  return (
  <div className="space-y-3">
  <div>
- <label className={labelClass}>Predmet emailu</label>
+ <label className={labelClass}>Předmět emailu</label>
  <input
  type="text"
  value={(config.subject as string) ?? ''}
  onChange={e => onConfigChange('subject', e.target.value)}
- placeholder="Napr. Zmena stavu projektu {{project_name}}"
+ placeholder="Např. Změna stavu projektu {{project_name}}"
  className={inputClass}
  />
  </div>
  <div>
- <label className={labelClass}>Telo emailu</label>
+ <label className={labelClass}>Tělo emailu</label>
  <textarea
  value={(config.body as string) ?? ''}
  onChange={e => onConfigChange('body', e.target.value)}
  rows={4}
- placeholder="Obsah emailu s promennymi..."
+ placeholder="Obsah emailu s proměnnými..."
  className={textareaClass}
  />
  </div>
  <div>
- <label className={labelClass}>Prijemce</label>
+ <label className={labelClass}>Příjemce</label>
  <select
  value={(config.email_target as string) ?? 'client'}
  onChange={e => onConfigChange('email_target', e.target.value)}
  className={selectClass}
  >
  <option value="client">Klient projektu</option>
- <option value="assignee">Prirazena osoba</option>
+ <option value="assignee">Přiřazena osoba</option>
  <option value="project_manager">Odpovědná osoba projektu</option>
- <option value="all_admins">Vsichni admini</option>
- <option value="custom">Vlastni adresa</option>
+ <option value="all_admins">Všichni admini</option>
+ <option value="custom">Vlastní adresa</option>
  </select>
  </div>
  {(config.email_target as string) === 'custom' && (
  <div>
- <label className={labelClass}>Emailova adresa</label>
+ <label className={labelClass}>Emailová adresa</label>
  <input
  type="email"
  value={(config.custom_email as string) ?? ''}
@@ -229,7 +229,7 @@ export default function AutomationActionConfig({
  )}
  <div className="bg-white/[0.04] rounded-lg p-2">
  <p className="text-[10px] text-slate-400 font-extrabold">
- Promenne: {'{{project_name}}'}, {'{{client_name}}'}, {'{{entity_name}}'}, {'{{new_status}}'}, {'{{invoice_number}}'}, {'{{total}}'}, {'{{due_date}}'}, {'{{link}}'}
+ Proměnné: {'{{project_name}}'}, {'{{client_name}}'}, {'{{entity_name}}'}, {'{{new_status}}'}, {'{{invoice_number}}'}, {'{{total}}'}, {'{{due_date}}'}, {'{{link}}'}
  </p>
  </div>
  </div>
@@ -239,14 +239,14 @@ export default function AutomationActionConfig({
  return (
  <div className="space-y-3">
  <div>
- <label className={labelClass}>Priradit osobu</label>
+ <label className={labelClass}>Přiřadit osobu</label>
  <select
  value={(config.user_id as string) ?? ''}
  onChange={e => onConfigChange('user_id', e.target.value)}
  className={selectClass}
  >
  <option value="">-- Vyberte --</option>
- <option value="__trigger_creator__">Tvurce entity</option>
+ <option value="__trigger_creator__">Tvůrce entity</option>
  {teamMembers.map(m => (
  <option key={m.id} value={m.id}>{m.display_name || m.email}</option>
  ))}
@@ -258,7 +258,7 @@ export default function AutomationActionConfig({
  case 'set_priority':
  return (
  <div>
- <label className={labelClass}>Nova priorita</label>
+ <label className={labelClass}>Nová priorita</label>
  <select
  value={(config.priority as string) ?? 'medium'}
  onChange={e => onConfigChange('priority', e.target.value)}
@@ -275,18 +275,18 @@ export default function AutomationActionConfig({
  return (
  <div className="space-y-3">
  <div>
- <label className={labelClass}>Text poznamky</label>
+ <label className={labelClass}>Text poznámky</label>
  <textarea
  value={(config.note as string) ?? ''}
  onChange={e => onConfigChange('note', e.target.value)}
  rows={2}
- placeholder="Napr. Automaticky zapsano: zmena stavu na {{new_status}}"
+ placeholder="Např. Automaticky zapsáno: změna stavu na {{new_status}}"
  className={textareaClass}
  />
  </div>
  <div className="bg-white/[0.04] rounded-lg p-2">
  <p className="text-[10px] text-slate-400 font-extrabold">
- Promenne: {'{{project_name}}'}, {'{{client_name}}'}, {'{{new_status}}'}, {'{{old_status}}'}, {'{{date}}'}
+ Proměnné: {'{{project_name}}'}, {'{{client_name}}'}, {'{{new_status}}'}, {'{{old_status}}'}, {'{{date}}'}
  </p>
  </div>
  </div>
@@ -296,18 +296,18 @@ export default function AutomationActionConfig({
  return (
  <div className="space-y-3">
  <div>
- <label className={labelClass}>Stav nove faktury</label>
+ <label className={labelClass}>Stav nové faktury</label>
  <select
  value={(config.invoice_status as string) ?? 'draft'}
  onChange={e => onConfigChange('invoice_status', e.target.value)}
  className={selectClass}
  >
  <option value="draft">Koncept</option>
- <option value="sent">Odeslana</option>
+ <option value="sent">Odeslána</option>
  </select>
  </div>
  <div>
- <label className={labelClass}>Splatnost (pocet dni)</label>
+ <label className={labelClass}>Splatnost (počet dni)</label>
  <input
  type="number"
  min={1}
@@ -369,7 +369,7 @@ export default function AutomationActionConfig({
  type="text"
  value={(config.field_name as string) ?? ''}
  onChange={e => onConfigChange('field_name', e.target.value)}
- placeholder="Napr. description, note, phase"
+ placeholder="Např. description, note, phase"
  className={inputClass}
  />
  </div>
@@ -412,7 +412,7 @@ export default function AutomationActionConfig({
  </select>
  </div>
  <div>
- <label className={labelClass}>Hlavicky (JSON, volitelne)</label>
+ <label className={labelClass}>Hlavičky (JSON, volitelné)</label>
  <textarea
  value={(config.headers as string) ?? ''}
  onChange={e => onConfigChange('headers', e.target.value)}
@@ -423,7 +423,7 @@ export default function AutomationActionConfig({
  </div>
  <div className="bg-white/[0.04] rounded-lg p-2">
  <p className="text-[10px] text-slate-400 font-extrabold">
- Telo requestu bude obsahovat vsechna data o entite a triggeru jako JSON.
+ Tělo requestu bude obsahovat všechna data o entitě a triggeru jako JSON.
  </p>
  </div>
  </div>
@@ -432,7 +432,7 @@ export default function AutomationActionConfig({
  default:
  return (
  <div className="text-xs text-slate-400 font-extrabold py-2">
- Zadna dalsi konfigurace
+ Žádná další konfigurace
  </div>
  );
  }

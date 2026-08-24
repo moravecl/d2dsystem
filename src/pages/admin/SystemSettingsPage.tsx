@@ -802,7 +802,7 @@ export default function SystemSettingsPage() {
           <div className="bg-navy-800/60 backdrop-blur-sm rounded-xl border border-white/[0.08] p-6">
             <h3 className="text-sm font-bold text-white mb-1">Resetovat průvodce</h3>
             <p className="text-sm text-slate-400 mb-4">
-              Po resetu se průvodce znovu zobrazí všem uživatelům při příští návštěvě dané stránky.
+              Po resetu se průvodce znovu zobrazí všem uživatelům při příští návštěvě daňé stránky.
             </p>
             <div className="space-y-2">
               {Object.entries({

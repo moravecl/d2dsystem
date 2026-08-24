@@ -147,7 +147,7 @@ export default function LoginPage() {
                     required
                     autoFocus
                     className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/[0.04]/50 text-sm font-medium text-white focus:outline-none focus:border-blue-400 focus:bg-white/[0.06] transition placeholder:text-slate-400"
-                    placeholder="vas@email.cz"
+                    placeholder="váš@email.cz"
                   />
                 </div>
               </div>

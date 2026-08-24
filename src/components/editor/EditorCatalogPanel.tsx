@@ -75,7 +75,7 @@ export default function EditorCatalogPanel({
               !activeCatId ? 'bg-slate-900 text-white' : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.08]'
             }`}
           >
-            Vse
+            Vše
           </button>
           {catsWithProducts.map((cat) => (
             <button

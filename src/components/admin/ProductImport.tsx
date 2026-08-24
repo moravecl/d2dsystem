@@ -525,11 +525,11 @@ export default function ProductImport({ categories, onClose, onDone }: Props) {
                   <tr>
                     <th className="text-left p-3 font-extrabold text-slate-500 uppercase tracking-wider">#</th>
                     <th className="text-left p-3 font-extrabold text-slate-500 uppercase tracking-wider">Číslo</th>
-                    <th className="text-left p-3 font-extrabold text-slate-500 uppercase tracking-wider min-w-[200px]">Nazev</th>
-                    <th className="text-left p-3 font-extrabold text-slate-500 uppercase tracking-wider">Vyrobce</th>
+                    <th className="text-left p-3 font-extrabold text-slate-500 uppercase tracking-wider min-w-[200px]">Název</th>
+                    <th className="text-left p-3 font-extrabold text-slate-500 uppercase tracking-wider">Výrobce</th>
                     <th className="text-right p-3 font-extrabold text-slate-500 uppercase tracking-wider">Prodej</th>
-                    <th className="text-right p-3 font-extrabold text-slate-500 uppercase tracking-wider">Nakup</th>
-                    <th className="text-right p-3 font-extrabold text-slate-500 uppercase tracking-wider">Marze %</th>
+                    <th className="text-right p-3 font-extrabold text-slate-500 uppercase tracking-wider">Nákup</th>
+                    <th className="text-right p-3 font-extrabold text-slate-500 uppercase tracking-wider">Marže %</th>
                     <th className="text-left p-3 font-extrabold text-slate-500 uppercase tracking-wider">Kategorie</th>
                     <th className="text-left p-3 font-extrabold text-slate-500 uppercase tracking-wider">Podkategorie</th>
                   </tr>
@@ -586,7 +586,7 @@ export default function ProductImport({ categories, onClose, onDone }: Props) {
         <div className="bg-navy-800/60 rounded-2xl border border-white/[0.06] p-16 text-center">
           <Loader2 className="w-12 h-12 text-blue-400 mx-auto mb-4 animate-spin" />
           <p className="text-lg font-extrabold text-slate-300">Importuji produkty...</p>
-          <p className="text-sm text-slate-400 mt-1">Prosim nepreruste operaci</p>
+          <p className="text-sm text-slate-400 mt-1">Prosím nepřerušte operaci</p>
         </div>
       )}
 

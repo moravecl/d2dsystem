@@ -132,7 +132,7 @@ export default function ServiceTicketsList() {
           <div className="flex items-center gap-1.5">
             <span className="text-[10px] font-bold text-slate-500 bg-white/[0.04] px-1.5 py-0.5 rounded">{pr.label}</span>
             {ticket.reported_by_portal && (
-              <span className="text-[10px] font-bold text-cyan-600 bg-cyan-500/10 px-1.5 py-0.5 rounded">Portal</span>
+              <span className="text-[10px] font-bold text-cyan-600 bg-cyan-500/10 px-1.5 py-0.5 rounded">Portál</span>
             )}
           </div>
         </div>
@@ -232,7 +232,7 @@ export default function ServiceTicketsList() {
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${colColor.bg} ${colColor.text}`}>
                       {colDef?.label || t.status}
                     </span>
-                    {t.reported_by_portal && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-600">Portal</span>}
+                    {t.reported_by_portal && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-600">Portál</span>}
                   </div>
                   <div className="text-[11px] text-slate-400 truncate mt-0.5">{t.project_name}</div>
                 </div>

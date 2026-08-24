@@ -198,7 +198,7 @@ export function buildSchematicSummary(params: BuildSchematicSummaryParams): Sche
       rowWarnings.push({
         type: 'no_assignment',
         severity: 'warning',
-        message: `${elType.name} nema prirazeny produkt`,
+        message: `${elType.name} nemá přiřazeny produkt`,
         elementId: element.id,
         elementTypeId: element.element_type_id,
       });
@@ -206,7 +206,7 @@ export function buildSchematicSummary(params: BuildSchematicSummaryParams): Sche
       rowWarnings.push({
         type: 'no_price',
         severity: 'info',
-        message: `Produkt "${product.name}" nema nastavenou cenu`,
+        message: `Produkt "${product.name}" nemá nastavenou cenu`,
         productId: product.id,
       });
     }
@@ -215,7 +215,7 @@ export function buildSchematicSummary(params: BuildSchematicSummaryParams): Sche
       rowWarnings.push({
         type: 'incompatible',
         severity: 'warning',
-        message: `Produkt "${product?.name || ''}" neni kompatibilni s ${elType.name}`,
+        message: `Produkt "${product?.name || ''}" není kompatibilní s ${elType.name}`,
         elementId: element.id,
         productId: product?.id,
       });
@@ -369,7 +369,7 @@ function buildFrameAndModuleRows(params: BuildFrameParams): {
       frameWarnings.push({
         type: 'missing_frame',
         severity: 'warning',
-        message: `Viceramecek${hint ? ` "${hint}"` : ''} nema prirazenou designovou radu`,
+        message: `Vícerámeček${hint ? ` "${hint}"` : ''} nemá přiřazenou designovou řadu`,
       });
       continue;
     }
@@ -397,7 +397,7 @@ function buildFrameAndModuleRows(params: BuildFrameParams): {
       frameWarnings.push({
         type: 'no_mapping',
         severity: 'info',
-        message: `Rada "${dsProduct.name}" nema mapovani pro ${frameRoleKey}`,
+        message: `Řada "${dsProduct.name}" nemá mapování pro ${frameRoleKey}`,
       });
     }
 
@@ -423,7 +423,7 @@ function buildFrameAndModuleRows(params: BuildFrameParams): {
         rowWarnings.push({
           type: 'no_price',
           severity: 'info',
-          message: `Ramecek ${group.frame_size}R nema nastavenou cenu`,
+          message: `Rámeček ${group.frame_size}R nemá nastavenou cenu`,
         });
       }
 
@@ -470,7 +470,7 @@ function buildFrameAndModuleRows(params: BuildFrameParams): {
           rowWarnings.push({
             type: 'no_mapping',
             severity: 'warning',
-            message: `Modul "${moduleName}" nema prirazeny produkt v rade "${dsProduct.name}"`,
+            message: `Modul "${moduleName}" nemá přiřazeny produkt v řadě "${dsProduct.name}"`,
           });
         }
 
@@ -598,7 +598,7 @@ export function schematicSummaryToQuoteSections(
       quoteWarnings.push({
         type: 'unassigned_element',
         severity: 'warning',
-        message: `${row.elementTypeName} (${row.quantity} ks) nema prirazeny produkt`,
+        message: `${row.elementTypeName} (${row.quantity} ks) nemá přiřazeny produkt`,
       });
       continue;
     }
@@ -681,7 +681,7 @@ export function schematicSummaryToQuoteSections(
         quoteWarnings.push({
           type: 'unassigned_element',
           severity: 'warning',
-          message: `Modul "${mod.moduleName}" v rade "${mod.designSeriesName}" nema prirazeny produkt`,
+          message: `Modul "${mod.moduleName}" v řadě "${mod.designSeriesName}" nemá přiřazeny produkt`,
         });
         continue;
       }

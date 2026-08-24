@@ -153,7 +153,7 @@ export default function CalendarEventDetailPopup({ event, onClose }: Props) {
               className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-xl hover:bg-slate-700 transition-colors"
             >
               <ExternalLink className="w-4 h-4" />
-              Prejit na detail
+              Přejít na detail
             </Link>
           </div>
         )}

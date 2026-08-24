@@ -16,12 +16,12 @@ const TOOLS: { mode: EpsCanvasMode; icon: typeof ShieldAlert; label: string; sho
   { mode: 'navigate', icon: MousePointer2, label: 'Navigace', shortcut: 'V' },
   { mode: 'place_detector', icon: ShieldAlert, label: 'Detektor', shortcut: 'D' },
   { mode: 'draw_route', icon: Route, label: 'Trasa kabelu', shortcut: 'R' },
-  { mode: 'place_panel', icon: Cpu, label: 'Ustredna', shortcut: 'U' },
-  { mode: 'place_siren', icon: Volume2, label: 'Sirena', shortcut: 'S' },
-  { mode: 'place_motion_sensor', icon: Scan, label: 'PIR cidlo', shortcut: 'P' },
-  { mode: 'place_keypad', icon: KeyRound, label: 'Klavesnice', shortcut: 'K' },
-  { mode: 'place_control_device', icon: ToggleRight, label: 'Ovladac', shortcut: 'O' },
-  { mode: 'set_scale', icon: Ruler, label: 'Meritko', shortcut: 'M' },
+  { mode: 'place_panel', icon: Cpu, label: 'Ústředna', shortcut: 'U' },
+  { mode: 'place_siren', icon: Volume2, label: 'Siréna', shortcut: 'S' },
+  { mode: 'place_motion_sensor', icon: Scan, label: 'PIR čidlo', shortcut: 'P' },
+  { mode: 'place_keypad', icon: KeyRound, label: 'Klávesnice', shortcut: 'K' },
+  { mode: 'place_control_device', icon: ToggleRight, label: 'Ovladač', shortcut: 'O' },
+  { mode: 'set_scale', icon: Ruler, label: 'Měřítko', shortcut: 'M' },
 ];
 
 const ALWAYS_AVAILABLE: EpsCanvasMode[] = ['navigate', 'set_scale'];
@@ -63,18 +63,18 @@ export default function EpsToolbar({ mode, onModeChange, showCoverage, showZones
 
       <button
         onClick={onToggleCoverage}
-        title="Zobrazit pokryti detektoru"
+        title="Zobrazit pokrytí detektoru"
         className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
           showCoverage ? 'bg-emerald-600/20 text-emerald-400 ring-1 ring-emerald-500/30' : 'text-slate-500 hover:text-slate-300'
         }`}
       >
         {showCoverage ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-        <span className="hidden lg:inline">Pokryti</span>
+        <span className="hidden lg:inline">Pokrytí</span>
       </button>
 
       <button
         onClick={onToggleZones}
-        title="Zobrazit zony"
+        title="Zobrazit zóny"
         className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
           showZones ? 'bg-amber-600/20 text-amber-400 ring-1 ring-amber-500/30' : 'text-slate-500 hover:text-slate-300'
         }`}
@@ -82,7 +82,7 @@ export default function EpsToolbar({ mode, onModeChange, showCoverage, showZones
         <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
           <rect x="2" y="2" width="12" height="12" rx="2" strokeDasharray="3 2" />
         </svg>
-        <span className="hidden lg:inline">Zony</span>
+        <span className="hidden lg:inline">Zóny</span>
       </button>
     </div>
   );

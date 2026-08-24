@@ -266,7 +266,7 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
       toast('Složka není prázdná. Nejdříve přesuňte nebo smažte obsah.', 'error');
       return;
     }
-    if (!confirm(`Smazat slozku "${folder.name}"?`)) return;
+    if (!confirm(`Smazat složku "${folder.name}"?`)) return;
     await supabase.from('project_folders').delete().eq('id', folder.id);
     toast('Složka smazána');
     loadData();
@@ -561,7 +561,7 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-white truncate">{folder.name}</span>
                     {folder.portal_visible && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 shrink-0">Portal</span>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 shrink-0">Portál</span>
                     )}
                     {folder.visible_to_roles && folder.visible_to_roles.length < 4 && (
                       <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400 shrink-0 flex items-center gap-0.5">
@@ -618,7 +618,7 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
                     </button>
                     {(file.portal_visible || inheritedFromFolder) && (
                       <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 shrink-0">
-                        Portal{inheritedFromFolder && !file.portal_visible ? ' (složka)' : ''}
+                        Portál{inheritedFromFolder && !file.portal_visible ? ' (složka)' : ''}
                       </span>
                     )}
                     {file.requires_approval && (
@@ -634,7 +634,7 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
                   </div>
                   {file.approval_status === 'approved' && file.approved_at && (
                     <div className="text-[10px] text-emerald-400 mt-0.5">
-                      Schvaleno {formatDateTime(file.approved_at)}
+                      Schváleno {formatDateTime(file.approved_at)}
                     </div>
                   )}
                   {file.approval_status === 'rejected' && file.approval_note && (
@@ -806,7 +806,7 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
                 {folderPortalVisible && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
               </div>
               <div>
-                <span className="text-sm font-medium text-white">Zobrazit v klientskem portalu</span>
+                <span className="text-sm font-medium text-white">Zobrazit v klientském portálu</span>
                 <p className="text-[10px] text-slate-500">Klient uvidí tuto složku a její soubory v portálu</p>
               </div>
             </button>

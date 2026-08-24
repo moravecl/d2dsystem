@@ -45,10 +45,10 @@ interface ProjectRef {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof CheckCircle }> = {
-  sent: { label: 'Odeslano', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-200', icon: CheckCircle },
+  sent: { label: 'Odesláno', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-200', icon: CheckCircle },
   failed: { label: 'Selhalo', color: 'bg-red-500/10 text-red-400 border-red-200', icon: XCircle },
-  queued: { label: 'Ve fronte', color: 'bg-amber-500/10 text-amber-400 border-amber-200', icon: Clock },
-  bounced: { label: 'Vraceno', color: 'bg-orange-500/10 text-orange-700 border-orange-200', icon: XCircle },
+  queued: { label: 'Ve frontě', color: 'bg-amber-500/10 text-amber-400 border-amber-200', icon: Clock },
+  bounced: { label: 'Vráceno', color: 'bg-orange-500/10 text-orange-700 border-orange-200', icon: XCircle },
 };
 
 export default function EmailingPage() {
@@ -107,12 +107,12 @@ export default function EmailingPage() {
         { label: 'Emailing' },
       ],
       primaryAction: {
-        label: 'Novy email',
+        label: 'Nový email',
         icon: <Send className="w-4 h-4" />,
         onClick: handleOpenSingleComposer,
       },
       secondaryAction: {
-        label: 'Hromadne odeslat',
+        label: 'Hromadné odeslat',
         icon: <Users className="w-4 h-4" />,
         onClick: () => setBulkOpen(true),
       },
@@ -158,7 +158,7 @@ export default function EmailingPage() {
 
   const handleBulkSend = () => {
     if (bulkEmails.length === 0) {
-      toast('Zadejte alespon jednu emailovou adresu', 'error');
+      toast('Zadejte alespoň jednu emailovou adresu', 'error');
       return;
     }
     setComposerBulkRecipients(bulkEmails);
@@ -174,9 +174,9 @@ export default function EmailingPage() {
 
   const statCards = [
     { label: 'Celkem', value: stats.total, icon: Mail, color: 'bg-white/[0.04] text-slate-300' },
-    { label: 'Odeslano', value: stats.sent, icon: CheckCircle, color: 'bg-emerald-500/10 text-emerald-400' },
+    { label: 'Odesláno', value: stats.sent, icon: CheckCircle, color: 'bg-emerald-500/10 text-emerald-400' },
     { label: 'Selhalo', value: stats.failed, icon: XCircle, color: 'bg-red-500/10 text-red-400' },
-    { label: 'Ve fronte', value: stats.queued, icon: Clock, color: 'bg-amber-500/10 text-amber-400' },
+    { label: 'Ve frontě', value: stats.queued, icon: Clock, color: 'bg-amber-500/10 text-amber-400' },
   ];
 
   if (loading) {
@@ -212,7 +212,7 @@ export default function EmailingPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Hledat dle predmetu, prijemce, odesilatele..."
+            placeholder="Hledat dle předmětu, příjemce, odesílatele..."
             className="w-full pl-10 pr-4 py-2.5 text-sm border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none transition"
           />
         </div>
@@ -250,11 +250,11 @@ export default function EmailingPage() {
               onChange={(e) => setFilterStatus(e.target.value)}
               className="px-3 py-2 text-sm border border-white/10 rounded-xl bg-white/[0.06] outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
             >
-              <option value="">Vsechny</option>
-              <option value="sent">Odeslano</option>
+              <option value="">Všechny</option>
+              <option value="sent">Odesláno</option>
               <option value="failed">Selhalo</option>
-              <option value="queued">Ve fronte</option>
-              <option value="bounced">Vraceno</option>
+              <option value="queued">Ve frontě</option>
+              <option value="bounced">Vráceno</option>
             </select>
           </div>
           <div>
@@ -264,7 +264,7 @@ export default function EmailingPage() {
               onChange={(e) => setFilterUser(e.target.value)}
               className="px-3 py-2 text-sm border border-white/10 rounded-xl bg-white/[0.06] outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
             >
-              <option value="">Vsichni</option>
+              <option value="">Všichni</option>
               {uniqueSenders.map(uid => (
                 <option key={uid} value={uid}>{getProfileName(uid)}</option>
               ))}
@@ -277,7 +277,7 @@ export default function EmailingPage() {
               onChange={(e) => setFilterProject(e.target.value)}
               className="px-3 py-2 text-sm border border-white/10 rounded-xl bg-white/[0.06] outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
             >
-              <option value="">Vsechny</option>
+              <option value="">Všechny</option>
               {uniqueProjects.map(pid => (
                 <option key={pid} value={pid}>{getProjectName(pid)}</option>
               ))}
@@ -297,8 +297,8 @@ export default function EmailingPage() {
       {filtered.length === 0 ? (
         <div className="bg-navy-800/60 backdrop-blur-sm rounded-2xl border border-white/[0.08] p-12 text-center">
           <Inbox className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <p className="text-sm font-semibold text-slate-400">Zatim zadne emaily</p>
-          <p className="text-xs text-slate-400 mt-1">Emaily odeslane ze systemu se zobrazi zde</p>
+          <p className="text-sm font-semibold text-slate-400">Zatím žádné emaily</p>
+          <p className="text-xs text-slate-400 mt-1">Emaily odesláné ze systému se zobrazí zde</p>
         </div>
       ) : (
         <div className="bg-navy-800/60 backdrop-blur-sm rounded-2xl border border-white/[0.08] overflow-hidden">
@@ -307,8 +307,8 @@ export default function EmailingPage() {
               <thead>
                 <tr className="bg-white/[0.04]/80">
                   <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Stav</th>
-                  <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Predmet</th>
-                  <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Prijemci</th>
+                  <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Předmět</th>
+                  <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Příjemci</th>
                   <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Odeslal</th>
                   <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Projekt</th>
                   <th className="text-left px-5 py-3 text-xs font-bold text-slate-500 uppercase">Datum</th>
@@ -390,12 +390,12 @@ export default function EmailingPage() {
       <Modal
         open={bulkOpen}
         onClose={() => setBulkOpen(false)}
-        title="Hromadny emailing"
+        title="Hromadný emailing"
         size="md"
         footer={
           <>
             <button onClick={() => setBulkOpen(false)} className="px-4 py-2 text-sm font-semibold text-slate-400 bg-white/[0.06] rounded-xl hover:bg-white/[0.08] transition">
-              Zrusit
+              Zrušit
             </button>
             <button
               onClick={handleBulkSend}
@@ -403,19 +403,19 @@ export default function EmailingPage() {
               className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
             >
               <ArrowUpRight className="w-4 h-4" />
-              Pokracovat ({bulkEmails.length})
+              Pokračovat ({bulkEmails.length})
             </button>
           </>
         }
       >
         <div className="space-y-4">
           <p className="text-sm text-slate-400">
-            Vyhledejte klienty podle jmena nebo zadejte emailove adresy rucne.
+            Vyhledejte klienty podle jména nebo zadejte emailové adresy ručně.
           </p>
           <RecipientAutocomplete
             emails={bulkEmails}
             onChange={setBulkEmails}
-            placeholder="Zadejte jmeno nebo email klienta..."
+            placeholder="Zadejte jméno nebo email klienta..."
           />
         </div>
       </Modal>
@@ -442,7 +442,7 @@ export default function EmailingPage() {
                 <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Datum</div>
                 <div className="text-sm font-medium text-white">{formatDate(detailEntry.created_at)}</div>
                 {detailEntry.sent_at && (
-                  <div className="text-xs text-slate-500 mt-0.5">Odeslano: {formatDate(detailEntry.sent_at)}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Odesláno: {formatDate(detailEntry.sent_at)}</div>
                 )}
               </div>
             </div>
@@ -472,7 +472,7 @@ export default function EmailingPage() {
             </div>
 
             <div className="p-3 bg-white/[0.04] rounded-xl">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Predmet</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Předmět</div>
               <div className="text-sm font-semibold text-white">{detailEntry.subject}</div>
             </div>
 

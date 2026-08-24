@@ -113,7 +113,7 @@ export default function CalendarWeekView({ currentDate, events, onDayClick, onDr
 
         <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b border-white/[0.06] bg-white/[0.06]">
           <div className="border-r border-white/10 px-1 py-2">
-            <span className="text-[9px] font-semibold text-slate-400 uppercase">Cely den</span>
+            <span className="text-[9px] font-semibold text-slate-400 uppercase">Celý den</span>
           </div>
           {weekDays.map((wd, i) => {
             const allDayEvents = dayData[i].allDay;

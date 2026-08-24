@@ -235,11 +235,11 @@ export default function CompanyInfoPage() {
  </div>
 
  <div className="pt-4 border-t border-white/[0.08]">
- <h3 className="text-sm font-bold text-slate-300 mb-4">Bankovni spojeni</h3>
+ <h3 className="text-sm font-bold text-slate-300 mb-4">Bankovní spojení</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
  <div>
  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
- Nazev banky
+ Název banky
  </label>
  <input
  value={form.bank_name}
@@ -251,7 +251,7 @@ export default function CompanyInfoPage() {
 
  <div>
  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
- Cislo uctu
+ Číslo účtu
  </label>
  <input
  value={form.bank_account}
@@ -259,7 +259,7 @@ export default function CompanyInfoPage() {
  className="w-full px-3.5 py-2.5 text-sm border border-white/10 rounded-xl bg-white/[0.06]/[0.06] text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition"
  placeholder="2901234567/2010"
  />
- <p className="text-xs text-slate-500 mt-1">Cislo uctu se automaticky propisuje do novych faktur</p>
+ <p className="text-xs text-slate-500 mt-1">Číslo účtu se automaticky propisuje do nových faktur</p>
  </div>
  </div>
 

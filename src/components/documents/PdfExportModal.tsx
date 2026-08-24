@@ -26,7 +26,7 @@ export default function PdfExportModal({ doc, content, projectName, onClose, onL
 
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      toast('Prohlizec zablokoval otevreni okna. Povolte vyskakovaci okna.', 'error');
+      toast('Prohlížeč zablokoval otevření okna. Povolte vyskakovací okna.', 'error');
       setExporting(false);
       return;
     }
@@ -99,10 +99,10 @@ export default function PdfExportModal({ doc, content, projectName, onClose, onL
       if (!error) {
         await logAudit('project_document', doc.id, 'locked', {});
         onLocked();
-        toast('PDF exportovano a dokument uzamcen');
+        toast('PDF exportováno a dokument uzamčen');
       }
     } else {
-      toast('PDF exportovano');
+      toast('PDF exportováno');
     }
 
     onClose();

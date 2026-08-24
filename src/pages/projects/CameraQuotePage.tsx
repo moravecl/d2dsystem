@@ -469,7 +469,7 @@ export default function CameraQuotePage() {
             <StatCard label="Kabeláž" value={Math.round(totalCableLengthM)} suffix="m" color="emerald" icon={Cable} />
             <StatCard label="PoE příkon" value={Math.round(totalPoe)} suffix="W" color="amber" icon={Network} />
             <StatCard
-              label="Uloziste"
+              label="Úložiště"
               value={hddBubbleValue > 0 ? hddBubbleValue.toString() : '0'}
               suffix="TB"
               color="slate"
@@ -521,7 +521,7 @@ export default function CameraQuotePage() {
                     }`}
                   >
                     <ImageIcon className="w-3 h-3" />
-                    <span className="text-[10px] font-extrabold">Obrazky</span>
+                    <span className="text-[10px] font-extrabold">Obrázky</span>
                   </button>
                   <div className="flex items-center gap-1.5 bg-slate-800 rounded-lg px-2.5 py-1.5">
                     <Percent className="w-3 h-3 text-blue-400" />

@@ -964,7 +964,7 @@ function TeamTab({
 
   const handleGenerateContract = async (employeeId: string) => {
     if (!organization || !contractTitle.trim()) {
-      toast('Vyplnte nazev smlouvy', 'error');
+      toast('Vyplňte název smlouvy', 'error');
       return;
     }
     setGeneratingContract(true);
@@ -1006,10 +1006,10 @@ function TeamTab({
 
     setGeneratingContract(false);
     if (error) {
-      toast('Chyba pri generovani smlouvy', 'error');
+      toast('Chyba při generování smlouvy', 'error');
       return;
     }
-    toast('Smlouva vygenerovana');
+    toast('Smlouva vygenerována');
     setShowContractModal(null);
     setContractTitle('');
     setSelectedTemplateId('');
@@ -1030,10 +1030,10 @@ function TeamTab({
       .eq('id', contractId);
     setUpdatingContractStatus(null);
     if (error) {
-      toast('Chyba pri aktualizaci', 'error');
+      toast('Chyba při aktualizaci', 'error');
       return;
     }
-    toast('Stav smlouvy aktualizovan');
+    toast('Stav smlouvy aktualizován');
     loadContracts();
     if (viewingContract?.id === contractId) {
       setViewingContract({ ...viewingContract, status: newStatus as EmployeeContract['status'] });
@@ -1044,10 +1044,10 @@ function TeamTab({
     if (!confirm('Opravdu smazat tuto smlouvu?')) return;
     const { error } = await supabase.from('employee_contracts').delete().eq('id', contractId);
     if (error) {
-      toast('Chyba pri mazani', 'error');
+      toast('Chyba při mazání', 'error');
       return;
     }
-    toast('Smlouva smazana');
+    toast('Smlouva smazána');
     loadContracts();
     if (viewingContract?.id === contractId) {
       setViewingContract(null);
@@ -1091,10 +1091,10 @@ function TeamTab({
       .eq('id', editingMemberId);
     setSavingProfile(false);
     if (error) {
-      toast('Chyba pri ukladani', 'error');
+      toast('Chyba při ukládání', 'error');
       return;
     }
-    toast('Profil aktualizovan');
+    toast('Profil aktualizován');
     setEditingMemberId(null);
     onRefresh();
   };
@@ -1125,7 +1125,7 @@ function TeamTab({
             <div className={`mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${planLimits.canAddUser ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
               {!planLimits.canAddUser && <AlertTriangle className="w-3 h-3" />}
               <Users className="w-3 h-3" />
-              {planLimits.userCount} / {planLimits.maxUsers >= 999 ? '\u221E' : planLimits.maxUsers} uzivatelu
+              {planLimits.userCount} / {planLimits.maxUsers >= 999 ? '\u221E' : planLimits.maxUsers} uživatelů
             </div>
           )}
         </div>
@@ -1138,7 +1138,7 @@ function TeamTab({
         <div className="bg-navy-800/60 backdrop-blur-sm rounded-xl border border-white/[0.08] p-5">
           <h2 className="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2">
             <UserPlus className="w-4 h-4 text-blue-400" />
-            Pridat clena
+            Přidat člena
           </h2>
           <div className="flex flex-wrap gap-3">
             <div className="relative flex-1 min-w-[200px]">
@@ -1148,7 +1148,7 @@ function TeamTab({
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleInvite()}
-                placeholder="email@uzivatele.cz"
+                placeholder="email@uživatele.cz"
                 className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-white/10 bg-white/[0.04] text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition"
               />
             </div>
@@ -1167,7 +1167,7 @@ function TeamTab({
               className="px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 transition disabled:opacity-40 flex items-center gap-2 shrink-0"
             >
               {inviting ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
-              Pridat
+              Přidat
             </button>
             <button
               onClick={onCreateUser}
@@ -1190,12 +1190,12 @@ function TeamTab({
       )}
 
       <div className="flex items-center justify-between">
-        <span className="text-sm font-bold text-slate-400">Clenove tymu ({members.length})</span>
+        <span className="text-sm font-bold text-slate-400">Členové týmu ({members.length})</span>
       </div>
 
       {members.length === 0 ? (
         <div className="bg-navy-800/60 backdrop-blur-sm border border-white/[0.08] rounded-2xl p-10 text-center">
-          <div className="text-lg font-extrabold text-white">Zatim zadni clenove</div>
+          <div className="text-lg font-extrabold text-white">Zatím zadní členové</div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -1271,7 +1271,7 @@ function TeamTab({
                       <div className="bg-white/[0.04] rounded-xl p-3">
                         <div className="flex items-center gap-2 text-slate-500 mb-1">
                           <Palmtree className="w-3.5 h-3.5" />
-                          <span className="text-[10px] font-semibold uppercase tracking-wider">Dovolena</span>
+                          <span className="text-[10px] font-semibold uppercase tracking-wider">Dovolená</span>
                         </div>
                         <div className="text-lg font-extrabold text-white">{m.profile.vacation_days_per_year || 20} dni</div>
                       </div>
@@ -1291,7 +1291,7 @@ function TeamTab({
                             className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition flex items-center gap-1"
                           >
                             <Plus className="w-3 h-3" />
-                            Nova
+                            Nová
                           </button>
                         )}
                       </div>
@@ -1317,12 +1317,12 @@ function TeamTab({
                           })}
                           {getEmployeeContracts(m.user_id).length > 3 && (
                             <div className="text-[10px] text-slate-500 text-center pt-1">
-                              +{getEmployeeContracts(m.user_id).length - 3} dalsich
+                              +{getEmployeeContracts(m.user_id).length - 3} dalších
                             </div>
                           )}
                         </div>
                       ) : (
-                        <div className="text-[10px] text-slate-500 italic">Zadne smlouvy</div>
+                        <div className="text-[10px] text-slate-500 italic">Žádné smlouvy</div>
                       )}
                     </div>
                   )}
@@ -1434,13 +1434,13 @@ function TeamTab({
                 value={editForm.address}
                 onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
                 className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-white text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                placeholder="Ulice 123, Mesto"
+                placeholder="Ulice 123, Město"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5">Datum narozeni</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5">Datum narození</label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
@@ -1468,10 +1468,10 @@ function TeamTab({
                     max={250}
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">Standardne 160h (plny uvazek)</p>
+                <p className="text-[10px] text-slate-500 mt-1">Standardně 160h (plný úvazek)</p>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Dnu dovolene / rok</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Dnu dovolené / rok</label>
                 <div className="relative">
                   <Palmtree className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input
@@ -1483,7 +1483,7 @@ function TeamTab({
                     max={60}
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">Standardne 20 dnu</p>
+                <p className="text-[10px] text-slate-500 mt-1">Standardně 20 dnu</p>
               </div>
             </div>
           </div>
@@ -1500,7 +1500,7 @@ function TeamTab({
             {contractDataStep ? (
               <>
                 <button onClick={() => setContractDataStep(false)} className="px-4 py-2 text-sm font-medium text-slate-400 hover:bg-white/[0.06] rounded-lg transition">
-                  Zpet
+                  Zpět
                 </button>
                 <button
                   onClick={() => handleGenerateContract(showContractModal!)}
@@ -1521,7 +1521,7 @@ function TeamTab({
                   disabled={!contractTitle.trim()}
                   className="px-5 py-2 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition disabled:opacity-50 flex items-center gap-2"
                 >
-                  Pokracovat
+                  Pokračovat
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </>
@@ -1532,11 +1532,11 @@ function TeamTab({
         {contractDataStep ? (
           <div className="space-y-4">
             <div className="p-3 bg-white/[0.04] rounded-xl border border-white/10 mb-4">
-              <p className="text-xs text-slate-400">Doplnte udaje, ktere nejsou v profilu zamestnance. Tyto udaje se pouziji pro nahrazeni placeholderu v sablone.</p>
+              <p className="text-xs text-slate-400">Doplňte údaje, které nejsou v profilu zaměstnance. Tyto údaje se použijí pro nahrazení placeholderu v šabloně.</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Misto vykonu prace</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Místo výkonu práce</label>
                 <input
                   value={contractData.work_location}
                   onChange={(e) => setContractData({ ...contractData, work_location: e.target.value })}
@@ -1545,7 +1545,7 @@ function TeamTab({
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Datum nastupu</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Datum nástupu</label>
                 <input
                   type="date"
                   value={contractData.start_date}
@@ -1556,21 +1556,21 @@ function TeamTab({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Doba trvani</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Doba trvání</label>
                 <select
                   value={contractData.contract_duration}
                   onChange={(e) => setContractData({ ...contractData, contract_duration: e.target.value })}
                   className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
-                  <option value="neurcitou">neurcitou</option>
-                  <option value="urcitou - 6 mesicu">urcitou - 6 mesicu</option>
-                  <option value="urcitou - 1 rok">urcitou - 1 rok</option>
-                  <option value="urcitou - 2 roky">urcitou - 2 roky</option>
-                  <option value="urcitou - 3 roky">urcitou - 3 roky</option>
+                  <option value="neurcitou">neurčitou</option>
+                  <option value="urcitou - 6 mesicu">určitou - 6 měsíců</option>
+                  <option value="urcitou - 1 rok">určitou - 1 rok</option>
+                  <option value="urcitou - 2 roky">určitou - 2 roky</option>
+                  <option value="urcitou - 3 roky">určitou - 3 roky</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Tydenni pracovni doba (hod)</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Týdenní pracovní doba (hod)</label>
                 <input
                   type="number"
                   value={contractData.weekly_hours}
@@ -1582,7 +1582,7 @@ function TeamTab({
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Mesicni hruba mzda (Kc)</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Měsíční hrubá mzda (Kc)</label>
               <input
                 type="number"
                 value={contractData.salary}
@@ -1595,22 +1595,22 @@ function TeamTab({
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Nazev smlouvy *</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Název smlouvy *</label>
               <input
                 value={contractTitle}
                 onChange={(e) => setContractTitle(e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-white text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                placeholder="Pracovni smlouva 2024"
+                placeholder="Pracovní smlouva 2024"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Sablona (volitelne)</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">Šablona (volitelné)</label>
               <select
                 value={selectedTemplateId}
                 onChange={(e) => setSelectedTemplateId(e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               >
-                <option value="">-- Bez sablony --</option>
+                <option value="">-- Bez šablony --</option>
                 {contractTemplates.map(tpl => (
                   <option key={tpl.id} value={tpl.id}>{tpl.name}</option>
                 ))}
@@ -1653,7 +1653,7 @@ function TeamTab({
                 className="px-4 py-2 text-sm font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition flex items-center gap-1.5"
               >
                 {updatingContractStatus === viewingContract.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <PenTool className="w-4 h-4" />}
-                Oznacit jako podepsano
+                Označit jako podepsáno
               </button>
             )}
             {viewingContract && viewingContract.status === 'signed' && (
@@ -1683,11 +1683,11 @@ function TeamTab({
                 );
               })()}
               <span className="text-xs text-slate-500">
-                Vytvoreno: {new Date(viewingContract.created_at).toLocaleDateString('cs-CZ')}
+                Vytvořeno: {new Date(viewingContract.created_at).toLocaleDateString('cs-CZ')}
               </span>
               {viewingContract.signed_at && (
                 <span className="text-xs text-emerald-400">
-                  Podepsano: {new Date(viewingContract.signed_at).toLocaleDateString('cs-CZ')}
+                  Podepsáno: {new Date(viewingContract.signed_at).toLocaleDateString('cs-CZ')}
                 </span>
               )}
             </div>

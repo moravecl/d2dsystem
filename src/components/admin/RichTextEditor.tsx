@@ -84,9 +84,9 @@ export default function RichTextEditor({ value, onChange, minHeight = '400px' }:
   return (
     <div className="border border-white/10 rounded-2xl overflow-hidden bg-white/[0.06]">
       <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-white/[0.06] bg-white/[0.04]">
-        <ToolbarBtn icon={Bold} title="Tucne" onClick={() => exec('bold')} />
-        <ToolbarBtn icon={Italic} title="Kurziva" onClick={() => exec('italic')} />
-        <ToolbarBtn icon={Underline} title="Podtrzene" onClick={() => exec('underline')} />
+        <ToolbarBtn icon={Bold} title="Tučně" onClick={() => exec('bold')} />
+        <ToolbarBtn icon={Italic} title="Kurzíva" onClick={() => exec('italic')} />
+        <ToolbarBtn icon={Underline} title="Podtržené" onClick={() => exec('underline')} />
         <div className="w-px h-6 bg-white/[0.08] mx-1" />
         <ToolbarBtn icon={Type} title="Odstavec" onClick={() => exec('formatBlock', 'p')} />
         <ToolbarBtn icon={Heading2} title="Nadpis 2" onClick={() => exec('formatBlock', 'h2')} />

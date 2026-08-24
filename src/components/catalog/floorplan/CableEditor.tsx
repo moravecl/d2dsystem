@@ -243,7 +243,7 @@ export default function CableEditor({
 
       {pickingMaterial && activeCircuit && (
         <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-3 mb-3 space-y-2">
-          <div className="text-xs font-extrabold text-slate-300">Vyber materiál:</div>
+          <div className="text-xs font-extrabold text-slate-300">Výběr materiál:</div>
           <select
             value={selectedMaterial}
             onChange={(e) => setSelectedMaterial(e.target.value)}

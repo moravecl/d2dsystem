@@ -296,7 +296,7 @@ export default function InvoiceFormPage() {
           .eq('id', quickJobId).maybeSingle();
         if (qj) {
           if (qj.billing_status === 'invoiced') {
-            toast('Tato rychla zakazka jiz byla vyfakturovana', 'error');
+            toast('Tato rychlá zakázka již byla vyfakturována', 'error');
             navigate('/finance');
             return;
           }
@@ -342,7 +342,7 @@ export default function InvoiceFormPage() {
           for (const w of workEntries) {
             const unitPrice = w.hourly_rate || 0;
             invoiceItems.push(calcItemTotals({
-              description: `Montazni prace - ${w.worker_name}${w.description ? ': ' + w.description : ''}`,
+              description: `Montážní práce - ${w.worker_name}${w.description ? ': ' + w.description : ''}`,
               quantity: w.hours, unit: 'hod', unit_price: unitPrice,
               total_price: w.hours * unitPrice, vat_rate: defVat, vat_amount: 0, sort_order: sortIdx++,
             }));
@@ -370,7 +370,7 @@ export default function InvoiceFormPage() {
           .eq('id', serviceScheduleId).maybeSingle();
         if (ss) {
           if (ss.billing_status === 'invoiced') {
-            toast('Tento servis jiz byl vyfakturovan', 'error');
+            toast('Tento servis již byl vyfakturován', 'error');
             navigate('/finance');
             return;
           }
@@ -432,7 +432,7 @@ export default function InvoiceFormPage() {
                   const price = item.hourly_rate || item.unit_price || 0;
                   if (qty > 0 && price > 0) {
                     invoiceItems.push(calcItemTotals({
-                      description: `Prace: ${item.worker_name || 'Technik'}${item.description ? ' - ' + item.description : ''}${item.work_date ? ' (' + new Date(item.work_date).toLocaleDateString('cs-CZ') + ')' : ''}`,
+                      description: `Práce: ${item.worker_name || 'Technik'}${item.description ? ' - ' + item.description : ''}${item.work_date ? ' (' + new Date(item.work_date).toLocaleDateString('cs-CZ') + ')' : ''}`,
                       quantity: qty, unit: 'hod', unit_price: price,
                       total_price: qty * price, vat_rate: defVat, vat_amount: 0, sort_order: sortIdx++,
                     }));
@@ -484,7 +484,7 @@ export default function InvoiceFormPage() {
             const price = ss.final_price ?? ss.agreed_price ?? 0;
             if (price > 0) {
               invoiceItems.push(calcItemTotals({
-                description: `Servisni prace: ${typeName}`,
+                description: `Servisní práce: ${typeName}`,
                 quantity: 1, unit: 'kpl', unit_price: price,
                 total_price: price, vat_rate: defVat, vat_amount: 0, sort_order: 0,
               }));

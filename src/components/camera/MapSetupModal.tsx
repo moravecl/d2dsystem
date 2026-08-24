@@ -156,7 +156,7 @@ export default function MapSetupModal({ lat, lon, name, onConfirm, onCancel }: P
         </div>
 
         <div className="px-5 py-3 bg-slate-800/50 border-b border-slate-700/30 flex items-center gap-4">
-          <span className="text-xs font-bold text-slate-400 uppercase">Priblizeni</span>
+          <span className="text-xs font-bold text-slate-400 uppercase">Přiblížení</span>
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => handleZoomChange(Math.max(15, zoom - 1))}
@@ -217,7 +217,7 @@ export default function MapSetupModal({ lat, lon, name, onConfirm, onCancel }: P
 
           <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-lg px-2.5 py-1.5 flex items-center gap-1.5 pointer-events-none">
             <Move className="w-3.5 h-3.5 text-white/70" />
-            <span className="text-[10px] text-white/70 font-bold">Tahnete pro posun</span>
+            <span className="text-[10px] text-white/70 font-bold">Táhněte pro posun</span>
           </div>
 
           <div className="absolute bottom-3 left-3">
@@ -245,7 +245,7 @@ export default function MapSetupModal({ lat, lon, name, onConfirm, onCancel }: P
           </div>
           <div className="flex items-center gap-2">
             <button onClick={onCancel} className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">
-              Zrusit
+              Zrušit
             </button>
             <button
               onClick={handleConfirm}

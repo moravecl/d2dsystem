@@ -1414,13 +1414,13 @@ export default function ProjectDetailPage() {
                         }}
                         className="w-full px-2 py-1.5 rounded-lg border border-white/10 bg-white/[0.06] text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                       >
-                        <option value="months">mesicu</option>
+                        <option value="months">měsíců</option>
                         <option value="years">let</option>
                       </select>
                     </div>
                     {nextDate && (
                       <div className="flex-1 min-w-[120px] text-right">
-                        <label className="block text-[10px] font-semibold text-slate-400 mb-0.5">Pristi servis</label>
+                        <label className="block text-[10px] font-semibold text-slate-400 mb-0.5">Příští servis</label>
                         <div className="text-sm font-semibold text-blue-400 py-1.5">
                           {new Date(nextDate).toLocaleDateString('cs-CZ')}
                         </div>

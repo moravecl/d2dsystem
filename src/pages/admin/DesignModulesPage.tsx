@@ -68,7 +68,7 @@ export default function DesignModulesPage() {
  const handleDelete = async (id: string) => {
  if (!confirm('Opravdu smazat modul?')) return;
  const { error } = await supabase.from('design_modules').delete().eq('id', id);
- if (error) toast(error.message, 'error'); else { toast('Smazano'); load(); }
+ if (error) toast(error.message, 'error'); else { toast('Smazáno'); load(); }
  };
 
  const moveOrder = async (mod: DesignModule, dir: -1 | 1) => {

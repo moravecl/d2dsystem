@@ -269,7 +269,7 @@ export default function MeetingFormModal({ open, onClose, onSaved, editData, pre
 
         <div>
           <label className="block text-xs font-semibold text-slate-400 mb-1.5">Popis</label>
-          <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} placeholder="Téma a cíle porady..."
+          <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} placeholder="Témá a cíle porady..."
             className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none" />
         </div>
 

@@ -127,14 +127,14 @@ export default function FilePreviewModal({ file, files = [], onClose, onNavigate
               <button
                 onClick={() => setZoom(z => Math.min(5, z + 0.25))}
                 className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
-                title="Priblizit"
+                title="Přiblížit"
               >
                 <ZoomIn className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setRotation(r => (r + 90) % 360)}
                 className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
-                title="Otocit"
+                title="Otočit"
               >
                 <RotateCw className="w-4 h-4" />
               </button>
@@ -153,7 +153,7 @@ export default function FilePreviewModal({ file, files = [], onClose, onNavigate
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
-            title="Stahnout"
+            title="Stáhnout"
           >
             <Download className="w-4 h-4" />
           </a>
@@ -206,7 +206,7 @@ export default function FilePreviewModal({ file, files = [], onClose, onNavigate
               <div className="flex-1 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
                   <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                  <span className="text-sm text-slate-500">Nacitam PDF...</span>
+                  <span className="text-sm text-slate-500">Načítám PDF...</span>
                 </div>
               </div>
             )}
@@ -221,14 +221,14 @@ export default function FilePreviewModal({ file, files = [], onClose, onNavigate
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition"
                   >
-                    <ExternalLink className="w-4 h-4" /> Otevrit v nove zalozce
+                    <ExternalLink className="w-4 h-4" /> Otevřít v nové záložce
                   </a>
                   <a
                     href={file.file_url}
                     download={file.name}
                     className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-300 bg-white/[0.06] hover:bg-white/[0.08] rounded-xl transition"
                   >
-                    <Download className="w-4 h-4" /> Stahnout
+                    <Download className="w-4 h-4" /> Stáhnout
                   </a>
                 </div>
               </div>
@@ -256,9 +256,9 @@ export default function FilePreviewModal({ file, files = [], onClose, onNavigate
             <div className="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center mx-auto mb-4">
               <FileText className="w-10 h-10 text-white/50" />
             </div>
-            <p className="text-sm font-semibold text-white mb-1">Nahled neni k dispozici</p>
+            <p className="text-sm font-semibold text-white mb-1">Náhled není k dispozici</p>
             <p className="text-xs text-slate-400 mb-4">
-              Soubor typu {ext.toUpperCase()} nelze zobrazit v prohlizeci
+              Soubor typu {ext.toUpperCase()} nelze zobrazit v prohlížeči
             </p>
             <a
               href={file.file_url}
@@ -266,7 +266,7 @@ export default function FilePreviewModal({ file, files = [], onClose, onNavigate
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition"
             >
-              <Download className="w-4 h-4" /> Stahnout soubor
+              <Download className="w-4 h-4" /> Stáhnout soubor
             </a>
           </div>
         )}

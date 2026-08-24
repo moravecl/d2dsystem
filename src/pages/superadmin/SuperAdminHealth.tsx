@@ -38,7 +38,7 @@ export default function SuperAdminHealth() {
       { table: 'profiles', label: 'Profily', icon: Database, color: 'text-emerald-400' },
       { table: 'projects', label: 'Projekty', icon: Database, color: 'text-amber-400' },
       { table: 'clients', label: 'Klienti', icon: Database, color: 'text-rose-400' },
-      { table: 'invoices', label: 'Vydané faktury', icon: Database, color: 'text-cyan-400' },
+      { table: 'invoices', label: 'Vydáné faktury', icon: Database, color: 'text-cyan-400' },
       { table: 'received_invoices', label: 'Přijaté faktury', icon: Database, color: 'text-violet-400' },
       { table: 'work_logs', label: 'Záznamy práce', icon: Database, color: 'text-orange-400' },
       { table: 'attendance_records', label: 'Docházka', icon: Database, color: 'text-pink-400' },

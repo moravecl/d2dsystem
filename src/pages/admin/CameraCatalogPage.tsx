@@ -14,9 +14,9 @@ type Tab = 'cameras' | 'nvrs' | 'cables' | 'switches' | 'accessories' | 'categor
 const TABS: { id: Tab; label: string; icon: typeof Camera }[] = [
  { id: 'cameras', label: 'Kamery', icon: Camera },
  { id: 'nvrs', label: 'NVR', icon: Monitor },
- { id: 'cables', label: 'Kabelaz', icon: Cable },
+ { id: 'cables', label: 'Kabeláž', icon: Cable },
  { id: 'switches', label: 'PoE Switche', icon: Network },
- { id: 'accessories', label: 'Prislusenstvi', icon: Package },
+ { id: 'accessories', label: 'Příslušenství', icon: Package },
  { id: 'categories', label: 'Kategorie', icon: Tag },
 ];
 
@@ -27,7 +27,7 @@ const ACC_TYPE_DEFAULTS: [string, string][] = [['bracket', 'Konzole'], ['junctio
 const CAMERA_CATEGORY_GROUPS: CategoryGroupDef[] = [
  { group: 'camera_type', label: 'Typy kamer', defaults: CAMERA_TYPE_DEFAULTS },
  { group: 'camera_cable_type', label: 'Typy kabelu', defaults: CABLE_TYPE_DEFAULTS },
- { group: 'camera_accessory_type', label: 'Typy prislusenstvi', defaults: ACC_TYPE_DEFAULTS },
+ { group: 'camera_accessory_type', label: 'Typy příslušenství', defaults: ACC_TYPE_DEFAULTS },
 ];
 
 const CAMERA_TYPE_LABELS: Record<string, string> = { dome: 'Dome', bullet: 'Bullet', ptz: 'PTZ', fisheye: 'Fisheye', box: 'Box' };
@@ -101,35 +101,35 @@ function CameraFields({ data, onChange, cameraTypeOptions }: { data: Partial<Cam
  const set = (k: keyof CameraModel, v: unknown) => onChange({ ...data, [k]: v });
  return (
  <>
- <Row><Field label="Nazev"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
- <Row cols={2}><Field label="Vyrobce"value={data.manufacturer ?? ''} onChange={v => set('manufacturer', v)} /><SelectField label="Typ"value={data.camera_type ?? 'bullet'} options={cameraTypeOptions} onChange={v => set('camera_type', v)} /></Row>
+ <Row><Field label="Název"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
+ <Row cols={2}><Field label="Výrobce"value={data.manufacturer ?? ''} onChange={v => set('manufacturer', v)} /><SelectField label="Typ"value={data.camera_type ?? 'bullet'} options={cameraTypeOptions} onChange={v => set('camera_type', v)} /></Row>
  <Row cols={3}>
- <NumField label="Rozliseni W (px)"value={data.resolution_w ?? 1920} onChange={v => set('resolution_w', v)} />
- <NumField label="Rozliseni H (px)"value={data.resolution_h ?? 1080} onChange={v => set('resolution_h', v)} />
- <SelectField label="Rozliseni"value={data.resolution_label ?? '1080p'} options={[['4K', '4K (8MP)'], ['2K', '2K (4MP)'], ['1440p', '1440p (4MP)'], ['1080p', '1080p (2MP)'], ['720p', '720p (1MP)']]} onChange={v => set('resolution_label', v)} />
+ <NumField label="Rozlišení W (px)"value={data.resolution_w ?? 1920} onChange={v => set('resolution_w', v)} />
+ <NumField label="Rozlišení H (px)"value={data.resolution_h ?? 1080} onChange={v => set('resolution_h', v)} />
+ <SelectField label="Rozlišení"value={data.resolution_label ?? '1080p'} options={[['4K', '4K (8MP)'], ['2K', '2K (4MP)'], ['1440p', '1440p (4MP)'], ['1080p', '1080p (2MP)'], ['720p', '720p (1MP)']]} onChange={v => set('resolution_label', v)} />
  </Row>
  <Row cols={3}>
  <NumField label="FOV horizontal (°)"value={data.h_fov_deg ?? 90} step={0.1} onChange={v => set('h_fov_deg', v)} />
- <NumField label="FOV vertikalni (°)"value={data.v_fov_deg ?? 50} step={0.1} onChange={v => set('v_fov_deg', v)} />
+ <NumField label="FOV vertikální (°)"value={data.v_fov_deg ?? 50} step={0.1} onChange={v => set('v_fov_deg', v)} />
  <NumField label="Ohnisko (mm)"value={data.lens_mm ?? 2.8} step={0.1} onChange={v => set('lens_mm', v)} />
  </Row>
  <Row cols={3}>
  <NumField label="IR dosah (m)"value={data.ir_range_m ?? 30} onChange={v => set('ir_range_m', v)} />
- <NumField label="Prikon (W)"value={data.power_w ?? 12} step={0.1} onChange={v => set('power_w', v)} />
- <Field label="IP stupen"value={data.ip_rating ?? 'IP67'} onChange={v => set('ip_rating', v)} />
+ <NumField label="Příkon (W)"value={data.power_w ?? 12} step={0.1} onChange={v => set('power_w', v)} />
+ <Field label="IP stupeň"value={data.ip_rating ?? 'IP67'} onChange={v => set('ip_rating', v)} />
  </Row>
  <Row cols={3}>
- <NumField label="Nakupni cena (Kc)"value={data.purchase_price ?? 0} onChange={v => set('purchase_price', v)} />
- <NumField label="Prodejni cena (Kc)"value={data.price ?? 0} onChange={v => set('price', v)} />
+ <NumField label="Nákupní cena (Kc)"value={data.purchase_price ?? 0} onChange={v => set('purchase_price', v)} />
+ <NumField label="Prodejní cena (Kc)"value={data.price ?? 0} onChange={v => set('price', v)} />
  <div className="flex items-end pb-2">
  <label className="flex items-center gap-2 text-xs font-extrabold text-slate-400 cursor-pointer">
  <input type="checkbox"checked={data.poe ?? true} onChange={e => set('poe', e.target.checked)} className="accent-blue-500"/>
- PoE napajeni
+ PoE napájení
  </label>
  </div>
  </Row>
- <Row><Field label="URL obrazku"value={data.image_url ?? ''} onChange={v => set('image_url', v)} /></Row>
- <Row><Field label="Poznamka"value={data.notes ?? ''} onChange={v => set('notes', v)} /></Row>
+ <Row><Field label="URL obrázku"value={data.image_url ?? ''} onChange={v => set('image_url', v)} /></Row>
+ <Row><Field label="Poznámka"value={data.notes ?? ''} onChange={v => set('notes', v)} /></Row>
  </>
  );
 }
@@ -138,10 +138,10 @@ function NvrFields({ data, onChange }: { data: Partial<CameraNvr>; onChange: (d:
  const set = (k: keyof CameraNvr, v: unknown) => onChange({ ...data, [k]: v });
  return (
  <>
- <Row><Field label="Nazev"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
- <Row cols={2}><Field label="Vyrobce"value={data.manufacturer ?? ''} onChange={v => set('manufacturer', v)} /><NumField label="Kanaly"value={data.channels ?? 8} onChange={v => set('channels', v)} /></Row>
+ <Row><Field label="Název"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
+ <Row cols={2}><Field label="Výrobce"value={data.manufacturer ?? ''} onChange={v => set('manufacturer', v)} /><NumField label="Kanály"value={data.channels ?? 8} onChange={v => set('channels', v)} /></Row>
  <Row cols={3}>
- <SelectField label="Max rozliseni"value={data.max_resolution_label ?? '4K'} options={[['4K', '4K'], ['2K', '2K'], ['1080p', '1080p']]} onChange={v => set('max_resolution_label', v)} />
+ <SelectField label="Max rozlišení"value={data.max_resolution_label ?? '4K'} options={[['4K', '4K'], ['2K', '2K'], ['1080p', '1080p']]} onChange={v => set('max_resolution_label', v)} />
  <NumField label="HDD sloty"value={data.hdd_bays ?? 1} onChange={v => set('hdd_bays', v)} />
  <NumField label="Max HDD (TB)"value={data.max_hdd_tb ?? 10} step={0.1} onChange={v => set('max_hdd_tb', v)} />
  </Row>
@@ -151,10 +151,10 @@ function NvrFields({ data, onChange }: { data: Partial<CameraNvr>; onChange: (d:
  <NumField label="Propustnost (Mbps)"value={data.throughput_mbps ?? 80} step={0.1} onChange={v => set('throughput_mbps', v)} />
  </Row>
  <Row cols={2}>
- <NumField label="Nakupni cena (Kc)"value={data.purchase_price ?? 0} onChange={v => set('purchase_price', v)} />
- <NumField label="Prodejni cena (Kc)"value={data.price ?? 0} onChange={v => set('price', v)} />
+ <NumField label="Nákupní cena (Kc)"value={data.purchase_price ?? 0} onChange={v => set('purchase_price', v)} />
+ <NumField label="Prodejní cena (Kc)"value={data.price ?? 0} onChange={v => set('price', v)} />
  </Row>
- <Row><Field label="URL obrazku"value={data.image_url ?? ''} onChange={v => set('image_url', v)} /></Row>
+ <Row><Field label="URL obrázku"value={data.image_url ?? ''} onChange={v => set('image_url', v)} /></Row>
  </>
  );
 }
@@ -163,16 +163,16 @@ function CableFields({ data, onChange, cableTypeOptions }: { data: Partial<Camer
  const set = (k: keyof CameraCable, v: unknown) => onChange({ ...data, [k]: v });
  return (
  <>
- <Row><Field label="Nazev"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
+ <Row><Field label="Název"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
  <Row cols={2}>
  <SelectField label="Typ kabelu"value={data.cable_type ?? 'utp_cat5e'} options={cableTypeOptions} onChange={v => set('cable_type', v)} />
- <NumField label="Max delka (m)"value={data.max_length_m ?? 100} onChange={v => set('max_length_m', v)} />
+ <NumField label="Max délka (m)"value={data.max_length_m ?? 100} onChange={v => set('max_length_m', v)} />
  </Row>
  <Row cols={2}>
- <NumField label="Nakupni cena/m (Kc)"value={data.purchase_price_per_m ?? 0} step={0.01} onChange={v => set('purchase_price_per_m', v)} />
- <NumField label="Prodejni cena/m (Kc)"value={data.price_per_m ?? 0} step={0.01} onChange={v => set('price_per_m', v)} />
+ <NumField label="Nákupní cena/m (Kc)"value={data.purchase_price_per_m ?? 0} step={0.01} onChange={v => set('purchase_price_per_m', v)} />
+ <NumField label="Prodejní cena/m (Kc)"value={data.price_per_m ?? 0} step={0.01} onChange={v => set('price_per_m', v)} />
  </Row>
- <Row><Field label="Poznamka"value={data.notes ?? ''} onChange={v => set('notes', v)} /></Row>
+ <Row><Field label="Poznámka"value={data.notes ?? ''} onChange={v => set('notes', v)} /></Row>
  </>
  );
 }
@@ -181,15 +181,15 @@ function SwitchFields({ data, onChange }: { data: Partial<CameraPoeSwitch>; onCh
  const set = (k: keyof CameraPoeSwitch, v: unknown) => onChange({ ...data, [k]: v });
  return (
  <>
- <Row><Field label="Nazev"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
- <Row cols={2}><Field label="Vyrobce"value={data.manufacturer ?? ''} onChange={v => set('manufacturer', v)} /><NumField label="PoE porty"value={data.poe_ports ?? 4} onChange={v => set('poe_ports', v)} /></Row>
+ <Row><Field label="Název"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
+ <Row cols={2}><Field label="Výrobce"value={data.manufacturer ?? ''} onChange={v => set('manufacturer', v)} /><NumField label="PoE porty"value={data.poe_ports ?? 4} onChange={v => set('poe_ports', v)} /></Row>
  <Row cols={2}>
  <NumField label="Uplink porty"value={data.uplink_ports ?? 1} onChange={v => set('uplink_ports', v)} />
  <NumField label="PoE budget (W)"value={data.poe_budget_w ?? 60} step={0.1} onChange={v => set('poe_budget_w', v)} />
  </Row>
  <Row cols={2}>
- <NumField label="Nakupni cena (Kc)"value={data.purchase_price ?? 0} onChange={v => set('purchase_price', v)} />
- <NumField label="Prodejni cena (Kc)"value={data.price ?? 0} onChange={v => set('price', v)} />
+ <NumField label="Nákupní cena (Kc)"value={data.purchase_price ?? 0} onChange={v => set('purchase_price', v)} />
+ <NumField label="Prodejní cena (Kc)"value={data.price ?? 0} onChange={v => set('price', v)} />
  </Row>
  <Row>
  <label className="flex items-center gap-2 text-xs font-extrabold text-slate-400 cursor-pointer">
@@ -197,7 +197,7 @@ function SwitchFields({ data, onChange }: { data: Partial<CameraPoeSwitch>; onCh
  Managed switch
  </label>
  </Row>
- <Row><Field label="URL obrazku"value={data.image_url ?? ''} onChange={v => set('image_url', v)} /></Row>
+ <Row><Field label="URL obrázku"value={data.image_url ?? ''} onChange={v => set('image_url', v)} /></Row>
  </>
  );
 }
@@ -207,14 +207,14 @@ function AccessoryFields({ data, onChange, accTypeOptions }: { data: Partial<Cam
  const isHdd = (data.accessory_type ?? 'bracket') === 'hdd';
  return (
  <>
- <Row><Field label="Nazev"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
+ <Row><Field label="Název"value={data.name ?? ''} onChange={v => set('name', v)} /></Row>
  <Row><SelectField label="Typ"value={data.accessory_type ?? 'bracket'} options={accTypeOptions} onChange={v => set('accessory_type', v)} /></Row>
  <Row cols={2}>
- <NumField label="Nakupni cena (Kc)"value={data.purchase_price ?? 0} onChange={v => set('purchase_price', v)} />
- <NumField label="Prodejni cena (Kc)"value={data.price ?? 0} onChange={v => set('price', v)} />
+ <NumField label="Nákupní cena (Kc)"value={data.purchase_price ?? 0} onChange={v => set('purchase_price', v)} />
+ <NumField label="Prodejní cena (Kc)"value={data.price ?? 0} onChange={v => set('price', v)} />
  </Row>
  {isHdd && <Row><NumField label="Kapacita (TB)"value={data.capacity_tb ?? 0} step={0.1} onChange={v => set('capacity_tb', v)} /></Row>}
- <Row><Field label="Poznamka"value={data.notes ?? ''} onChange={v => set('notes', v)} /></Row>
+ <Row><Field label="Poznámka"value={data.notes ?? ''} onChange={v => set('notes', v)} /></Row>
  </>
  );
 }
@@ -252,11 +252,11 @@ export default function CameraCatalogPage() {
  if (id) {
  const { error } = await supabase.from(TABLE_NAME[tab]!).update(data).eq('id', id);
  if (error) throw error;
- toast('Ulozeno', 'success');
+ toast('Uloženo', 'success');
  } else {
  const { error } = await supabase.from(TABLE_NAME[tab]!).insert({ ...data, org_id: organizationId });
  if (error) throw error;
- toast('Pridano', 'success');
+ toast('Přidáno', 'success');
  }
  catalog.reload();
  setEditingId(null);
@@ -270,7 +270,7 @@ export default function CameraCatalogPage() {
  if (!confirm('Opravdu smazat?')) return;
  const { error } = await supabase.from(TABLE_NAME[tab]!).delete().eq('id', id);
  if (error) toast(error.message, 'error');
- else { toast('Smazano', 'success'); catalog.reload(); }
+ else { toast('Smazáno', 'success'); catalog.reload(); }
  };
 
  const cameraTypeOpts = catCats.getOptions('camera_type').length > 0 ? catCats.getOptions('camera_type') : Object.entries(CAMERA_TYPE_LABELS) as [string, string][];
@@ -328,8 +328,8 @@ export default function CameraCatalogPage() {
  <Camera className="w-5 h-5 text-blue-400"/>
  </div>
  <div>
- <h1 className="text-2xl font-extrabold text-white">Kamerovy katalog</h1>
- <p className="text-sm text-slate-500 font-medium">Kamery, NVR, kabelaz, PoE switche a prislusenstvi</p>
+ <h1 className="text-2xl font-extrabold text-white">Kamerový katalog</h1>
+ <p className="text-sm text-slate-500 font-medium">Kamery, NVR, kabeláž, PoE switche a příslušenství</p>
  </div>
  </div>
  </div>
@@ -372,20 +372,20 @@ export default function CameraCatalogPage() {
 
  <div className="flex justify-end mb-4">
  <button onClick={startAdd} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl font-extrabold text-sm hover:bg-blue-700 transition">
- <Plus className="w-4 h-4"/> Pridat
+ <Plus className="w-4 h-4"/> Přidat
  </button>
  </div>
 
  {adding && (
  <div className="mb-4 bg-blue-500/10 border border-blue-200 rounded-2xl p-5">
- <div className="text-sm font-extrabold text-white mb-4">Nova polozka</div>
+ <div className="text-sm font-extrabold text-white mb-4">Nová položka</div>
  <div className="space-y-3">{renderFields(addData, setAddData)}</div>
  <div className="flex gap-2 mt-4">
  <button onClick={() => handleSave(null, addData)} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl font-extrabold text-sm hover:bg-blue-700 transition disabled:opacity-50">
- {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin"/> : <Save className="w-3.5 h-3.5"/>} Pridat
+ {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin"/> : <Save className="w-3.5 h-3.5"/>} Přidat
  </button>
  <button onClick={cancelEdit} className="px-4 py-2 bg-navy-800/60 border border-white/[0.08] rounded-xl font-extrabold text-sm text-slate-400 hover:bg-white/[0.04] transition flex items-center gap-1.5">
- <X className="w-3.5 h-3.5"/> Zrusit
+ <X className="w-3.5 h-3.5"/> Zrušit
  </button>
  </div>
  </div>
@@ -396,8 +396,8 @@ export default function CameraCatalogPage() {
  ) : items.length === 0 && !adding ? (
  <div className="text-center py-12 text-slate-400">
  <Camera className="w-12 h-12 mx-auto mb-3 opacity-20"/>
- <div className="font-extrabold">Zadne polozky</div>
- <div className="text-sm mt-1">Kliknete na "Pridat"pro prvni polozku.</div>
+ <div className="font-extrabold">Žádné položky</div>
+ <div className="text-sm mt-1">Klikněte na "Přidat"pro první položku.</div>
  </div>
  ) : (
  <div className="space-y-2">
@@ -408,10 +408,10 @@ export default function CameraCatalogPage() {
  <div className="space-y-3 mb-4">{renderFields(editData, setEditData)}</div>
  <div className="flex gap-2">
  <button onClick={() => handleSave(item.id, editData)} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl font-extrabold text-sm hover:bg-blue-700 transition disabled:opacity-50">
- {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin"/> : <Save className="w-3.5 h-3.5"/>} Ulozit
+ {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin"/> : <Save className="w-3.5 h-3.5"/>} Uložit
  </button>
  <button onClick={cancelEdit} className="px-4 py-2 bg-navy-800/60 border border-white/[0.08] rounded-xl font-extrabold text-sm text-slate-400 hover:bg-white/[0.04] transition flex items-center gap-1.5">
- <X className="w-3.5 h-3.5"/> Zrusit
+ <X className="w-3.5 h-3.5"/> Zrušit
  </button>
  </div>
  </div>
