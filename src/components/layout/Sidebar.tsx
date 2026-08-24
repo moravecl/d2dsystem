@@ -32,12 +32,15 @@ const financeSubItems = [
   { to: '/finance/banka', label: 'Banka', icon: Landmark },
 ];
 
+// Kolik radku kostry ukazat, nez dorazi opravneni - odpovida bezne delce menu.
+const SIDEBAR_SKELETON_ROWS = Array.from({ length: 9 });
+
 export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: SidebarProps) {
   const { profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { groupedItems } = useSidebarSettings();
-  const { hasModule } = usePermissions();
+  const { hasModule, loading: permissionsLoading } = usePermissions();
   const [assetExpanded, setAssetExpanded] = useState(location.pathname.startsWith('/majetek'));
   const [financeExpanded, setFinanceExpanded] = useState(location.pathname.startsWith('/finance'));
 
@@ -154,7 +157,15 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
       </div>
 
       <nav className="flex-1 py-3 px-2.5 overflow-y-auto relative z-10">
-        {groupedItems.map((group, gIdx) => {
+        {permissionsLoading && (
+          <div className="space-y-1.5" aria-hidden="true">
+            {SIDEBAR_SKELETON_ROWS.map((_, i) => (
+              <div key={i} className="h-[42px] rounded-xl bg-white/[0.05] animate-skeleton" />
+            ))}
+          </div>
+        )}
+
+        {!permissionsLoading && groupedItems.map((group, gIdx) => {
           const visibleInGroup = group.items.filter((i) => i.visible && hasModule(i.key as ModuleKey));
           if (visibleInGroup.length === 0) return null;
 
@@ -179,7 +190,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
           );
         })}
 
-        {(isAdmin || hasModule('admin')) && (
+        {!permissionsLoading && (isAdmin || hasModule('admin')) && (
           <>
             <div className="my-2 border-t border-white/[0.06]" />
             <NavLink to="/admin" onClick={onMobileClose} className={({ isActive }) => linkClass(isActive)}>

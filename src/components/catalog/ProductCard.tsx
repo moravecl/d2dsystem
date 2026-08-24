@@ -14,7 +14,7 @@ interface Props {
 }
 
 export default memo(function ProductCard({ product, category, selected, qty, onToggle, onPlace, onDetail }: Props) {
-  const { hasPermission } = usePermissions();
+  const { hasPermission, loading: permissionsLoading } = usePermissions();
   const canViewPrices = hasPermission('view_prices');
   return (
     <div
@@ -90,7 +90,10 @@ export default memo(function ProductCard({ product, category, selected, qty, onT
         <h3 className="font-extrabold text-white text-lg mt-2 leading-tight">{product.name}</h3>
         <p className="text-xs text-slate-500 leading-relaxed mt-2 line-clamp-2">{product.description}</p>
 
-        {product.price > 0 && canViewPrices && (
+        {product.price > 0 && permissionsLoading && (
+          <div className="mt-2 h-5 w-24 rounded bg-white/[0.06] animate-skeleton" aria-hidden="true" />
+        )}
+        {product.price > 0 && !permissionsLoading && canViewPrices && (
           <div className="mt-2 text-sm font-extrabold text-blue-400">{product.price.toLocaleString('cs-CZ')} Kc</div>
         )}
 

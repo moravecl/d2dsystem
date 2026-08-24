@@ -6,6 +6,7 @@ import { useOrganization } from '../../contexts/OrganizationContext';
 import { useToast } from '../../components/ui/Toast';
 import { usePlanLimits } from '../../hooks/usePlanLimits';
 import { sendTeamInviteEmail } from '../../lib/transactionalEmail';
+import { loadQuoteCompanyInfo, type QuoteCompanyInfo } from '../../lib/quoteHeaderHtml';
 import Modal from '../../components/ui/Modal';
 import type { Profile, Project } from '../../types/database';
 import type { CustomRole, RolePermissions, ModuleKey, DataPermissionKey } from '../../lib/permissions';
@@ -927,12 +928,14 @@ function TeamTab({
     salary: '',
   });
   const [viewingContract, setViewingContract] = useState<EmployeeContract | null>(null);
+  const [companyInfo, setCompanyInfo] = useState<QuoteCompanyInfo | null>(null);
   const [updatingContractStatus, setUpdatingContractStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (organization) {
       loadContracts();
       loadContractTemplates();
+      loadQuoteCompanyInfo().then(setCompanyInfo);
     }
   }, [organization?.id]);
 
@@ -965,7 +968,7 @@ function TeamTab({
     }
     setGeneratingContract(true);
 
-    const member = teamMembers.find(m => m.user_id === employeeId);
+    const member = members.find(m => m.user_id === employeeId);
     const profile = member?.profile;
     const employeeName = profile?.display_name || profile?.email || '';
 
@@ -979,9 +982,9 @@ function TeamTab({
           .replace(/\{\{employee_address\}\}/g, profile?.address || '')
           .replace(/\{\{job_position\}\}/g, profile?.job_position || '')
           .replace(/\{\{vacation_days\}\}/g, String(profile?.vacation_days_per_year || 20))
-          .replace(/\{\{company_name\}\}/g, organization.name || '')
-          .replace(/\{\{company_ico\}\}/g, organization.ico || '')
-          .replace(/\{\{company_address\}\}/g, organization.address || '')
+          .replace(/\{\{company_name\}\}/g, companyInfo?.company_name || organization.name || '')
+          .replace(/\{\{company_ico\}\}/g, companyInfo?.company_id || '')
+          .replace(/\{\{company_address\}\}/g, [companyInfo?.address, [companyInfo?.zip, companyInfo?.city].filter(Boolean).join(' ')].filter(Boolean).join(', '))
           .replace(/\{\{work_location\}\}/g, contractData.work_location)
           .replace(/\{\{start_date\}\}/g, contractData.start_date ? new Date(contractData.start_date).toLocaleDateString('cs-CZ') : '')
           .replace(/\{\{contract_duration\}\}/g, contractData.contract_duration)

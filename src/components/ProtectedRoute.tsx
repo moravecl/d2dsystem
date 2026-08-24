@@ -14,7 +14,7 @@ export default function ProtectedRoute({
   requiredModule?: ModuleKey;
 }) {
   const { user, profile, loading, signOut } = useAuth();
-  const { hasModule, isFullAdmin } = usePermissions();
+  const { hasModule, isFullAdmin, loading: permissionsLoading } = usePermissions();
 
   if (loading) {
     return (
@@ -60,7 +60,10 @@ export default function ProtectedRoute({
     );
   }
 
-  if (requireAdmin && !profile) {
+  // Opravneni se nacitaji asynchronne. Dokud nejsou znama, nic nepovolujeme
+  // ani nepresmerovavame - jinak by se bud kratkodobe zobrazil obsah, na ktery
+  // uzivatel nema narok, nebo by ho hlidka vyhodila z platneho odkazu.
+  if ((requireAdmin && !profile) || ((requireAdmin || requiredModule) && permissionsLoading)) {
     return (
       <div className="min-h-screen bg-white/[0.04] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />

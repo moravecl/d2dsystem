@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useOrganization } from '../contexts/OrganizationContext';
 import type { ModuleKey, DataPermissionKey, RolePermissions, CustomRole } from '../lib/permissions';
-import { createFullAccessPermissions } from '../lib/permissions';
+import { createFullAccessPermissions, createNoAccessPermissions } from '../lib/permissions';
 
 interface PermissionsState {
   loading: boolean;
@@ -16,27 +16,32 @@ interface PermissionsState {
 }
 
 const FULL_ACCESS = createFullAccessPermissions();
+const NO_ACCESS = createNoAccessPermissions();
 
 export function usePermissions(): PermissionsState {
   const { user, isAdmin } = useAuth();
-  const { organization, membership } = useOrganization();
-  const [loading, setLoading] = useState(true);
+  const { organization, membership, loading: orgLoading } = useOrganization();
+  const [rolesLoading, setRolesLoading] = useState(true);
   const [role, setRole] = useState<CustomRole | null>(null);
-  const [permissions, setPermissions] = useState<RolePermissions>(FULL_ACCESS);
+  const [permissions, setPermissions] = useState<RolePermissions>(NO_ACCESS);
+
+  const loading = rolesLoading || orgLoading;
 
   const isOwnerOrAdmin = membership?.role === 'owner' || membership?.role === 'admin';
   const isFullAdmin = isAdmin || isOwnerOrAdmin;
 
   const load = useCallback(async () => {
     if (!user || !organization) {
-      setLoading(false);
+      setPermissions(NO_ACCESS);
+      setRole(null);
+      setRolesLoading(false);
       return;
     }
 
     if (isFullAdmin) {
       setPermissions(FULL_ACCESS);
       setRole(null);
-      setLoading(false);
+      setRolesLoading(false);
       return;
     }
 
@@ -57,7 +62,7 @@ export function usePermissions(): PermissionsState {
       });
       setPermissions(fallbackPerms);
       setRole(null);
-      setLoading(false);
+      setRolesLoading(false);
       return;
     }
 
@@ -70,30 +75,35 @@ export function usePermissions(): PermissionsState {
     if (roleData) {
       setRole(roleData as CustomRole);
       setPermissions(roleData.permissions as RolePermissions);
+    } else {
+      setRole(null);
+      setPermissions(NO_ACCESS);
     }
 
-    setLoading(false);
+    setRolesLoading(false);
   }, [user?.id, organization?.id, isFullAdmin]);
 
   useEffect(() => {
-    setLoading(true);
+    setRolesLoading(true);
     load();
   }, [load]);
 
   const hasModule = useCallback(
     (key: ModuleKey) => {
+      if (loading) return false;
       if (isFullAdmin) return true;
       return permissions.modules[key] === true;
     },
-    [permissions, isFullAdmin],
+    [permissions, isFullAdmin, loading],
   );
 
   const hasPermission = useCallback(
     (key: DataPermissionKey) => {
+      if (loading) return false;
       if (isFullAdmin) return true;
       return permissions.data[key] === true;
     },
-    [permissions, isFullAdmin],
+    [permissions, isFullAdmin, loading],
   );
 
   return {

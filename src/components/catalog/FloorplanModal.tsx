@@ -61,6 +61,8 @@ interface UndoAction {
   payload: Record<string, unknown>;
 }
 
+const SNAP_STEP_DEG = 15;
+
 export default function FloorplanModal({
   open,
   onClose,
@@ -193,6 +195,39 @@ export default function FloorplanModal({
     }
     return result;
   }, [rooms, allFloorPins]);
+
+  const snapToAngle = useCallback((from: { x: number; y: number }, to: { x: number; y: number }): { x: number; y: number } => {
+    const ar = imgAspectRatio;
+    const dx = to.x - from.x;
+    const dy = (to.y - from.y) / ar;
+    if (Math.abs(dx) < 1e-9 && Math.abs(dy) < 1e-9) return to;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const rawAngleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
+    const snapped = Math.round(rawAngleDeg / SNAP_STEP_DEG) * SNAP_STEP_DEG;
+    const rad = snapped * (Math.PI / 180);
+    return {
+      x: from.x + dist * Math.cos(rad),
+      y: from.y + dist * Math.sin(rad) * ar,
+    };
+  }, [imgAspectRatio]);
+
+  const handleCanvasMouseMove = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
+    if (!isDrawingCable && !isDrawingRoom) { setSnappedMousePos(null); return; }
+    const img = imgRef.current;
+    if (!img) return;
+    const rect = img.getBoundingClientRect();
+    const raw = {
+      x: Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)),
+      y: Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height)),
+    };
+    const drawnPoints = isDrawingCable ? cableDrawingPoints : roomDrawingPoints;
+    if (drawnPoints.length > 0) {
+      const last = drawnPoints[drawnPoints.length - 1];
+      setSnappedMousePos(snapToAngle(last, raw));
+    } else {
+      setSnappedMousePos(raw);
+    }
+  }, [isDrawingCable, isDrawingRoom, cableDrawingPoints, roomDrawingPoints, snapToAngle]);
 
   if (!open) return null;
 
@@ -397,41 +432,6 @@ export default function FloorplanModal({
   };
   const handleClearScale = () => { if (activeFloor) project.setFloorScale(activeFloor.id, undefined); };
   const handleCancelScale = () => { setScaleStep('idle'); setScaleTempPoints([]); setToolMode('pointer'); };
-
-  const SNAP_STEP_DEG = 15;
-
-  const snapToAngle = useCallback((from: { x: number; y: number }, to: { x: number; y: number }): { x: number; y: number } => {
-    const ar = imgAspectRatio;
-    const dx = to.x - from.x;
-    const dy = (to.y - from.y) / ar;
-    if (Math.abs(dx) < 1e-9 && Math.abs(dy) < 1e-9) return to;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const rawAngleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
-    const snapped = Math.round(rawAngleDeg / SNAP_STEP_DEG) * SNAP_STEP_DEG;
-    const rad = snapped * (Math.PI / 180);
-    return {
-      x: from.x + dist * Math.cos(rad),
-      y: from.y + dist * Math.sin(rad) * ar,
-    };
-  }, [imgAspectRatio]);
-
-  const handleCanvasMouseMove = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
-    if (!isDrawingCable && !isDrawingRoom) { setSnappedMousePos(null); return; }
-    const img = imgRef.current;
-    if (!img) return;
-    const rect = img.getBoundingClientRect();
-    const raw = {
-      x: Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)),
-      y: Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height)),
-    };
-    const drawnPoints = isDrawingCable ? cableDrawingPoints : roomDrawingPoints;
-    if (drawnPoints.length > 0) {
-      const last = drawnPoints[drawnPoints.length - 1];
-      setSnappedMousePos(snapToAngle(last, raw));
-    } else {
-      setSnappedMousePos(raw);
-    }
-  }, [isDrawingCable, isDrawingRoom, cableDrawingPoints, roomDrawingPoints, snapToAngle]);
 
   const handleStartRoomDraw = () => { setToolMode('room'); setIsDrawingRoom(true); setRoomDrawingPoints([]); };
   const handleFinishRoomDraw = (name: string) => {

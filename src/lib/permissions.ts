@@ -135,6 +135,19 @@ export function getDefaultPermissions(): RolePermissions {
   return { modules, data };
 }
 
+/**
+ * Vychozi stav pred nactenim opravneni: nic neni povoleno.
+ * Pouziva se jako bezpecny default, aby se pri nacitani nikdy
+ * kratkodobe nezobrazila data, na ktera uzivatel nema narok.
+ */
+export function createNoAccessPermissions(): RolePermissions {
+  const modules: Partial<Record<ModuleKey, boolean>> = {};
+  MODULE_KEYS.forEach((k) => { modules[k] = false; });
+  const data: Partial<Record<DataPermissionKey, boolean>> = {};
+  DATA_PERMISSION_KEYS.forEach((k) => { data[k] = false; });
+  return { modules, data };
+}
+
 export function createFullAccessPermissions(): RolePermissions {
   const modules: Partial<Record<ModuleKey, boolean>> = {};
   MODULE_KEYS.forEach((k) => { modules[k] = true; });

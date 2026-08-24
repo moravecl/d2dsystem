@@ -116,6 +116,15 @@ export default function ProjectsDashboard() {
     navigate(`/?load=${projectId}`);
   };
 
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: projects.length };
+    for (const proj of projects) {
+      const s = proj.status || 'draft';
+      counts[s] = (counts[s] || 0) + 1;
+    }
+    return counts;
+  }, [projects]);
+
   if (!user) {
     return (
       <div className="min-h-screen bg-white/[0.04] flex items-center justify-center p-4">
@@ -135,15 +144,6 @@ export default function ProjectsDashboard() {
       </div>
     );
   }
-
-  const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: projects.length };
-    for (const proj of projects) {
-      const s = proj.status || 'draft';
-      counts[s] = (counts[s] || 0) + 1;
-    }
-    return counts;
-  }, [projects]);
 
   return (
     <div className="min-h-screen bg-white/[0.04]">

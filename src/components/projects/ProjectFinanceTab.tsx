@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   TrendingUp, TrendingDown, FileText, Package, Clock,
   DollarSign, ArrowUpRight, ArrowDownRight, FileInput,
-  Plus, FilePlus, Trash2, Edit2, PenLine, Lock,
+  Plus, FilePlus, Trash2, Edit2, PenLine, Lock, Loader2,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { downloadCsv } from '../../lib/csvExport';
@@ -88,17 +88,9 @@ const STATUS_LABELS: Record<string, string> = {
 export default function ProjectFinanceTab({ projectId }: Props) {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { hasPermission } = usePermissions();
+  const { hasPermission, loading: permissionsLoading } = usePermissions();
   const canViewFinancials = hasPermission('view_financial_reports');
 
-  if (!canViewFinancials) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-slate-500">
-        <Lock className="w-8 h-8 mb-3" />
-        <p className="text-sm font-medium">Nemate opravneni zobrazit financni data tohoto projektu.</p>
-      </div>
-    );
-  }
   const [issuedInvoices, setIssuedInvoices] = useState<IssuedInvoice[]>([]);
   const [receivedInvoices, setReceivedInvoices] = useState<ReceivedInv[]>([]);
   const [receivedItems, setReceivedItems] = useState<ReceivedInvItem[]>([]);
@@ -192,7 +184,28 @@ export default function ProjectFinanceTab({ projectId }: Props) {
     setLoading(false);
   }, [projectId]);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => {
+    if (!canViewFinancials) return;
+    loadData();
+  }, [loadData, canViewFinancials]);
+
+  // Dokud se opravneni nactou, neukazujeme ani data, ani hlasku o zamitnuti.
+  if (permissionsLoading) {
+    return (
+      <div className="flex items-center justify-center py-20 text-slate-500">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!canViewFinancials) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+        <Lock className="w-8 h-8 mb-3" />
+        <p className="text-sm font-medium">Nemáte oprávnění zobrazit finanční data tohoto projektu.</p>
+      </div>
+    );
+  }
 
   const deleteEntry = async (entryId: string) => {
     const { error } = await supabase.from('financial_entries').delete().eq('id', entryId);
