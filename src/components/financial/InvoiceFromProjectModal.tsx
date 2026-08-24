@@ -46,12 +46,35 @@ interface SelectableSection {
   percentage: number;
 }
 
+export interface BillingSources {
+  workIds: string[];
+  materialIds: string[];
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
   projectId: string;
   defaultVatRate: number;
-  onConfirm: (items: InvoiceItem[], note: string) => void;
+  onConfirm: (items: InvoiceItem[], note: string, sources?: BillingSources) => void;
+}
+
+interface UnbilledWorklog {
+  id: string;
+  activity: string;
+  started_at: string;
+  duration_minutes: number;
+  hourly_rate: number;
+  selected: boolean;
+}
+
+interface UnbilledMaterial {
+  id: string;
+  material_name: string;
+  unit: string;
+  actual_qty: number;
+  unit_price: number;
+  selected: boolean;
 }
 
 function parseSections(raw: QuoteSection[] | { sections: QuoteSection[] }): QuoteSection[] {
@@ -62,6 +85,9 @@ function parseSections(raw: QuoteSection[] | { sections: QuoteSection[] }): Quot
 
 export default function InvoiceFromProjectModal({ open, onClose, projectId, defaultVatRate, onConfirm }: Props) {
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<'quotes' | 'work'>('quotes');
+  const [worklogs, setWorklogs] = useState<UnbilledWorklog[]>([]);
+  const [materials, setMaterials] = useState<UnbilledMaterial[]>([]);
   const [sections, setSections] = useState<SelectableSection[]>([]);
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set());
   const [globalPercentage, setGlobalPercentage] = useState(100);
@@ -147,6 +173,34 @@ export default function InvoiceFromProjectModal({ open, onClose, projectId, defa
     }
 
     setSections(selectableSections);
+    // nevyuctovana prace a material z realizace (nejnovejsi job projektu)
+    const { data: jobRows } = await supabase
+      .from('jobs')
+      .select('id')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false })
+      .limit(1);
+    const jobId = (jobRows ?? [])[0]?.id as string | undefined;
+    if (jobId) {
+      const [workRes, matRes] = await Promise.all([
+        supabase.from('job_worklogs')
+          .select('id, activity, started_at, duration_minutes, hourly_rate')
+          .eq('job_id', jobId).is('billed_invoice_id', null).eq('is_running', false)
+          .order('started_at'),
+        supabase.from('job_material_entries')
+          .select('id, material_name, unit, actual_qty, unit_price')
+          .eq('job_id', jobId).is('billed_invoice_id', null).gt('actual_qty', 0)
+          .order('created_at'),
+      ]);
+      setWorklogs(((workRes.data ?? []) as Omit<UnbilledWorklog, 'selected'>[])
+        .map((w) => ({ ...w, selected: true })));
+      setMaterials(((matRes.data ?? []) as Omit<UnbilledMaterial, 'selected'>[])
+        .map((m) => ({ ...m, selected: true })));
+    } else {
+      setWorklogs([]);
+      setMaterials([]);
+    }
+
     setLoading(false);
   }, [projectId]);
 
@@ -190,6 +244,61 @@ export default function InvoiceFromProjectModal({ open, onClose, projectId, defa
     (s, sec) => s + sec.totalSelling * (sec.percentage / 100),
     0
   );
+
+  const updateWorklogRate = async (id: string, rate: number) => {
+    setWorklogs((prev) => prev.map((w) => (w.id === id ? { ...w, hourly_rate: rate } : w)));
+    await supabase.from('job_worklogs').update({ hourly_rate: rate }).eq('id', id);
+  };
+
+  const toggleWorklog = (id: string) =>
+    setWorklogs((prev) => prev.map((w) => (w.id === id ? { ...w, selected: !w.selected } : w)));
+  const toggleMaterial = (id: string) =>
+    setMaterials((prev) => prev.map((m) => (m.id === id ? { ...m, selected: !m.selected } : m)));
+
+  const workTotal = worklogs.filter((w) => w.selected)
+    .reduce((sum, w) => sum + (w.duration_minutes / 60) * w.hourly_rate, 0);
+  const materialTotal = materials.filter((m) => m.selected)
+    .reduce((sum, m) => sum + m.actual_qty * m.unit_price, 0);
+
+  const handleConfirmWork = () => {
+    const selWork = worklogs.filter((w) => w.selected);
+    const selMat = materials.filter((m) => m.selected);
+    if (selWork.length === 0 && selMat.length === 0) return;
+
+    const invoiceItems: InvoiceItem[] = [];
+    for (const w of selWork) {
+      const hours = Math.round((w.duration_minutes / 60) * 100) / 100;
+      invoiceItems.push(calcItemTotals({
+        description: `Práce: ${w.activity} (${new Date(w.started_at).toLocaleDateString('cs-CZ')})`,
+        quantity: hours,
+        unit: 'hod',
+        unit_price: w.hourly_rate,
+        vat_rate: defaultVatRate,
+        total_price: 0,
+        vat_amount: 0,
+        sort_order: invoiceItems.length,
+        section_name: 'Práce',
+      }));
+    }
+    for (const m of selMat) {
+      invoiceItems.push(calcItemTotals({
+        description: m.material_name,
+        quantity: m.actual_qty,
+        unit: m.unit,
+        unit_price: m.unit_price,
+        vat_rate: defaultVatRate,
+        total_price: 0,
+        vat_amount: 0,
+        sort_order: invoiceItems.length,
+        section_name: 'Materiál',
+      }));
+    }
+    const note = `Vyúčtování práce a materiálu k ${new Date().toLocaleDateString('cs-CZ')}`;
+    onConfirm(invoiceItems, note, {
+      workIds: selWork.map((w) => w.id),
+      materialIds: selMat.map((m) => m.id),
+    });
+  };
 
   const handleConfirm = () => {
     const invoiceItems: InvoiceItem[] = [];
@@ -251,6 +360,99 @@ export default function InvoiceFromProjectModal({ open, onClose, projectId, defa
         <div className="flex items-center justify-center py-16">
           <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
         </div>
+      ) : (
+      <div className="space-y-4">
+        <div className="flex gap-1 bg-white/[0.04] rounded-xl p-1">
+          <button
+            onClick={() => setTab('quotes')}
+            className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition ${
+              tab === 'quotes' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Nabídky a vícepráce
+          </button>
+          <button
+            onClick={() => setTab('work')}
+            className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition ${
+              tab === 'work' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Práce a materiál
+            {(worklogs.length + materials.length) > 0 && (
+              <span className="ml-1.5 text-[10px] opacity-80">({worklogs.length + materials.length})</span>
+            )}
+          </button>
+        </div>
+
+      {tab === 'work' ? (
+        (worklogs.length === 0 && materials.length === 0) ? (
+          <div className="text-center py-12">
+            <Receipt className="w-10 h-10 text-slate-500 mx-auto mb-3" />
+            <div className="text-sm font-semibold text-slate-400">Nic nevyúčtovaného</div>
+            <div className="text-xs text-slate-500 mt-1">Veškerá zapsaná práce i materiál už byly vyfakturovány.</div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {worklogs.length > 0 && (
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Práce ({worklogs.length})</div>
+                <div className="max-h-48 overflow-y-auto divide-y divide-white/[0.06] rounded-xl border border-white/[0.08]">
+                  {worklogs.map((w) => (
+                    <div key={w.id} className="flex items-center gap-3 px-3 py-2">
+                      <input type="checkbox" checked={w.selected} onChange={() => toggleWorklog(w.id)} className="accent-blue-500" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-slate-200 truncate">{w.activity}</div>
+                        <div className="text-[11px] text-slate-500">
+                          {new Date(w.started_at).toLocaleDateString('cs-CZ')} · {(w.duration_minutes / 60).toLocaleString('cs-CZ', { maximumFractionDigits: 2 })} hod
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <input
+                          type="number"
+                          min={0}
+                          value={w.hourly_rate}
+                          onChange={(e) => updateWorklogRate(w.id, Number(e.target.value) || 0)}
+                          className="w-20 px-2 py-1 text-xs text-right"
+                          title="Hodinová sazba"
+                        />
+                        <span className="text-[10px] text-slate-500">Kč/h</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {materials.length > 0 && (
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Materiál ({materials.length})</div>
+                <div className="max-h-48 overflow-y-auto divide-y divide-white/[0.06] rounded-xl border border-white/[0.08]">
+                  {materials.map((m) => (
+                    <div key={m.id} className="flex items-center gap-3 px-3 py-2">
+                      <input type="checkbox" checked={m.selected} onChange={() => toggleMaterial(m.id)} className="accent-blue-500" />
+                      <div className="flex-1 min-w-0 text-sm text-slate-200 truncate">{m.material_name}</div>
+                      <div className="text-xs text-slate-400 shrink-0">
+                        {m.actual_qty.toLocaleString('cs-CZ')} {m.unit} × {fmt(m.unit_price)} Kč
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="flex items-center justify-between bg-white/[0.04] rounded-xl px-4 py-3">
+              <div className="text-xs text-slate-400">
+                Práce {fmt(workTotal)} Kč · Materiál {fmt(materialTotal)} Kč
+              </div>
+              <div className="text-sm font-extrabold text-white">Celkem {fmt(workTotal + materialTotal)} Kč</div>
+            </div>
+            <button
+              onClick={handleConfirmWork}
+              disabled={workTotal + materialTotal <= 0}
+              className="w-full px-4 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+            >
+              Pokračovat na fakturu
+            </button>
+          </div>
+        )
       ) : sections.length === 0 ? (
         <div className="text-center py-16">
           <Receipt className="w-10 h-10 text-slate-300 mx-auto mb-3" />
@@ -419,6 +621,8 @@ export default function InvoiceFromProjectModal({ open, onClose, projectId, defa
             </button>
           </div>
         </div>
+      )}
+      </div>
       )}
     </Modal>
   );

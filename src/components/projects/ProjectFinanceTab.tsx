@@ -214,9 +214,14 @@ export default function ProjectFinanceTab({ projectId }: Props) {
     loadData();
   };
 
-  const handleInvoiceFromProject = (items: InvoiceItem[], note: string) => {
+  const handleInvoiceFromProject = (items: InvoiceItem[], note: string, sources?: { workIds: string[]; materialIds: string[] }) => {
     const encoded = encodeURIComponent(JSON.stringify({ items, note }));
-    navigate(`/finance/faktura/nova?project=${projectId}&prefill=${encoded}`);
+    let url = `/finance/faktura/nova?project=${projectId}&prefill=${encoded}`;
+    // id zapisu prace/materialu putuji do formulare faktury, ktery je po
+    // uspesnem vystaveni oznaci jako vyuctovane (vzor ?qj=/?ss=)
+    if (sources?.workIds.length) url += `&work=${sources.workIds.join(',')}`;
+    if (sources?.materialIds.length) url += `&mat=${sources.materialIds.join(',')}`;
+    navigate(url);
   };
 
   const fmt = (n: number) => Math.round(n).toLocaleString('cs-CZ');

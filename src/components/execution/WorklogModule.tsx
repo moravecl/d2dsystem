@@ -137,6 +137,21 @@ export default function WorklogModule({ jobId, isMobile, onTimerChange }: { jobI
     }
   }, [runningLog]);
 
+
+  // Snapshot hodinove sazby pro pozdejsi vyuctovani: sazba prvniho
+  // zamestnaneckeho workera; brigadnik/bez shody -> 0 (editovatelne
+  // pred fakturaci v modalu Vyuctovani).
+  const resolveHourlyRate = async (list: WorkerEntry[]): Promise<number> => {
+    const empId = list.find((w) => w.type === 'employee' && w.id)?.id;
+    if (!empId) return 0;
+    const { data } = await supabase
+      .from('employees')
+      .select('hourly_rate')
+      .eq('user_id', empId)
+      .maybeSingle();
+    return Number((data as { hourly_rate?: number } | null)?.hourly_rate ?? 0);
+  };
+
   const handleStart = async () => {
     if (!user) return;
     setSaving(true);
@@ -148,6 +163,7 @@ export default function WorklogModule({ jobId, isMobile, onTimerChange }: { jobI
       is_running: true,
       note,
       workers,
+      hourly_rate: await resolveHourlyRate(workers),
     });
     if (error) {
       toast('Chyba', 'error');
@@ -223,6 +239,7 @@ export default function WorklogModule({ jobId, isMobile, onTimerChange }: { jobI
       note: manualNote,
       is_running: false,
       workers: manualWorkers,
+      hourly_rate: await resolveHourlyRate(manualWorkers),
     });
 
     if (error) {

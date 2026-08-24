@@ -698,6 +698,23 @@ export default function InvoiceFormPage() {
           .update({ billing_status: 'invoiced', updated_at: new Date().toISOString() })
           .eq('id', qjParam);
       }
+
+      // Vyuctovani prace a materialu z realizace: oznacit zdrojove zapisy,
+      // aby se nefakturovaly dvakrat (vzor ?qj=/?ss= vyse)
+      const workParam = searchParams.get('work');
+      if (workParam) {
+        await supabase.from('job_worklogs')
+          .update({ billed_invoice_id: invoiceId, billed_at: new Date().toISOString() })
+          .in('id', workParam.split(',').filter(Boolean))
+          .is('billed_invoice_id', null);
+      }
+      const matParam = searchParams.get('mat');
+      if (matParam) {
+        await supabase.from('job_material_entries')
+          .update({ billed_invoice_id: invoiceId, billed_at: new Date().toISOString() })
+          .in('id', matParam.split(',').filter(Boolean))
+          .is('billed_invoice_id', null);
+      }
     }
 
     const itemsPayload = items
