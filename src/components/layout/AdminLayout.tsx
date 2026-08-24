@@ -1,42 +1,91 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutGrid, Package, Puzzle, Settings, ArrowLeft, LogOut, Users, Lightbulb, Cable, Flame, Menu, X, FileText, Building2, Sliders, Receipt, Mail, FileCode, CreditCard, Shield, ClipboardList, Tags, Sun, Zap, Settings2, FolderOpen, PanelLeft, Camera, FileCheck, ShieldAlert, Shapes, PenTool, Link2, GitMerge } from 'lucide-react';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { LayoutGrid, Package, Puzzle, Settings, ArrowLeft, LogOut, Users, Lightbulb, Cable, Flame, Menu, X, FileText, Building2, Sliders, Receipt, Mail, FileCode, CreditCard, Shield, ClipboardList, Tags, Sun, Zap, Settings2, FolderOpen, PanelLeft, Camera, FileCheck, ShieldAlert, Shapes, PenTool, Link2, GitMerge, ChevronDown, Layers, FormInput, Boxes } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
-const navItems = [
-  { to: '/admin', icon: LayoutGrid, label: 'Přehled', end: true },
-  { to: '/admin/categories', icon: LayoutGrid, label: 'Kategorie', end: false },
-  { to: '/admin/products', icon: Package, label: 'Položky', end: false },
-  { to: '/admin/design-modules', icon: Puzzle, label: 'Design moduly', end: false },
-  { to: '/admin/presets', icon: Settings, label: 'Presety', end: false },
-  { to: '/admin/materials', icon: Cable, label: 'Materiály a ceny', end: false },
-  { to: '/admin/heating', icon: Flame, label: 'Systémy vytápění', end: false },
-  { to: '/admin/fv-katalog', icon: Sun, label: 'FV katalog', end: false },
-  { to: '/admin/camera-katalog', icon: Camera, label: 'Kamerový katalog', end: false },
-  { to: '/admin/eps-katalog', icon: ShieldAlert, label: 'EPS / EZS katalog', end: false },
-  { to: '/admin/design-element-types', icon: Shapes, label: 'Schématické značky', end: false },
-  { to: '/admin/compatibility', icon: Link2, label: 'Kompatibilita prvků', end: false },
-  { to: '/admin/design-series-links', icon: GitMerge, label: 'Mapování des. řad', end: false },
-  { to: '/admin/designer-config', icon: PenTool, label: 'Konfigurace návrháře', end: false },
-  { to: '/admin/project-types', icon: Tags, label: 'Typy projektů', end: false },
-  { to: '/admin/custom-fields', icon: Settings2, label: 'Vlastní pole', end: false },
-  { to: '/admin/project-templates', icon: FolderOpen, label: 'Šablony projektů', end: false },
-  { to: '/admin/protocol-templates', icon: FileCheck, label: 'Šablony protokolů', end: false },
-  { to: '/admin/formulare', icon: FileCode, label: 'Formuláře', end: false },
-  { to: '/admin/inspirations', icon: Lightbulb, label: 'Inspirace', end: false },
-  { to: '/admin/templates', icon: FileText, label: 'Šablony', end: false },
-  { to: '/admin/users', icon: Users, label: 'Uživatelé a tým', end: false },
-  { to: '/admin/system', icon: Sliders, label: 'Systémová nastavení', end: false },
-  { to: '/admin/firma', icon: Building2, label: 'Informace o firmě', end: false },
-  { to: '/admin/fakturace', icon: Receipt, label: 'Nastavení fakturace', end: false },
-  { to: '/admin/smtp', icon: Mail, label: 'SMTP účty', end: false },
-  { to: '/admin/email-sablony', icon: FileCode, label: 'Emailové šablony', end: false },
-  { to: '/admin/licence', icon: CreditCard, label: 'Licence a limity', end: false },
-  { to: '/admin/automatizace', icon: Zap, label: 'Automatizace', end: false },
-  { to: '/admin/gdpr', icon: Shield, label: 'GDPR & Export dat', end: false },
-  { to: '/admin/sidebar', icon: PanelLeft, label: 'Nastavení sidebaru', end: false },
-  { to: '/admin/audit', icon: ClipboardList, label: 'Audit log', end: false },
+const overviewItem = { to: '/admin', icon: LayoutGrid, label: 'Přehled' };
+
+// Sbalitelné skupiny. Otevřená je vždy ta, ve které je aktivní routa;
+// ruční otevření/zavření se pamatuje v localStorage.
+const NAV_GROUPS = [
+  {
+    id: 'katalog', label: 'Katalog',
+    items: [
+      { to: '/admin/categories', icon: Layers, label: 'Kategorie' },
+      { to: '/admin/products', icon: Package, label: 'Položky' },
+      { to: '/admin/materials', icon: Cable, label: 'Materiály a ceny' },
+      { to: '/admin/heating', icon: Flame, label: 'Systémy vytápění' },
+      { to: '/admin/inspirations', icon: Lightbulb, label: 'Inspirace' },
+    ],
+  },
+  {
+    id: 'obory', label: 'Oborové katalogy',
+    items: [
+      { to: '/admin/fv-katalog', icon: Sun, label: 'FV katalog' },
+      { to: '/admin/camera-katalog', icon: Camera, label: 'Kamerový katalog' },
+      { to: '/admin/eps-katalog', icon: ShieldAlert, label: 'EPS / EZS katalog' },
+    ],
+  },
+  {
+    id: 'navrhar', label: 'Návrhář',
+    items: [
+      { to: '/admin/design-modules', icon: Puzzle, label: 'Design moduly' },
+      { to: '/admin/presets', icon: Settings, label: 'Presety' },
+      { to: '/admin/design-element-types', icon: Shapes, label: 'Schématické značky' },
+      { to: '/admin/compatibility', icon: Link2, label: 'Kompatibilita prvků' },
+      { to: '/admin/design-series-links', icon: GitMerge, label: 'Mapování des. řad' },
+      { to: '/admin/designer-config', icon: PenTool, label: 'Konfigurace návrháře' },
+    ],
+  },
+  {
+    id: 'projekty', label: 'Projekty a šablony',
+    items: [
+      { to: '/admin/project-types', icon: Tags, label: 'Typy projektů' },
+      { to: '/admin/custom-fields', icon: Settings2, label: 'Vlastní pole' },
+      { to: '/admin/project-templates', icon: FolderOpen, label: 'Šablony projektů' },
+      { to: '/admin/protocol-templates', icon: FileCheck, label: 'Šablony protokolů' },
+      { to: '/admin/templates', icon: FileText, label: 'Šablony dokumentů' },
+      { to: '/admin/formulare', icon: FormInput, label: 'Formuláře' },
+      { to: '/admin/resource-groups', icon: Boxes, label: 'Skupiny zdrojů' },
+    ],
+  },
+  {
+    id: 'tym', label: 'Tým a firma',
+    items: [
+      { to: '/admin/users', icon: Users, label: 'Uživatelé a tým' },
+      { to: '/admin/firma', icon: Building2, label: 'Informace o firmě' },
+      { to: '/admin/licence', icon: CreditCard, label: 'Licence a limity' },
+      { to: '/admin/gdpr', icon: Shield, label: 'GDPR & Export dat' },
+    ],
+  },
+  {
+    id: 'fakturace', label: 'Fakturace a e-mail',
+    items: [
+      { to: '/admin/fakturace', icon: Receipt, label: 'Nastavení fakturace' },
+      { to: '/admin/smtp', icon: Mail, label: 'SMTP účty' },
+      { to: '/admin/email-sablony', icon: FileCode, label: 'Emailové šablony' },
+    ],
+  },
+  {
+    id: 'system', label: 'Systém',
+    items: [
+      { to: '/admin/system', icon: Sliders, label: 'Systémová nastavení' },
+      { to: '/admin/automatizace', icon: Zap, label: 'Automatizace' },
+      { to: '/admin/sidebar', icon: PanelLeft, label: 'Nastavení sidebaru' },
+      { to: '/admin/audit', icon: ClipboardList, label: 'Audit log' },
+    ],
+  },
 ];
+
+const NAV_OPEN_KEY = 'hs-admin-nav-open';
+
+function loadOpenState(): Record<string, boolean> {
+  try {
+    return JSON.parse(localStorage.getItem(NAV_OPEN_KEY) ?? '{}');
+  } catch {
+    return {};
+  }
+}
 
 function SidebarContent({ profile, onSignOut, onNavigateCatalog, onNavClick }: {
   profile: { display_name?: string; email?: string } | null;
@@ -44,6 +93,17 @@ function SidebarContent({ profile, onSignOut, onNavigateCatalog, onNavClick }: {
   onNavigateCatalog: () => void;
   onNavClick?: () => void;
 }) {
+  const location = useLocation();
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(loadOpenState);
+
+  const toggleGroup = (id: string, open: boolean) => {
+    setOpenGroups((prev) => {
+      const next = { ...prev, [id]: open };
+      try { localStorage.setItem(NAV_OPEN_KEY, JSON.stringify(next)); } catch { /* private mode */ }
+      return next;
+    });
+  };
+
   return (
     <div className="flex flex-col h-full bg-navy-900 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-orange-500/[0.04] via-transparent to-transparent pointer-events-none" />
@@ -58,25 +118,59 @@ function SidebarContent({ profile, onSignOut, onNavigateCatalog, onNavClick }: {
         </div>
       </div>
 
-      <nav className="flex-1 p-2.5 space-y-0.5 overflow-y-auto min-h-0 relative z-10">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.end}
-            onClick={onNavClick}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-orange-500/15 text-orange-300 border border-orange-500/20'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.06]'
-              }`
-            }
-          >
-            <item.icon className="w-4 h-4 shrink-0" />
-            {item.label}
-          </NavLink>
-        ))}
+      <nav className="flex-1 p-2.5 overflow-y-auto min-h-0 relative z-10">
+        <NavLink
+          to={overviewItem.to}
+          end
+          onClick={onNavClick}
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              isActive
+                ? 'bg-orange-500/15 text-orange-300 border border-orange-500/20'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.06]'
+            }`
+          }
+        >
+          <overviewItem.icon className="w-4 h-4 shrink-0" />
+          {overviewItem.label}
+        </NavLink>
+
+        {NAV_GROUPS.map((group) => {
+          const isActiveGroup = group.items.some((i) => location.pathname.startsWith(i.to));
+          const isOpen = openGroups[group.id] ?? isActiveGroup;
+          return (
+            <div key={group.id} className="mt-1.5">
+              <button
+                onClick={() => toggleGroup(group.id, !isOpen)}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                <span className={isActiveGroup ? 'text-orange-400/80' : undefined}>{group.label}</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? '' : '-rotate-90'}`} />
+              </button>
+              {isOpen && (
+                <div className="space-y-0.5">
+                  {group.items.map((item) => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      onClick={onNavClick}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 ${
+                          isActive
+                            ? 'bg-orange-500/15 text-orange-300 border border-orange-500/20'
+                            : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.06]'
+                        }`
+                      }
+                    >
+                      <item.icon className="w-4 h-4 shrink-0" />
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </nav>
 
       <div className="p-2.5 border-t border-white/[0.06] space-y-1 relative z-10">

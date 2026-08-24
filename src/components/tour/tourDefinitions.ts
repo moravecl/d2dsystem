@@ -385,7 +385,7 @@ export const ADMIN_TOUR: Tour = {
     },
     {
       id: 'admin-products',
-      target: '[href="/admin/produkty"]',
+      target: '[href="/admin/products"]',
       title: 'Správa produktů',
       content: 'Přidávejte a upravujte produkty v katalogu. Produkty jsou základem pro tvorbu nabídek a projektových specifikací.',
       placement: 'right',
