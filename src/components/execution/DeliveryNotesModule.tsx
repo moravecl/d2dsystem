@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Truck, Plus, Printer, Loader2 } from 'lucide-react';
+import { Truck, Plus, Printer, Loader2, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
 import Modal from '../ui/Modal';
@@ -155,6 +155,22 @@ export default function DeliveryNotesModule({ projectId, jobId, onChanged }: Pro
     onChanged?.();
   };
 
+  const handleDelete = async (note: DeliveryNote) => {
+    if (!confirm(`Stornovat dodací list ${note.number}? Materiál se uvolní pro nový dodací list.`)) return;
+    // uvolnit material, pak smazat (polozky spadnou pres FK CASCADE)
+    await supabase.from('job_material_entries')
+      .update({ delivery_note_id: null })
+      .eq('delivery_note_id', note.id);
+    const { error } = await supabase.from('delivery_notes').delete().eq('id', note.id);
+    if (error) {
+      toast('Storno se nepodařilo', 'error');
+      return;
+    }
+    toast(`Dodací list ${note.number} stornován`);
+    load();
+    onChanged?.();
+  };
+
   const handlePrint = async (note: DeliveryNote) => {
     setPrinting(note.id);
     const [itemsRes, companyRes] = await Promise.all([
@@ -208,16 +224,25 @@ export default function DeliveryNotesModule({ projectId, jobId, onChanged }: Pro
                     {n.note ? ` · ${n.note}` : ''}
                   </div>
                 </div>
-                <button
-                  onClick={() => handlePrint(n)}
-                  disabled={printing === n.id}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.10] text-slate-300 text-xs font-semibold transition shrink-0"
-                >
-                  {printing === n.id
-                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    : <Printer className="w-3.5 h-3.5" />}
-                  Tisk
-                </button>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={() => handlePrint(n)}
+                    disabled={printing === n.id}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.10] text-slate-300 text-xs font-semibold transition"
+                  >
+                    {printing === n.id
+                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      : <Printer className="w-3.5 h-3.5" />}
+                    Tisk
+                  </button>
+                  <button
+                    onClick={() => handleDelete(n)}
+                    title="Stornovat dodací list"
+                    className="p-1.5 rounded-lg hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

@@ -263,6 +263,34 @@ export default function InvoiceFormPage() {
       const quickJobId = searchParams.get('qj');
       const serviceScheduleId = searchParams.get('ss');
 
+      // Guard proti znovupouziti URL vyuctovani: pokud je cokoli z work/mat/vp
+      // uz oznacene jako vyuctovane, fakturu nezakladat (hrozila by duplicita)
+      const workGuard = searchParams.get('work');
+      const matGuard = searchParams.get('mat');
+      const vpGuard = searchParams.get('vp');
+      if (workGuard || matGuard || vpGuard) {
+        const checks = await Promise.all([
+          workGuard
+            ? supabase.from('job_worklogs').select('id', { count: 'exact', head: true })
+                .in('id', workGuard.split(',')).not('billed_invoice_id', 'is', null)
+            : Promise.resolve({ count: 0 }),
+          matGuard
+            ? supabase.from('job_material_entries').select('id', { count: 'exact', head: true })
+                .in('id', matGuard.split(',')).not('billed_invoice_id', 'is', null)
+            : Promise.resolve({ count: 0 }),
+          vpGuard
+            ? supabase.from('viceprace').select('id', { count: 'exact', head: true })
+                .in('id', vpGuard.split(',')).not('billed_invoice_id', 'is', null)
+            : Promise.resolve({ count: 0 }),
+        ]);
+        const alreadyBilled = checks.reduce((sum, c) => sum + (('count' in c ? c.count : 0) ?? 0), 0);
+        if (alreadyBilled > 0) {
+          toast('Některé položky už byly vyúčtovány — otevřete vyúčtování znovu z projektu.', 'error');
+          navigate('/finance');
+          return;
+        }
+      }
+
       if (prefillRaw) {
         try {
           const parsed = JSON.parse(decodeURIComponent(prefillRaw));
@@ -713,6 +741,13 @@ export default function InvoiceFormPage() {
         await supabase.from('job_material_entries')
           .update({ billed_invoice_id: invoiceId, billed_at: new Date().toISOString() })
           .in('id', matParam.split(',').filter(Boolean))
+          .is('billed_invoice_id', null);
+      }
+      const vpParam = searchParams.get('vp');
+      if (vpParam) {
+        await supabase.from('viceprace')
+          .update({ billed_invoice_id: invoiceId, billed_at: new Date().toISOString() })
+          .in('id', vpParam.split(',').filter(Boolean))
           .is('billed_invoice_id', null);
       }
     }

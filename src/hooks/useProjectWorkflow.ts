@@ -152,6 +152,13 @@ export function useProjectWorkflow(projectId: string | undefined): ProjectWorkfl
 
   useEffect(() => { load(); }, [load]);
 
+  // obnovit stavy pri navratu do okna (po akci na jine zalozce/strance)
+  useEffect(() => {
+    const onFocus = () => load();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [load]);
+
   return useMemo(() => {
     const fmt = (n: number) => `${Math.round(n).toLocaleString('cs-CZ')} Kč`;
     const unbilledTotal = counts.unbilledWork + counts.unbilledMaterial;

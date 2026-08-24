@@ -4,7 +4,7 @@ import { CreditCard as EditIcon, Calendar, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useToast } from '../../components/ui/Toast';
-import { useProjectWorkflow, type ProjectWorkflowStep } from '../../hooks/useProjectWorkflow';
+import { useProjectWorkflow, PROJECT_WORKFLOW_LABELS, type ProjectWorkflowStep } from '../../hooks/useProjectWorkflow';
 import ProjectWorkflowStepper from '../../components/projects/ProjectWorkflowStepper';
 import WorkflowSkipConfirmModal from '../../components/projects/WorkflowSkipConfirmModal';
 import ProjectTabNav from '../../components/projects/ProjectTabNav';
@@ -189,6 +189,9 @@ export default function ProjectDetailPage() {
   const goToWorkflowStep = (step: ProjectWorkflowStep) => {
     setActiveTab(WORKFLOW_STEP_TAB[step]);
   };
+
+  // po prepnuti zalozky obnovit odvozene stavy (lehke count dotazy)
+  useEffect(() => { workflow.refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [activeTab]);
   const handleWorkflowStepClick = (step: ProjectWorkflowStep) => {
     const missing = workflow.incompletePredecessors(step);
     if (workflow.enforcement === 'confirm' && missing.length > 0 && !workflow.steps[step].isComplete) {
@@ -1053,6 +1056,15 @@ export default function ProjectDetailPage() {
               nextStep={workflow.nextStep}
               onStepClick={handleWorkflowStepClick}
             />
+            {workflow.nextStep && activeTab === 'overview' && (
+              <button
+                onClick={() => handleWorkflowStepClick(workflow.nextStep!)}
+                className="mt-2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/25 text-xs font-semibold text-blue-300 hover:bg-blue-500/20 transition"
+              >
+                Další krok: {PROJECT_WORKFLOW_LABELS[workflow.nextStep]}
+                <span aria-hidden>→</span>
+              </button>
+            )}
           </div>
         )}
 

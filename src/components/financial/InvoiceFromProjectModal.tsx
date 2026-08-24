@@ -49,6 +49,7 @@ interface SelectableSection {
 export interface BillingSources {
   workIds: string[];
   materialIds: string[];
+  vicepraceIds: string[];
 }
 
 interface Props {
@@ -106,6 +107,7 @@ export default function InvoiceFromProjectModal({ open, onClose, projectId, defa
       supabase
         .from('viceprace')
         .select('id, title, status, amount, viceprace_items(id, name, unit, quantity, unit_price, total_price)')
+        .is('billed_invoice_id', null)
         .eq('project_id', projectId)
         .in('status', ['approved', 'completed'])
         .order('created_at', { ascending: false }),
@@ -297,6 +299,7 @@ export default function InvoiceFromProjectModal({ open, onClose, projectId, defa
     onConfirm(invoiceItems, note, {
       workIds: selWork.map((w) => w.id),
       materialIds: selMat.map((m) => m.id),
+      vicepraceIds: [],
     });
   };
 
@@ -348,7 +351,12 @@ export default function InvoiceFromProjectModal({ open, onClose, projectId, defa
     const vpNames = selectedSections.filter(s => s.sourceType === 'viceprace').map(s => s.sourceLabel);
     if (vpNames.length > 0) noteLines.push(`Vícepráce: ${vpNames.join(', ')}`);
 
-    onConfirm(invoiceItems, noteLines.join('\n'));
+    // viceprace fakturovane v plne vysi (100 %) se oznaci jako vyuctovane;
+    // castecne (zalohove) procento zaznam neoznacuje
+    const vicepraceIds = selectedSections
+      .filter((sec) => sec.sourceType === 'viceprace' && sec.percentage === 100)
+      .map((sec) => sec.sourceId);
+    onConfirm(invoiceItems, noteLines.join('\n'), { workIds: [], materialIds: [], vicepraceIds });
     onClose();
   };
 
