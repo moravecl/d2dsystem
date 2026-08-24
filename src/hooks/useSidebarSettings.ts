@@ -64,36 +64,34 @@ export function useSidebarSettings() {
   }, [load]);
 
   const save = useCallback(
-    async (items: SidebarItemSetting[], grps?: SidebarGroup[]) => {
-      if (!organization?.id) return;
+    async (items: SidebarItemSetting[], grps?: SidebarGroup[]): Promise<boolean> => {
+      if (!organization?.id) return false;
 
       const groupsToSave = grps || groups;
 
-      const { data: existing } = await supabase
+      // Upsert + select: UPDATE zablokovany RLS politikou nevraci chybu,
+      // jen 0 radku - proto se kontroluje i to, ze se zapis skutecne provedl.
+      const { data, error } = await supabase
         .from('sidebar_settings')
-        .select('id')
-        .eq('organization_id', organization.id)
-        .maybeSingle();
+        .upsert(
+          {
+            organization_id: organization.id,
+            items: items as unknown as Record<string, unknown>[],
+            groups: groupsToSave as unknown as Record<string, unknown>[],
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'organization_id' },
+        )
+        .select('id');
 
-      const payload = {
-        items: items as unknown as Record<string, unknown>[],
-        groups: groupsToSave as unknown as Record<string, unknown>[],
-        updated_at: new Date().toISOString(),
-      };
-
-      if (existing) {
-        await supabase
-          .from('sidebar_settings')
-          .update(payload)
-          .eq('organization_id', organization.id);
-      } else {
-        await supabase
-          .from('sidebar_settings')
-          .insert({ organization_id: organization.id, ...payload });
+      if (error || !data || data.length === 0) {
+        console.error('Uložení sidebar_settings selhalo:', error);
+        return false;
       }
 
       setSettings(items);
       setGroups(groupsToSave);
+      return true;
     },
     [organization?.id, groups],
   );

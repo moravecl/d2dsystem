@@ -12,8 +12,10 @@ import {
   type SidebarGroup,
 } from '../../lib/sidebarConfig';
 import Modal from '../../components/ui/Modal';
+import { useToast } from '../../components/ui/Toast';
 
 export default function SidebarSettingsPage() {
+  const { toast } = useToast();
   const { settings, groups: savedGroups, loading, save } = useSidebarSettings();
   const [items, setItems] = useState<SidebarItemSetting[]>([]);
   const [groups, setGroups] = useState<SidebarGroup[]>([]);
@@ -224,8 +226,12 @@ export default function SidebarSettingsPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    await save(items, groups);
+    const ok = await save(items, groups);
     setSaving(false);
+    if (!ok) {
+      toast('Nastavení se nepodařilo uložit. Zkuste to prosím znovu.', 'error');
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
