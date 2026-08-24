@@ -30,7 +30,7 @@ export default function TemplateSelectionModal({ projectId, prefilterType, onClo
   const [docName, setDocName] = useState('');
   const [creating, setCreating] = useState(false);
 
-  const [quotes, setQuotes] = useState<{ id: string; quote_number: string; version: number }[]>([]);
+  const [quotes, setQuotes] = useState<{ id: string; quote_number: string; version: number; total_selling?: number; status?: string }[]>([]);
   const [jobs, setJobs] = useState<{ id: string; status: string; started_at: string }[]>([]);
   const [projectData, setProjectData] = useState<Record<string, unknown>>({});
   const [clientData, setClientData] = useState<Record<string, unknown>>({});
@@ -75,7 +75,7 @@ export default function TemplateSelectionModal({ projectId, prefilterType, onClo
         }
       }
 
-      const { data: q } = await supabase.from('project_quotes').select('id, quote_number, version').eq('project_id', projectId).order('created_at', { ascending: false });
+      const { data: q } = await supabase.from('project_quotes').select('id, quote_number, version, total_selling, status').eq('project_id', projectId).order('created_at', { ascending: false });
       setQuotes((q || []) as { id: string; quote_number: string; version: number }[]);
 
       const { data: j } = await supabase.from('jobs').select('id, status, started_at').eq('project_id', projectId).order('created_at', { ascending: false });
@@ -97,7 +97,12 @@ export default function TemplateSelectionModal({ projectId, prefilterType, onClo
     const quoteData: Record<string, unknown> = {};
     if (attachQuote && selectedQuoteId) {
       const q = quotes.find(x => x.id === selectedQuoteId);
-      if (q) { quoteData.name = q.quote_number; quoteData.version = `v${q.version}`; }
+      if (q) {
+        quoteData.name = q.quote_number;
+        quoteData.version = `v${q.version}`;
+        quoteData.total = `${Math.round(q.total_selling ?? 0).toLocaleString('cs-CZ')} Kč`;
+        quoteData.status = q.status === 'approved' ? 'schválená' : q.status;
+      }
     }
 
     const jobData: Record<string, unknown> = {};

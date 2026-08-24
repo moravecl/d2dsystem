@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Plus, Upload, Search, Eye, Download, Copy, Lock, Trash2, MoreHorizontal } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -55,6 +55,52 @@ export default function ProjectDocumentsTab({ projectId, prefilterType, autoOpen
     setShowTemplateModal(false);
     onModalClosed?.();
     navigate(`/projekty/${projectId}/dokument/${docId}`);
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const pendingTypeRef = useRef<'upload' | 'objednavka'>('upload');
+  const [uploading, setUploading] = useState(false);
+
+  const startUpload = (type: 'upload' | 'objednavka') => {
+    pendingTypeRef.current = type;
+    fileInputRef.current?.click();
+  };
+
+  const handleFilePicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setUploading(true);
+    const type = pendingTypeRef.current;
+    const ext = file.name.split('.').pop() || '';
+    const path = `project-documents/${projectId}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from('documents').upload(path, file);
+    if (upErr) {
+      toast('Nahrání souboru selhalo', 'error');
+      setUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from('documents').getPublicUrl(path);
+    const { data: user } = await supabase.auth.getUser();
+    const { error } = await supabase.from('project_documents').insert({
+      project_id: projectId,
+      name: file.name,
+      // objednavka od klienta je hotovy dokument -> rovnou FINAL (plni krok 2 workflow)
+      status: type === 'objednavka' ? 'FINAL' : 'DRAFT',
+      rendered_html: '',
+      render_context: {},
+      document_type: type,
+      file_url: urlData.publicUrl,
+      file_type: ext,
+      created_by: user.user?.id,
+    });
+    if (error) {
+      toast('Uložení dokumentu selhalo', 'error');
+    } else {
+      toast(type === 'objednavka' ? 'Objednávka nahrána' : 'Soubor nahrán');
+      loadDocuments();
+    }
+    setUploading(false);
   };
 
   const handleDelete = async (doc: ProjectDocument) => {
@@ -131,7 +177,20 @@ export default function ProjectDocumentsTab({ projectId, prefilterType, autoOpen
           </select>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-300 border border-white/10 rounded-xl hover:bg-white/[0.04] transition">
+          <input ref={fileInputRef} type="file" className="hidden" onChange={handleFilePicked} />
+          <button
+            onClick={() => startUpload('objednavka')}
+            disabled={uploading}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-300 border border-white/10 rounded-xl hover:bg-white/[0.04] transition disabled:opacity-50"
+          >
+            <Upload className="w-4 h-4" />
+            Nahrát objednávku
+          </button>
+          <button
+            onClick={() => startUpload('upload')}
+            disabled={uploading}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-300 border border-white/10 rounded-xl hover:bg-white/[0.04] transition disabled:opacity-50"
+          >
             <Upload className="w-4 h-4" />
             Nahrát soubor
           </button>

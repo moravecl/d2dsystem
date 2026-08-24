@@ -11,6 +11,7 @@ import Modal from '../../components/ui/Modal';
 import PlaceholderPanel from '../../components/documents/PlaceholderPanel';
 import PdfExportModal from '../../components/documents/PdfExportModal';
 import type { ProjectDocument, DocumentTemplate } from '../../types/database';
+import SignaturePad from '../../components/projects/SignaturePad';
 
 export default function DocumentEditorPage() {
   const { id: projectId, docId } = useParams<{ id: string; docId: string }>();
@@ -32,6 +33,9 @@ export default function DocumentEditorPage() {
   const [activePanel, setActivePanel] = useState<'preview' | 'data'>('preview');
   const [projectName, setProjectName] = useState('');
   const [contextData, setContextData] = useState<Record<string, unknown>>({});
+  const [clientSig, setClientSig] = useState('');
+  const [contractorSig, setContractorSig] = useState('');
+  const [savingSigs, setSavingSigs] = useState(false);
 
   const loadDocument = useCallback(async () => {
     if (!docId) return;
@@ -40,6 +44,8 @@ export default function DocumentEditorPage() {
     const docData = data as ProjectDocument;
     setDoc(docData);
     setContent(docData.rendered_html);
+    setClientSig((docData as ProjectDocument).client_signature ?? '');
+    setContractorSig((docData as ProjectDocument).contractor_signature ?? '');
 
     if (docData.template_id) {
       const { data: tpl } = await supabase.from('document_templates').select('*').eq('id', docData.template_id).maybeSingle();
@@ -201,7 +207,37 @@ export default function DocumentEditorPage() {
   }
 
   if (!doc) return null;
-  const isFinal = doc.status === 'FINAL';
+  const isFinal = doc.status === 'FINAL' || doc.status === 'SIGNED';
+  const isSignable = doc.document_type === 'smlouva' || doc.document_type === 'objednavka';
+  const isSigned = doc.status === 'SIGNED';
+
+  const handleSaveSignatures = async () => {
+    if (!doc) return;
+    setSavingSigs(true);
+    const bothSigned = !!clientSig && !!contractorSig;
+    const payload: Record<string, unknown> = {
+      client_signature: clientSig || null,
+      contractor_signature: contractorSig || null,
+      updated_at: new Date().toISOString(),
+    };
+    if (bothSigned) {
+      payload.status = 'SIGNED';
+      payload.signed_at = new Date().toISOString();
+    }
+    const { error } = await supabase.from('project_documents').update(payload).eq('id', doc.id);
+    if (error) {
+      toast('Podpisy se nepodařilo uložit', 'error');
+    } else {
+      setDoc(prev => prev ? {
+        ...prev,
+        client_signature: clientSig || null,
+        contractor_signature: contractorSig || null,
+        ...(bothSigned ? { status: 'SIGNED' as const, signed_at: new Date().toISOString() } : {}),
+      } : prev);
+      toast(bothSigned ? 'Dokument podepsán oběma stranami' : 'Podpisy uloženy');
+    }
+    setSavingSigs(false);
+  };
 
   return (
     <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
@@ -278,6 +314,37 @@ export default function DocumentEditorPage() {
               className={`w-full h-full min-h-[600px] p-6 bg-navy-800/60 border border-white/[0.08] rounded-xl text-sm font-mono leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${isFinal ? 'bg-white/[0.04] cursor-default' : ''}`}
               placeholder="Obsah dokumentu..."
             />
+            {isSignable && (
+              <div className="mt-4 bg-navy-800/60 border border-white/[0.08] rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Podpisy</h3>
+                  {isSigned && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                      Podepsáno {doc.signed_at ? new Date(doc.signed_at).toLocaleDateString('cs-CZ') : ''}
+                    </span>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-[11px] font-semibold text-slate-400 mb-1.5">Zhotovitel</div>
+                    <SignaturePad value={contractorSig} onChange={setContractorSig} width={380} height={140} />
+                  </div>
+                  <div>
+                    <div className="text-[11px] font-semibold text-slate-400 mb-1.5">Objednatel (klient)</div>
+                    <SignaturePad value={clientSig} onChange={setClientSig} width={380} height={140} />
+                  </div>
+                </div>
+                <div className="flex justify-end mt-3">
+                  <button
+                    onClick={handleSaveSignatures}
+                    disabled={savingSigs}
+                    className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition disabled:opacity-50"
+                  >
+                    {savingSigs ? 'Ukládám…' : 'Uložit podpisy'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

@@ -777,8 +777,8 @@ export interface ProjectFull extends Project {
   responsible?: Profile | null;
 }
 
-export type DocumentTemplateType = 'zapis_stavba' | 'predavaci_protokol' | 'servisni_protokol' | 'checklist' | 'obecny';
-export type DocumentStatus = 'DRAFT' | 'FINAL';
+export type DocumentTemplateType = 'zapis_stavba' | 'predavaci_protokol' | 'servisni_protokol' | 'checklist' | 'obecny' | 'smlouva' | 'objednavka';
+export type DocumentStatus = 'DRAFT' | 'FINAL' | 'SIGNED';
 
 export interface DocumentTemplate {
   id: string;
@@ -808,4 +808,7 @@ export interface ProjectDocument {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  client_signature?: string | null;
+  contractor_signature?: string | null;
+  signed_at?: string | null;
 }

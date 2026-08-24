@@ -55,6 +55,8 @@ export const TEMPLATE_TYPE_LABELS: Record<DocumentTemplateType, string> = {
   servisni_protokol: 'Servisní protokol',
   checklist: 'Checklist',
   obecny: 'Obecný dokument',
+  smlouva: 'Smlouva o dílo',
+  objednavka: 'Objednávka',
 };
 
 export interface RenderContext {
