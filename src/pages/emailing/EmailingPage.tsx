@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { sanitizeHtml } from '../../lib/sanitize';
 import {
   Mail, Send, Search, Filter, RefreshCw, CheckCircle, XCircle, Clock,
   Eye, Users, ArrowUpRight, Inbox,
@@ -481,7 +482,7 @@ export default function EmailingPage() {
               </div>
               <div
                 className="p-4 prose prose-sm max-w-none max-h-[40vh] overflow-y-auto"
-                dangerouslySetInnerHTML={{ __html: detailEntry.body_html }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(detailEntry.body_html) }}
               />
             </div>
           </div>

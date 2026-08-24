@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { sanitizeSvg } from '../../../lib/sanitize';
 import { X, RotateCw, Trash2, FlipHorizontal, MessageSquare, Check, Bath, Ruler } from 'lucide-react';
 import type { Room, FloorScale, BathroomPlacement } from '../../../hooks/useProjectState';
 import { polygonCentroid, polygonAreaM2, polygonPerimeterM, distanceBetween, normalizedToMeters } from './geometry';
@@ -336,7 +337,7 @@ export default function BathroomDesigner({ room, scale, onSave, onClose }: Props
                             viewBox={`0 0 ${sym.width_mm} ${sym.height_mm}`}
                             preserveAspectRatio="none"
                             style={{ pointerEvents: 'none' }}
-                            dangerouslySetInnerHTML={{ __html: sym.svg_content }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeSvg(sym.svg_content) }}
                           />
                           <rect
                             x={ox}

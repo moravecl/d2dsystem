@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { sanitizeHtml } from '../../lib/sanitize';
 import { X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
@@ -146,7 +147,7 @@ export default function TemplateEditorModal({ template, onClose, onSaved }: Prop
             ) : (
               <div className="flex-1 overflow-auto p-6">
                 <div className="max-w-3xl mx-auto bg-navy-800/60 border border-white/[0.08] rounded-xl  p-8">
-                  <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: renderedPreview }} />
+                  <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedPreview) }} />
                 </div>
               </div>
             )}

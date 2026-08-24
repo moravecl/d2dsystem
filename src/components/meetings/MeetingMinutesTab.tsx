@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { sanitizeHtml } from '../../lib/sanitize';
 import { Save, Clock, Pencil, Copy, List, CheckCircle2, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -207,21 +208,21 @@ export default function MeetingMinutesTab({ meetingId, meetingStatus, startTime,
           {data.content && (
             <div className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.06]">
               <h4 className="text-xs font-bold text-slate-500 uppercase mb-2">Průběh jednání</h4>
-              <div className="text-sm text-slate-300 prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_ul]:pl-5 [&_ol]:pl-5" dangerouslySetInnerHTML={{ __html: data.content }} />
+              <div className="text-sm text-slate-300 prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_ul]:pl-5 [&_ol]:pl-5" dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.content) }} />
             </div>
           )}
 
           {data.decisions && (
             <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
               <h4 className="text-xs font-bold text-emerald-400 uppercase mb-2">Klíčová rozhodnutí</h4>
-              <div className="text-sm text-slate-300 prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_ul]:pl-5 [&_ol]:pl-5" dangerouslySetInnerHTML={{ __html: data.decisions }} />
+              <div className="text-sm text-slate-300 prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_ul]:pl-5 [&_ol]:pl-5" dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.decisions) }} />
             </div>
           )}
 
           {data.notes && (
             <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
               <h4 className="text-xs font-bold text-amber-400 uppercase mb-2">Doplňkové poznámky</h4>
-              <div className="text-sm text-slate-300 prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_ul]:pl-5 [&_ol]:pl-5" dangerouslySetInnerHTML={{ __html: data.notes }} />
+              <div className="text-sm text-slate-300 prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_ul]:pl-5 [&_ol]:pl-5" dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.notes) }} />
             </div>
           )}
 

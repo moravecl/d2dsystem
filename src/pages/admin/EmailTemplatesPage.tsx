@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { sanitizeHtml } from '../../lib/sanitize';
 import { FileText, Plus, CreditCard as Edit2, Trash2, Search, Copy, Code, Eye } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
@@ -385,7 +386,7 @@ export default function EmailTemplatesPage() {
  </div>
  <div
  className="p-4 prose prose-sm max-w-none"
- dangerouslySetInnerHTML={{ __html: previewTemplate.body_html }}
+ dangerouslySetInnerHTML={{ __html: sanitizeHtml(previewTemplate.body_html) }}
  />
  </div>
  {previewTemplate.placeholders_used.length > 0 && (

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { sanitizeHtml } from '../../lib/sanitize';
 import { Users, ShieldCheck, ShieldOff, Eye, ChevronDown, ChevronUp, KeyRound, CreditCard as Edit, UserPlus, Trash2, Loader2, RefreshCw, Mail, Crown, Shield, Wrench, User, AlertTriangle, Plus, Copy, Lock, EyeOff, Save, X, Check, ChevronRight, Search, Phone, MapPin, Cake, Briefcase, Clock, Palmtree, Calendar, FileText, Download, Send, CheckCircle, Archive, PenTool } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -1693,7 +1694,7 @@ function TeamTab({
 
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
               <div className="prose prose-invert prose-sm max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: viewingContract.content.replace(/\n/g, '<br />') }} />
+                <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(viewingContract.content.replace(/\n/g, '<br />')) }} />
               </div>
             </div>
 

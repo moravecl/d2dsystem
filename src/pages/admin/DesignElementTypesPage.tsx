@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
+import { sanitizeSvg } from '../../lib/sanitize';
 import { Plus, Pencil, Trash2, X, Check, Search, GripVertical, ChevronDown, ChevronRight, Palette, RotateCcw, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
@@ -632,7 +633,7 @@ export default function DesignElementTypesPage() {
                                     return (
                                       <span
                                         style={{ position: 'absolute', left: '50%', top: '50%', transform: `translate(calc(-50% + ${svgOffsetX}px), calc(-50% + ${svgOffsetY}px))` }}
-                                        dangerouslySetInnerHTML={{ __html: normalized }}
+                                        dangerouslySetInnerHTML={{ __html: sanitizeSvg(normalized) }}
                                       />
                                     );
                                   })()}

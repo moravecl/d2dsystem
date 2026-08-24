@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { sanitizeHtml } from '../../lib/sanitize';
 import {
   Mail, Send, CheckCircle, XCircle, Clock, Eye, Inbox, RefreshCw, Users,
 } from 'lucide-react';
@@ -242,7 +243,7 @@ export default function ProjectEmailTab({ projectId, clientId }: Props) {
               </div>
               <div
                 className="p-4 prose prose-sm max-w-none max-h-[40vh] overflow-y-auto"
-                dangerouslySetInnerHTML={{ __html: detailEntry.body_html }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(detailEntry.body_html) }}
               />
             </div>
           </div>

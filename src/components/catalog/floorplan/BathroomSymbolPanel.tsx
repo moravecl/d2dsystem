@@ -1,4 +1,5 @@
 import type { BathroomSymbol } from './BathroomDesigner';
+import { sanitizeSvg } from '../../../lib/sanitize';
 
 const CATEGORIES: { id: string; label: string }[] = [
   { id: 'wc', label: 'WC' },
@@ -74,7 +75,7 @@ export default function BathroomSymbolPanel({ symbols, activeCategory, onCategor
                   height={previewH}
                   viewBox={`0 0 ${sym.width_mm} ${sym.height_mm}`}
                   preserveAspectRatio="xMidYMid meet"
-                  dangerouslySetInnerHTML={{ __html: sym.svg_content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeSvg(sym.svg_content) }}
                 />
               </div>
               <div className="text-[11px] font-extrabold text-slate-300 group-hover:text-cyan-700 leading-tight">{sym.name}</div>

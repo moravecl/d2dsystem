@@ -113,6 +113,7 @@ function buildEmbedScript(form: Props['form']) {
     html += '</div>';
   });
 
+  html += '<input type="text" name="_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;height:0;width:0;opacity:0" />';
   html += '<button type="submit" class="hs-form-btn">' + (settings.submit_label || "Odeslat") + '</button>';
   html += '</form></div>';
 
@@ -175,6 +176,8 @@ ${hasFileFields ? `
     btn.textContent = "Odesílám...";
 
     var data = {};
+    var hp = formEl.querySelector('[name="_hp"]');
+    if (hp) data._hp = hp.value;
     fields.forEach(function(f) {
       if (f.type === "file") return;
       var el = formEl.querySelector('[name="' + f.key + '"]');

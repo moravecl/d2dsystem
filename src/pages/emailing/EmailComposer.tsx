@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { sanitizeHtml } from '../../lib/sanitize';
 import { Send, Code } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
@@ -346,7 +347,7 @@ export default function EmailComposer({ open, onClose, onSent, prefillTo, prefil
                   <summary className="px-4 py-2 bg-white/[0.04] text-xs font-semibold text-slate-500 cursor-pointer hover:bg-white/[0.06] transition">
                     Nahled HTML
                   </summary>
-                  <div className="p-4 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: form.body_html }} />
+                  <div className="p-4 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(form.body_html) }} />
                 </details>
               )}
             </div>

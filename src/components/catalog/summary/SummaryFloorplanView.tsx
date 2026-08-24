@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { sanitizeSvg } from '../../../lib/sanitize';
 import type { Category, Product, FloorplanSymbol } from '../../../types/database';
 import type { Floor } from '../../../hooks/useProjectState';
 import type { HeatingSystemFull } from '../../../hooks/useHeatingSystems';
@@ -164,7 +165,7 @@ export default function SummaryFloorplanView({ floor, floors, floorPins, product
                           width={w} height={h}
                           viewBox={`0 0 ${sym.width_mm} ${sym.height_mm}`}
                           preserveAspectRatio="none"
-                          dangerouslySetInnerHTML={{ __html: sym.svg_content }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeSvg(sym.svg_content) }}
                         />
                       </g>
                     </g>
@@ -227,7 +228,7 @@ export default function SummaryFloorplanView({ floor, floors, floorPins, product
                             width={svgW} height={svgH}
                             viewBox={rotated.viewBox}
                             preserveAspectRatio="none"
-                            dangerouslySetInnerHTML={{ __html: rotated.content }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeSvg(rotated.content) }}
                           />
                         </g>
                       );

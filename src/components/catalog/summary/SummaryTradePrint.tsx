@@ -1,4 +1,5 @@
 import type { Product, Category } from '../../../types/database';
+import { sanitizeSvg } from '../../../lib/sanitize';
 import type { SelectionState, Floor } from '../../../hooks/useProjectState';
 import type { HeatingSystemFull } from '../../../hooks/useHeatingSystems';
 import type { BathroomSymbol } from '../floorplan/BathroomDesigner';
@@ -193,7 +194,7 @@ export default function SummaryTradePrint({
                                     width={w} height={h}
                                     viewBox={`0 0 ${sym.width_mm} ${sym.height_mm}`}
                                     preserveAspectRatio="none"
-                                    dangerouslySetInnerHTML={{ __html: sym.svg_content }}
+                                    dangerouslySetInnerHTML={{ __html: sanitizeSvg(sym.svg_content) }}
                                   />
                                 </g>
                               </g>

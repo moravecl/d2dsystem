@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { sanitizeHtml } from '../../lib/sanitize';
 import { FileText, Plus, Search, Edit2, Trash2, Eye, Copy } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
@@ -180,7 +181,7 @@ export default function TemplatesPage() {
         size="lg"
       >
         {previewTemplate && (
-          <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: previewTemplate.content }} />
+          <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(previewTemplate.content) }} />
         )}
       </Modal>
 

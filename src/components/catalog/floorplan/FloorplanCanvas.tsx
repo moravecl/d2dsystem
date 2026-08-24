@@ -1,4 +1,5 @@
 import type { Room, FloorScale, Circuit, Cable, Dimension, FloorDistributor } from '../../../hooks/useProjectState';
+import { sanitizeSvg } from '../../../lib/sanitize';
 import type { CircuitType } from '../../../hooks/useProjectState';
 import type { HeatingSystemFull } from '../../../hooks/useHeatingSystems';
 import { polygonCentroid, polygonAreaM2, getDoorWallPoints, distanceBetween } from './geometry';
@@ -194,7 +195,7 @@ export default function FloorplanCanvas({
                   height={h}
                   viewBox={`0 0 ${sym.width_mm} ${sym.height_mm}`}
                   preserveAspectRatio="none"
-                  dangerouslySetInnerHTML={{ __html: sym.svg_content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeSvg(sym.svg_content) }}
                 />
               </g>
             </g>
@@ -554,7 +555,7 @@ export default function FloorplanCanvas({
                     height={svgH}
                     viewBox={rotated.viewBox}
                     preserveAspectRatio="none"
-                    dangerouslySetInnerHTML={{ __html: rotated.content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeSvg(rotated.content) }}
                   />
                   {isActive && (
                     <rect

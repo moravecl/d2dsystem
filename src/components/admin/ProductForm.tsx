@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { sanitizeSvg } from '../../lib/sanitize';
 import { ArrowLeft, Check, Image as ImageIcon, MapPin } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
@@ -459,7 +460,7 @@ export default function ProductForm({ product, categories, subcategories, onSave
                         <p className="text-xs font-extrabold text-slate-300 mb-2">Náhled:</p>
                         <div
                           className="flex items-center justify-center p-4 bg-navy-800/60 rounded-lg border border-white/10"
-                          dangerouslySetInnerHTML={{ __html: symbol.svg_content }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeSvg(symbol.svg_content) }}
                         />
                       </div>
                     )}

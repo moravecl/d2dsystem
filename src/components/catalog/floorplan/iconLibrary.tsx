@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { sanitizeSvg } from '../../../lib/sanitize';
 
 export interface FloorplanIconDef {
   id: string;
@@ -214,7 +215,7 @@ export function renderPinIcon(iconId: string | undefined, size = 14, className =
         >
           <span
             style={{ position: 'absolute', left: '50%', top: '50%', transform: `translate(calc(-50% + ${oxScaled}px), calc(-50% + ${oyScaled}px))`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'visible' }}
-            dangerouslySetInnerHTML={{ __html: svg }}
+            dangerouslySetInnerHTML={{ __html: sanitizeSvg(svg) }}
           />
         </span>
       );
