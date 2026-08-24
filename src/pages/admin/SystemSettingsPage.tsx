@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Settings, Plus, Edit2, Trash2, Save, GripVertical, Wrench, Lightbulb, RotateCcw, ToggleLeft, ToggleRight, Loader2 } from 'lucide-react';
+import { Settings, Plus, Edit2, Trash2, Save, GripVertical, Wrench, Lightbulb, RotateCcw, ToggleLeft, ToggleRight, Loader2, GitBranch } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
@@ -88,6 +88,27 @@ export default function SystemSettingsPage() {
       setToursEnabled((organization as any).onboarding_tours_enabled !== false);
     }
   }, [organization?.id]);
+
+  const workflowMode = organization?.workflow_enforcement === 'confirm' ? 'confirm' : 'guide';
+  const [savingWorkflow, setSavingWorkflow] = useState(false);
+
+  const handleWorkflowMode = async (mode: 'guide' | 'confirm') => {
+    if (!organization || mode === workflowMode) return;
+    setSavingWorkflow(true);
+    const { error } = await supabase
+      .from('organizations')
+      .update({ workflow_enforcement: mode })
+      .eq('id', organization.id);
+    if (!error) {
+      await refreshOrg();
+      toast(mode === 'confirm'
+        ? 'Workflow: přeskočení kroku bude vyžadovat potvrzení.'
+        : 'Workflow: kroky slouží jen jako vodítko.', 'success');
+    } else {
+      toast('Chyba při ukládání.', 'error');
+    }
+    setSavingWorkflow(false);
+  };
 
   const handleToggleTours = async () => {
     if (!organization) return;
@@ -793,6 +814,52 @@ export default function SystemSettingsPage() {
                     <span className={toursEnabled ? 'text-blue-400' : 'text-slate-500'}>
                       {toursEnabled ? 'Zapnuto' : 'Vypnuto'}
                     </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-navy-800/60 backdrop-blur-sm rounded-xl border border-white/[0.08] p-6">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-emerald-500/15 rounded-xl flex items-center justify-center shrink-0">
+                <GitBranch className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-sm font-bold text-white">Workflow projektu</h2>
+                <p className="text-sm text-slate-400 mt-0.5 mb-4">
+                  Vedený tok zakázky: nabídka → smlouva/objednávka → realizace → zápisy →
+                  předávací protokol → dodací list → faktura. Zvolte, jak přísně má systém
+                  pořadí kroků hlídat.
+                </p>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => handleWorkflowMode('guide')}
+                    disabled={savingWorkflow}
+                    className={`w-full text-left p-4 rounded-xl border transition ${
+                      workflowMode === 'guide'
+                        ? 'border-emerald-500/40 bg-emerald-500/10'
+                        : 'border-white/[0.08] bg-navy-900/50 hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <div className="text-sm font-semibold text-white">Vodítko</div>
+                    <div className="text-xs text-slate-400 mt-0.5">
+                      Kroky ukazují stav a navádějí k dalšímu, ale nic neblokují.
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => handleWorkflowMode('confirm')}
+                    disabled={savingWorkflow}
+                    className={`w-full text-left p-4 rounded-xl border transition ${
+                      workflowMode === 'confirm'
+                        ? 'border-emerald-500/40 bg-emerald-500/10'
+                        : 'border-white/[0.08] bg-navy-900/50 hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <div className="text-sm font-semibold text-white">Potvrzované přeskočení</div>
+                    <div className="text-xs text-slate-400 mt-0.5">
+                      Přeskočení nesplněného kroku vyžaduje výslovné potvrzení a zapíše se do audit logu.
+                    </div>
                   </button>
                 </div>
               </div>

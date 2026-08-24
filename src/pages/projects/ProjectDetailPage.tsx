@@ -4,6 +4,9 @@ import { CreditCard as EditIcon, Calendar, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useToast } from '../../components/ui/Toast';
+import { useProjectWorkflow, type ProjectWorkflowStep } from '../../hooks/useProjectWorkflow';
+import ProjectWorkflowStepper from '../../components/projects/ProjectWorkflowStepper';
+import WorkflowSkipConfirmModal from '../../components/projects/WorkflowSkipConfirmModal';
 import ProjectTabNav from '../../components/projects/ProjectTabNav';
 import StatusBadge from '../../components/ui/StatusBadge';
 import Modal from '../../components/ui/Modal';
@@ -175,6 +178,34 @@ export default function ProjectDetailPage() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'overview');
+
+  // Workflow projektu: odvozene stavy kroku + navigace na zalozky
+  const workflow = useProjectWorkflow(id);
+  const [skipTarget, setSkipTarget] = useState<ProjectWorkflowStep | null>(null);
+  const WORKFLOW_STEP_TAB: Record<ProjectWorkflowStep, string> = {
+    quote: 'quotes', contract: 'documents', execution: 'execution',
+    diary: 'execution', handover: 'protocols', delivery: 'execution', invoice: 'finance',
+  };
+  const goToWorkflowStep = (step: ProjectWorkflowStep) => {
+    setActiveTab(WORKFLOW_STEP_TAB[step]);
+  };
+  const handleWorkflowStepClick = (step: ProjectWorkflowStep) => {
+    const missing = workflow.incompletePredecessors(step);
+    if (workflow.enforcement === 'confirm' && missing.length > 0 && !workflow.steps[step].isComplete) {
+      setSkipTarget(step);
+      return;
+    }
+    goToWorkflowStep(step);
+  };
+  const confirmWorkflowSkip = () => {
+    if (!skipTarget) return;
+    logAudit('workflow', id ?? null, 'step_skipped', {
+      target: skipTarget,
+      missing: workflow.incompletePredecessors(skipTarget),
+    });
+    goToWorkflowStep(skipTarget);
+    setSkipTarget(null);
+  };
   const [loading, setLoading] = useState(true);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [newStatus, setNewStatus] = useState('');
@@ -1013,6 +1044,25 @@ export default function ProjectDetailPage() {
 
       <div data-tour="project-tabs-section" className="bg-navy-800/60 backdrop-blur-sm rounded-2xl border border-white/[0.08]">
         <ProjectTabNav active={activeTab} onChange={setActiveTab} workflowBadges={workflowBadges} />
+
+        {!workflow.loading && (
+          <div className="px-5 pt-4 -mb-1 overflow-x-auto">
+            <ProjectWorkflowStepper
+              steps={workflow.steps}
+              completedSteps={workflow.completedSteps}
+              nextStep={workflow.nextStep}
+              onStepClick={handleWorkflowStepClick}
+            />
+          </div>
+        )}
+
+        <WorkflowSkipConfirmModal
+          open={skipTarget !== null}
+          targetStep={skipTarget ?? 'invoice'}
+          missingSteps={skipTarget ? workflow.incompletePredecessors(skipTarget) : []}
+          onConfirm={confirmWorkflowSkip}
+          onCancel={() => setSkipTarget(null)}
+        />
 
         <div className="p-5">
           {activeTab === 'overview' && (

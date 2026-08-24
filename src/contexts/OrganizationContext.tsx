@@ -12,6 +12,7 @@ export interface Organization {
   is_active: boolean;
   logo_url: string | null;
   onboarding_tours_enabled?: boolean;
+  workflow_enforcement?: 'guide' | 'confirm';
   created_at: string;
 }
 
