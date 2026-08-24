@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
 import { PortalAuthProvider } from './contexts/PortalAuthContext';
 import { OrganizationProvider } from './contexts/OrganizationContext';
@@ -10,111 +12,145 @@ import { TourProvider } from './contexts/TourContext';
 import { PageErrorBoundary } from './components/ui/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import SuperAdminRoute from './components/superadmin/SuperAdminRoute';
-import SuperAdminLayout from './components/superadmin/SuperAdminLayout';
-import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
-import SuperAdminOrganizations from './pages/superadmin/SuperAdminOrganizations';
-import SuperAdminUsers from './pages/superadmin/SuperAdminUsers';
-import SuperAdminHealth from './pages/superadmin/SuperAdminHealth';
-import SuperAdminPlans from './pages/superadmin/SuperAdminPlans';
-import SuperAdminAnnouncements from './pages/superadmin/SuperAdminAnnouncements';
-import SuperAdminActivity from './pages/superadmin/SuperAdminActivity';
-import OnboardingPage from './pages/onboarding/OnboardingPage';
+
 import AppLayout from './components/layout/AppLayout';
-import AdminLayout from './components/layout/AdminLayout';
-import PortalLayout from './components/portal/PortalLayout';
+
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';
-import ClientsPage from './pages/crm/ClientsPage';
-import ClientDetailPage from './pages/crm/ClientDetailPage';
-import ProjectsListPage from './pages/projects/ProjectsListPage';
-import ArchivePage from './pages/projects/ArchivePage';
-import ProjectDetailPage from './pages/projects/ProjectDetailPage';
-import CatalogListPage from './pages/catalog/CatalogListPage';
-import CatalogPage from './pages/CatalogPage';
-import ExecutionPage from './pages/ExecutionPage';
-import DesignEditorPage from './pages/projects/DesignEditorPage';
-import ProductAssignmentPage from './pages/projects/ProductAssignmentPage';
-import FvDesignerPage from './pages/projects/FvDesignerPage';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import CategoriesPage from './pages/admin/CategoriesPage';
-import ProductsPage from './pages/admin/ProductsPage';
-import DesignModulesPage from './pages/admin/DesignModulesPage';
-import PresetsPage from './pages/admin/PresetsPage';
-import UsersPage from './pages/admin/UsersPage';
-import InspirationsPage from './pages/admin/InspirationsPage';
-import MaterialsPage from './pages/admin/MaterialsPage';
-import HeatingSystemsPage from './pages/admin/HeatingSystemsPage';
-import TemplatesPage from './pages/admin/TemplatesPage';
-import SystemSettingsPage from './pages/admin/SystemSettingsPage';
-import CompanyInfoPage from './pages/admin/CompanyInfoPage';
-import DocumentEditorPage from './pages/projects/DocumentEditorPage';
-import InspiracePage from './pages/InspiracePage';
-import InspirationDetailPage from './pages/InspirationDetailPage';
-import PortalLoginPage from './pages/portal/PortalLoginPage';
-import PortalProjectsPage from './pages/portal/PortalProjectsPage';
-import PortalProjectDetailPage from './pages/portal/PortalProjectDetailPage';
-import AttendancePage from './pages/AttendancePage';
-import AssetDashboardPage from './pages/assets/AssetDashboardPage';
-import AssetListPage from './pages/assets/AssetListPage';
-import AssetDetailPage from './pages/assets/AssetDetailPage';
-import DueItemsPage from './pages/assets/DueItemsPage';
-import ServiceHistoryPage from './pages/assets/ServiceHistoryPage';
-import TasksBoardPage from './pages/tasks/TasksBoardPage';
-import TimeTrackingPage from './pages/timetracking/TimeTrackingPage';
-import WarehousePage from './pages/warehouse/WarehousePage';
-import QrPrintPage from './pages/warehouse/QrPrintPage';
-import ReportsPage from './pages/reports/ReportsPage';
-import CalendarPage from './pages/calendar/CalendarPage';
-import FinancialPage from './pages/financial/FinancialPage';
-import InvoiceFormPage from './pages/financial/InvoiceFormPage';
-import InvoiceDetailPage from './pages/financial/InvoiceDetailPage';
-import ReceivedInvoicesPage from './pages/financial/ReceivedInvoicesPage';
-import SuppliersPage from './pages/financial/SuppliersPage';
-import CashRegisterPage from './pages/financial/CashRegisterPage';
-import FixedCostsPage from './pages/financial/FixedCostsPage';
-import CashflowPage from './pages/financial/CashflowPage';
-import BankPage from './pages/financial/bank/BankPage';
-import EmployeesPage from './pages/employees/EmployeesPage';
-import GanttPage from './pages/gantt/GanttPage';
-import ServicePage from './pages/service/ServicePage';
-import QuickJobsPage from './pages/quickjobs/QuickJobsPage';
-import InvoiceSettingsPage from './pages/admin/InvoiceSettingsPage';
-import EmailingPage from './pages/emailing/EmailingPage';
-import SmtpAccountsPage from './pages/admin/SmtpAccountsPage';
-import EmailTemplatesPage from './pages/admin/EmailTemplatesPage';
-import LicencePage from './pages/admin/LicencePage';
-import GdprPage from './pages/admin/GdprPage';
-import AuditLogPage from './pages/admin/AuditLogPage';
-import ProjectTypesPage from './pages/admin/ProjectTypesPage';
-import CustomFieldsPage from './pages/admin/CustomFieldsPage';
-import ProjectTemplatesPage from './pages/admin/ProjectTemplatesPage';
-import ProtocolTemplatesPage from './pages/admin/ProtocolTemplatesPage';
-import FvCatalogPage from './pages/admin/FvCatalogPage';
-import CameraCatalogPage from './pages/admin/CameraCatalogPage';
-import CameraDesignerPage from './pages/projects/CameraDesignerPage';
-import CameraQuotePage from './pages/projects/CameraQuotePage';
-import EpsDesignerPage from './pages/projects/EpsDesignerPage';
-import EpsQuotePage from './pages/projects/EpsQuotePage';
-import EpsCatalogPage from './pages/admin/EpsCatalogPage';
-import AutomationsPage from './pages/admin/AutomationsPage';
-import SidebarSettingsPage from './pages/admin/SidebarSettingsPage';
-import ResourceGroupsPage from './pages/admin/ResourceGroupsPage';
-import InquiryFormsPage from './pages/admin/InquiryFormsPage';
-import DesignElementTypesPage from './pages/admin/DesignElementTypesPage';
-import DesignerConfigPage from './pages/admin/DesignerConfigPage';
-import CompatibilityPage from './pages/admin/CompatibilityPage';
-import DesignSeriesLinksPage from './pages/admin/DesignSeriesLinksPage';
-import LeadsPage from './pages/leads/LeadsPage';
-import EventsPage from './pages/events/EventsPage';
-import MeetingsPage from './pages/meetings/MeetingsPage';
-import MeetingDetailPage from './pages/meetings/MeetingDetailPage';
-import KnowledgePage from './pages/knowledge/KnowledgePage';
-import NewsPage from './pages/news/NewsPage';
-import TermsPage from './pages/legal/TermsPage';
-import PrivacyPage from './pages/legal/PrivacyPage';
+
 import PlanProtectedRoute from './components/ui/PlanProtectedRoute';
-import DocumentsPage from './pages/documents/DocumentsPage';
+
+
+// Stranky se nacitaji az pri prvni navsteve sve routy (code-splitting).
+// Po novem deployi mohou stare chunky vratit 404 - v tom pripade se stranka
+// jednou obnovi, aby si stahla aktualni verzi.
+function lazyPage<T extends { default: React.ComponentType<any> }>(load: () => Promise<T>) {
+  return lazy(() =>
+    load()
+      .then((mod) => {
+        sessionStorage.removeItem('chunk-reload');
+        return mod;
+      })
+      .catch((err) => {
+        if (!sessionStorage.getItem('chunk-reload')) {
+          sessionStorage.setItem('chunk-reload', '1');
+          window.location.reload();
+          return new Promise<T>(() => {});
+        }
+        throw err;
+      })
+  );
+}
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen bg-white/[0.04] flex items-center justify-center">
+      <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+    </div>
+  );
+}
+
+const SuperAdminLayout = lazyPage(() => import('./components/superadmin/SuperAdminLayout'));
+const SuperAdminDashboard = lazyPage(() => import('./pages/superadmin/SuperAdminDashboard'));
+const SuperAdminOrganizations = lazyPage(() => import('./pages/superadmin/SuperAdminOrganizations'));
+const SuperAdminUsers = lazyPage(() => import('./pages/superadmin/SuperAdminUsers'));
+const SuperAdminHealth = lazyPage(() => import('./pages/superadmin/SuperAdminHealth'));
+const SuperAdminPlans = lazyPage(() => import('./pages/superadmin/SuperAdminPlans'));
+const SuperAdminAnnouncements = lazyPage(() => import('./pages/superadmin/SuperAdminAnnouncements'));
+const SuperAdminActivity = lazyPage(() => import('./pages/superadmin/SuperAdminActivity'));
+const OnboardingPage = lazyPage(() => import('./pages/onboarding/OnboardingPage'));
+const AdminLayout = lazyPage(() => import('./components/layout/AdminLayout'));
+const PortalLayout = lazyPage(() => import('./components/portal/PortalLayout'));
+const RegisterPage = lazyPage(() => import('./pages/RegisterPage'));
+const DashboardPage = lazyPage(() => import('./pages/DashboardPage'));
+const ClientsPage = lazyPage(() => import('./pages/crm/ClientsPage'));
+const ClientDetailPage = lazyPage(() => import('./pages/crm/ClientDetailPage'));
+const ProjectsListPage = lazyPage(() => import('./pages/projects/ProjectsListPage'));
+const ArchivePage = lazyPage(() => import('./pages/projects/ArchivePage'));
+const ProjectDetailPage = lazyPage(() => import('./pages/projects/ProjectDetailPage'));
+const CatalogListPage = lazyPage(() => import('./pages/catalog/CatalogListPage'));
+const CatalogPage = lazyPage(() => import('./pages/CatalogPage'));
+const ExecutionPage = lazyPage(() => import('./pages/ExecutionPage'));
+const DesignEditorPage = lazyPage(() => import('./pages/projects/DesignEditorPage'));
+const ProductAssignmentPage = lazyPage(() => import('./pages/projects/ProductAssignmentPage'));
+const FvDesignerPage = lazyPage(() => import('./pages/projects/FvDesignerPage'));
+const AdminDashboard = lazyPage(() => import('./pages/admin/AdminDashboard'));
+const CategoriesPage = lazyPage(() => import('./pages/admin/CategoriesPage'));
+const ProductsPage = lazyPage(() => import('./pages/admin/ProductsPage'));
+const DesignModulesPage = lazyPage(() => import('./pages/admin/DesignModulesPage'));
+const PresetsPage = lazyPage(() => import('./pages/admin/PresetsPage'));
+const UsersPage = lazyPage(() => import('./pages/admin/UsersPage'));
+const InspirationsPage = lazyPage(() => import('./pages/admin/InspirationsPage'));
+const MaterialsPage = lazyPage(() => import('./pages/admin/MaterialsPage'));
+const HeatingSystemsPage = lazyPage(() => import('./pages/admin/HeatingSystemsPage'));
+const TemplatesPage = lazyPage(() => import('./pages/admin/TemplatesPage'));
+const SystemSettingsPage = lazyPage(() => import('./pages/admin/SystemSettingsPage'));
+const CompanyInfoPage = lazyPage(() => import('./pages/admin/CompanyInfoPage'));
+const DocumentEditorPage = lazyPage(() => import('./pages/projects/DocumentEditorPage'));
+const InspiracePage = lazyPage(() => import('./pages/InspiracePage'));
+const InspirationDetailPage = lazyPage(() => import('./pages/InspirationDetailPage'));
+const PortalLoginPage = lazyPage(() => import('./pages/portal/PortalLoginPage'));
+const PortalProjectsPage = lazyPage(() => import('./pages/portal/PortalProjectsPage'));
+const PortalProjectDetailPage = lazyPage(() => import('./pages/portal/PortalProjectDetailPage'));
+const AttendancePage = lazyPage(() => import('./pages/AttendancePage'));
+const AssetDashboardPage = lazyPage(() => import('./pages/assets/AssetDashboardPage'));
+const AssetListPage = lazyPage(() => import('./pages/assets/AssetListPage'));
+const AssetDetailPage = lazyPage(() => import('./pages/assets/AssetDetailPage'));
+const DueItemsPage = lazyPage(() => import('./pages/assets/DueItemsPage'));
+const ServiceHistoryPage = lazyPage(() => import('./pages/assets/ServiceHistoryPage'));
+const TasksBoardPage = lazyPage(() => import('./pages/tasks/TasksBoardPage'));
+const TimeTrackingPage = lazyPage(() => import('./pages/timetracking/TimeTrackingPage'));
+const WarehousePage = lazyPage(() => import('./pages/warehouse/WarehousePage'));
+const QrPrintPage = lazyPage(() => import('./pages/warehouse/QrPrintPage'));
+const ReportsPage = lazyPage(() => import('./pages/reports/ReportsPage'));
+const CalendarPage = lazyPage(() => import('./pages/calendar/CalendarPage'));
+const FinancialPage = lazyPage(() => import('./pages/financial/FinancialPage'));
+const InvoiceFormPage = lazyPage(() => import('./pages/financial/InvoiceFormPage'));
+const InvoiceDetailPage = lazyPage(() => import('./pages/financial/InvoiceDetailPage'));
+const ReceivedInvoicesPage = lazyPage(() => import('./pages/financial/ReceivedInvoicesPage'));
+const SuppliersPage = lazyPage(() => import('./pages/financial/SuppliersPage'));
+const CashRegisterPage = lazyPage(() => import('./pages/financial/CashRegisterPage'));
+const FixedCostsPage = lazyPage(() => import('./pages/financial/FixedCostsPage'));
+const CashflowPage = lazyPage(() => import('./pages/financial/CashflowPage'));
+const BankPage = lazyPage(() => import('./pages/financial/bank/BankPage'));
+const EmployeesPage = lazyPage(() => import('./pages/employees/EmployeesPage'));
+const GanttPage = lazyPage(() => import('./pages/gantt/GanttPage'));
+const ServicePage = lazyPage(() => import('./pages/service/ServicePage'));
+const QuickJobsPage = lazyPage(() => import('./pages/quickjobs/QuickJobsPage'));
+const InvoiceSettingsPage = lazyPage(() => import('./pages/admin/InvoiceSettingsPage'));
+const EmailingPage = lazyPage(() => import('./pages/emailing/EmailingPage'));
+const SmtpAccountsPage = lazyPage(() => import('./pages/admin/SmtpAccountsPage'));
+const EmailTemplatesPage = lazyPage(() => import('./pages/admin/EmailTemplatesPage'));
+const LicencePage = lazyPage(() => import('./pages/admin/LicencePage'));
+const GdprPage = lazyPage(() => import('./pages/admin/GdprPage'));
+const AuditLogPage = lazyPage(() => import('./pages/admin/AuditLogPage'));
+const ProjectTypesPage = lazyPage(() => import('./pages/admin/ProjectTypesPage'));
+const CustomFieldsPage = lazyPage(() => import('./pages/admin/CustomFieldsPage'));
+const ProjectTemplatesPage = lazyPage(() => import('./pages/admin/ProjectTemplatesPage'));
+const ProtocolTemplatesPage = lazyPage(() => import('./pages/admin/ProtocolTemplatesPage'));
+const FvCatalogPage = lazyPage(() => import('./pages/admin/FvCatalogPage'));
+const CameraCatalogPage = lazyPage(() => import('./pages/admin/CameraCatalogPage'));
+const CameraDesignerPage = lazyPage(() => import('./pages/projects/CameraDesignerPage'));
+const CameraQuotePage = lazyPage(() => import('./pages/projects/CameraQuotePage'));
+const EpsDesignerPage = lazyPage(() => import('./pages/projects/EpsDesignerPage'));
+const EpsQuotePage = lazyPage(() => import('./pages/projects/EpsQuotePage'));
+const EpsCatalogPage = lazyPage(() => import('./pages/admin/EpsCatalogPage'));
+const AutomationsPage = lazyPage(() => import('./pages/admin/AutomationsPage'));
+const SidebarSettingsPage = lazyPage(() => import('./pages/admin/SidebarSettingsPage'));
+const ResourceGroupsPage = lazyPage(() => import('./pages/admin/ResourceGroupsPage'));
+const InquiryFormsPage = lazyPage(() => import('./pages/admin/InquiryFormsPage'));
+const DesignElementTypesPage = lazyPage(() => import('./pages/admin/DesignElementTypesPage'));
+const DesignerConfigPage = lazyPage(() => import('./pages/admin/DesignerConfigPage'));
+const CompatibilityPage = lazyPage(() => import('./pages/admin/CompatibilityPage'));
+const DesignSeriesLinksPage = lazyPage(() => import('./pages/admin/DesignSeriesLinksPage'));
+const LeadsPage = lazyPage(() => import('./pages/leads/LeadsPage'));
+const EventsPage = lazyPage(() => import('./pages/events/EventsPage'));
+const MeetingsPage = lazyPage(() => import('./pages/meetings/MeetingsPage'));
+const MeetingDetailPage = lazyPage(() => import('./pages/meetings/MeetingDetailPage'));
+const KnowledgePage = lazyPage(() => import('./pages/knowledge/KnowledgePage'));
+const NewsPage = lazyPage(() => import('./pages/news/NewsPage'));
+const TermsPage = lazyPage(() => import('./pages/legal/TermsPage'));
+const PrivacyPage = lazyPage(() => import('./pages/legal/PrivacyPage'));
+const DocumentsPage = lazyPage(() => import('./pages/documents/DocumentsPage'));
 
 export default function App() {
   return (
@@ -127,6 +163,7 @@ export default function App() {
         <TimerProvider>
         <ActiveMeetingProvider>
         <ToastProvider>
+          <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -288,6 +325,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
+          </Suspense>
         </ToastProvider>
         </ActiveMeetingProvider>
         </TimerProvider>
