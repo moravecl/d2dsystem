@@ -367,7 +367,7 @@ export default function DocumentEditorPage() {
             {activePanel === 'preview' ? (
               <div className="p-4">
                 <div className="bg-navy-800/60 border border-white/[0.08] rounded-xl p-6 ">
-                  <div className="prose prose-sm max-w-none text-sm" dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }} />
+                  <div className="bg-white text-slate-900 rounded-xl p-5 shadow-inner prose prose-sm max-w-none text-sm" dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }} />
                 </div>
               </div>
             ) : (

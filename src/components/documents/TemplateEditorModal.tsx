@@ -147,7 +147,7 @@ export default function TemplateEditorModal({ template, onClose, onSaved }: Prop
             ) : (
               <div className="flex-1 overflow-auto p-6">
                 <div className="max-w-3xl mx-auto bg-navy-800/60 border border-white/[0.08] rounded-xl  p-8">
-                  <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedPreview) }} />
+                  <div className="bg-white text-slate-900 rounded-xl p-6 shadow-inner prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedPreview) }} />
                 </div>
               </div>
             )}

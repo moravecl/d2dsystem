@@ -181,7 +181,7 @@ export default function TemplatesPage() {
         size="lg"
       >
         {previewTemplate && (
-          <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(previewTemplate.content) }} />
+          <div className="bg-white text-slate-900 rounded-xl p-6 shadow-inner prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(previewTemplate.content) }} />
         )}
       </Modal>
 
