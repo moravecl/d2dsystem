@@ -8,8 +8,9 @@
 //   - body {"mode":"test","account_id":"..."} = jen connect + NOOP + STATUS
 //     (overeni IMAP udaju, nic se nezapisuje)
 //
-// Limity: max 50 zprav na ucet a beh (timeout edge funkce); zbytek dozene
-// dalsi tik cronu. Prilohy do 10 MB do bucketu email-attachments/{org}/{id}/.
+// Limity: mala davka zprav na jedno zavolani (CPU limit runtime); odpoved
+// nese `pending` a klient/cron vola opakovane, dokud neni nula. Prilohy
+// do 10 MB do bucketu email-attachments/{org}/{id}/.
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
@@ -33,15 +34,17 @@ function corsHeadersFor(req: Request): Record<string, string> {
   };
 }
 
-const MAX_MESSAGES_PER_RUN = 50;
+// mala davka: CPU limit runtime zabiji dlouhe behy (parsovani MIME je drahe);
+// klient i cron volaji sync opakovane, dokud `pending` nespadne na nulu
+const MAX_MESSAGES_PER_RUN = 10;
 const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
-// prvni synchronizace uctu: importuji se jen NEJNOVEJSI zpravy,
+// prvni synchronizace uctu: importuje se jen NEJNOVEJSICH 50 zprav,
 // starsi historie se preskoci a uz se k ni nevracime
 const INITIAL_SYNC_MESSAGES = 50;
 // o poste starsi nez X dni se neposilaji notifikace (import backlogu)
 const NOTIFY_MAX_AGE_DAYS = 7;
-// bezpecne pod wall-clock limitem edge funkce; zbytek dozene dalsi beh
-const RUN_TIME_BUDGET_MS = 100_000;
+// pojistka pro wall-clock; realny strop je mensi CPU limit na pozadavek
+const RUN_TIME_BUDGET_MS = 60_000;
 
 interface ImapAccount {
   id: string;
@@ -215,6 +218,8 @@ interface SyncResult {
   inserted: number;
   unassigned: number;
   last_uid: number;
+  /** kolik zprav jeste ceka na dalsi beh (klient podle toho vola znovu) */
+  pending: number;
   note?: string;
   error?: string;
 }
@@ -230,6 +235,7 @@ async function syncAccount(
     inserted: 0,
     unassigned: 0,
     last_uid: account.imap_last_uid,
+    pending: 0,
   };
   const orgId = account.organization_id;
   if (!orgId || !account.imap_host || !account.imap_username) {
@@ -257,11 +263,14 @@ async function syncAccount(
     const candidates = (found ?? [])
       .filter((u: number) => u > lastUid)
       .sort((a: number, b: number) => a - b);
-    // prvni beh bere NEJNOVEJSI zpravy (konec seznamu) - stara historie
-    // se neimportuje; dalsi behy dobihaji vse nove od posledniho UID
-    const newUids = lastUid === 0
+    // prvni beh pracuje jen s oknem NEJNOVEJSICH zprav (konec seznamu),
+    // stara historie se neimportuje; z okna se zpracuje mala davka a
+    // zbytek (pending) dobehne dalsimi volanimi
+    const windowUids = lastUid === 0
       ? candidates.slice(-INITIAL_SYNC_MESSAGES)
-      : candidates.slice(0, MAX_MESSAGES_PER_RUN);
+      : candidates;
+    const newUids = windowUids.slice(0, MAX_MESSAGES_PER_RUN);
+    let processed = 0;
 
     for (const uid of newUids) {
       if (Date.now() > deadline) {
@@ -374,11 +383,14 @@ async function syncAccount(
         console.error(`account ${account.name} uid ${uid}:`, msgErr);
       }
       result.last_uid = maxUidSeen;
+      processed++;
       await supabase
         .from("smtp_accounts")
         .update({ imap_last_uid: maxUidSeen, imap_last_synced_at: new Date().toISOString() })
         .eq("id", account.id);
     }
+
+    result.pending = Math.max(0, windowUids.length - processed);
 
     if (newUids.length === 0) {
       await supabase

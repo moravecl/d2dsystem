@@ -117,27 +117,39 @@ export default function MailboxPage() {
 
   const handleSync = async () => {
     setSyncing(true);
+    // funkce zpracuje malou davku na jedno zavolani (CPU limit) a vraci
+    // `pending` - vola se opakovane, dokud je co stahovat
+    let total = 0;
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/imap-sync`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
-      });
-      const result = await res.json();
-      if (result.ok) {
-        const total = (result.results ?? []).reduce(
-          (s: number, r: { inserted?: number }) => s + (r.inserted ?? 0), 0);
-        toast(total > 0 ? `Staženo ${total} nových e-mailů` : 'Žádné nové e-maily');
-        load();
-      } else {
-        toast(result.error || 'Synchronizace selhala', 'error');
+      for (let i = 0; i < 10; i++) {
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/imap-sync`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        });
+        const result = await res.json();
+        if (!result.ok) {
+          const detail = (result.results ?? [])
+            .map((r: { error?: string }) => r.error).filter(Boolean).join('; ');
+          toast(detail || result.error || 'Synchronizace selhala', 'error');
+          setSyncing(false);
+          return;
+        }
+        const results = (result.results ?? []) as { inserted?: number; pending?: number; error?: string }[];
+        total += results.reduce((s, r) => s + (r.inserted ?? 0), 0);
+        await load();
+        const pending = results.reduce((s, r) => s + (r.pending ?? 0), 0);
+        if (pending === 0) break;
       }
+      toast(total > 0 ? `Staženo ${total} nových e-mailů` : 'Žádné nové e-maily');
     } catch {
-      toast('Synchronizace selhala', 'error');
+      toast(total > 0
+        ? `Staženo ${total} e-mailů, pak synchronizace selhala — zkuste to znovu`
+        : 'Synchronizace selhala', 'error');
     }
     setSyncing(false);
   };

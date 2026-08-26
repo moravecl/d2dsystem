@@ -183,27 +183,34 @@ export default function SmtpAccountsPage() {
 
   const handleSyncNow = async (acc: SmtpAccount) => {
     setTesting(acc.id);
+    // funkce zpracovava male davky (CPU limit) - vola se opakovane dle `pending`
+    let total = 0;
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/imap-sync`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session?.access_token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ account_id: acc.id }),
+      for (let i = 0; i < 10; i++) {
+        const res = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/imap-sync`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session?.access_token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ account_id: acc.id }),
+          }
+        );
+        const result = await res.json();
+        const r = result.results?.[0];
+        if (!r || r.error) {
+          toast(r?.error || result.error || 'Synchronizace selhala', 'error');
+          setTesting(null);
+          return;
         }
-      );
-      const result = await res.json();
-      const r = result.results?.[0];
-      if (r && !r.error) {
-        toast(`Synchronizace hotova — staženo ${r.inserted ?? 0} nových e-mailů`);
-        loadAccounts();
-      } else {
-        toast(r?.error || result.error || 'Synchronizace selhala', 'error');
+        total += r.inserted ?? 0;
+        if (!r.pending) break;
       }
+      toast(total > 0 ? `Synchronizace hotova — staženo ${total} nových e-mailů` : 'Žádné nové e-maily');
+      loadAccounts();
     } catch {
       toast('Synchronizace selhala', 'error');
     }
