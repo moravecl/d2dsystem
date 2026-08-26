@@ -142,6 +142,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_notifications_dedupe
 -- Kdokoli mohl vlozit notifikaci komukoli; nove jen sam sobe
 -- (cross-user zapisy jdou vyhradne pres SECURITY DEFINER helper nize)
 DROP POLICY IF EXISTS "Authenticated users can insert notifications" ON notifications;
+DROP POLICY IF EXISTS "Users can insert own notifications" ON notifications;
 CREATE POLICY "Users can insert own notifications"
   ON notifications FOR INSERT TO authenticated
   WITH CHECK (user_id = auth.uid());
