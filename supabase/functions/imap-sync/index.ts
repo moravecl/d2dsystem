@@ -38,9 +38,12 @@ function corsHeadersFor(req: Request): Record<string, string> {
 // klient i cron volaji sync opakovane, dokud `pending` nespadne na nulu
 const MAX_MESSAGES_PER_RUN = 10;
 const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
-// zpravy vetsi nez X se nestahuji cele (pamet/CPU workeru) - ulozi se
+// zpravy vetsi nez X se nestahuji cele (pamet workeru) - ulozi se
 // jen hlavicka z obalky s poznamkou, ze obsah je v postovnim klientu
-const MAX_MESSAGE_BYTES = 4 * 1024 * 1024;
+const MAX_MESSAGE_BYTES = 15 * 1024 * 1024;
+// souhrnny objem stazenych tel na jeden beh; po prekroceni se davka
+// utne a zbytek (pending) dobehne dalsim volanim
+const RUN_BYTE_BUDGET = 24 * 1024 * 1024;
 // prvni synchronizace uctu: importuje se jen NEJNOVEJSICH 50 zprav,
 // starsi historie se preskoci a uz se k ni nevracime
 const INITIAL_SYNC_MESSAGES = 50;
@@ -309,11 +312,16 @@ async function syncAccount(
       : candidates;
     const newUids = windowUids.slice(0, MAX_MESSAGES_PER_RUN);
     let processed = 0;
+    let bytesUsed = 0;
     console.log(`${account.name}: ${candidates.length} kandidatu, davka ${newUids.length}, od UID ${newUids[0] ?? "-"}`);
 
     for (const uid of newUids) {
       if (Date.now() > deadline) {
         result.note = "Časový limit běhu — zbytek stáhne příští synchronizace";
+        break;
+      }
+      if (bytesUsed > RUN_BYTE_BUDGET) {
+        result.note = "Objemový limit běhu — zbytek stáhne příští synchronizace";
         break;
       }
 
@@ -377,6 +385,7 @@ async function syncAccount(
         continue;
       }
 
+      bytesUsed += msgSize;
       const msg = await fetchByUid(client, uid, { source: true });
       if (!msg?.source) {
         console.error(`${account.name}: uid ${uid} bez tela (fetch source)`);
