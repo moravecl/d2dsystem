@@ -246,15 +246,19 @@ Deno.serve(async (req: Request) => {
       usersByOrg.set(m.organization_id, list);
     }
 
-    // 3) preference (bez radku = zapnuto, DEFAULT_DAYS_BEFORE dni)
+    // 3) preference (zvonek: bez radku zapnuto; e-mail: bez radku vypnuto)
     const eventKeys = [...new Set(items.map((i) => i.eventKey))];
     const { data: prefRows } = await supabase
       .from("notification_preferences")
-      .select("user_id, event_key, enabled, days_before")
+      .select("user_id, event_key, enabled, email_enabled, days_before")
       .in("event_key", eventKeys);
-    const prefs = new Map<string, { enabled: boolean; days_before: number | null }>();
+    const prefs = new Map<string, { enabled: boolean; email_enabled: boolean; days_before: number | null }>();
     for (const p of prefRows ?? []) {
-      prefs.set(`${p.user_id}:${p.event_key}`, { enabled: p.enabled, days_before: p.days_before });
+      prefs.set(`${p.user_id}:${p.event_key}`, {
+        enabled: p.enabled,
+        email_enabled: p.email_enabled === true,
+        days_before: p.days_before,
+      });
     }
 
     // 4) sestavit radky notifikaci dle oken jednotlivych uzivatelu
@@ -263,29 +267,48 @@ Deno.serve(async (req: Request) => {
       message: string; entity_type: string; entity_id: string; link: string;
       dedupe_key: string;
     }[] = [];
+    const emailCandidates: {
+      user_id: string; organization_id: string; event_key: string; title: string;
+      message: string; link: string; dedupe_key: string;
+    }[] = [];
     for (const item of items) {
       const users = usersByOrg.get(item.orgId) ?? [];
       const remaining = daysUntil(item.dueDate, today);
       for (const userId of users) {
         const pref = prefs.get(`${userId}:${item.eventKey}`);
-        if (pref && !pref.enabled) continue;
         const days = pref?.days_before ?? DEFAULT_DAYS_BEFORE;
         // po splatnosti/proslé terminy projdou vzdy; budouci jen v okne uzivatele
         if (remaining > days) continue;
-        candidates.push({
-          user_id: userId,
-          organization_id: item.orgId,
-          type: item.type,
-          title: item.title,
-          message: item.message,
-          entity_type: item.entityType,
-          entity_id: item.entityId,
-          link: item.link,
-          dedupe_key: `${item.eventKey}:${item.entityId}:${item.dueDate}`,
-        });
+        const dedupeKey = `${item.eventKey}:${item.entityId}:${item.dueDate}`;
+        if (!pref || pref.enabled) {
+          candidates.push({
+            user_id: userId,
+            organization_id: item.orgId,
+            type: item.type,
+            title: item.title,
+            message: item.message,
+            entity_type: item.entityType,
+            entity_id: item.entityId,
+            link: item.link,
+            dedupe_key: dedupeKey,
+          });
+        }
+        if (pref?.email_enabled) {
+          emailCandidates.push({
+            user_id: userId,
+            organization_id: item.orgId,
+            event_key: item.eventKey,
+            title: item.title,
+            message: item.message,
+            link: item.link,
+            dedupe_key: dedupeKey,
+          });
+        }
       }
     }
-    if (candidates.length === 0) return json({ ok: true, inserted: 0 });
+    if (candidates.length === 0 && emailCandidates.length === 0) {
+      return json({ ok: true, inserted: 0, queued: 0 });
+    }
 
     // 5) deduplikace: partial unique index nejde pouzit jako PostgREST
     //    ON CONFLICT arbiter, proto se existujici pary predem odfiltruji
@@ -315,7 +338,34 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    return json({ ok: true, candidates: candidates.length, inserted });
+    // 6) e-mailova fronta (stejna deduplikace proti jiz zarazenym radkum)
+    let queued = 0;
+    if (emailCandidates.length > 0) {
+      const eKeys = [...new Set(emailCandidates.map((c) => c.dedupe_key))];
+      const eExisting = new Set<string>();
+      for (let i = 0; i < eKeys.length; i += 200) {
+        const { data: rows } = await supabase
+          .from("notification_email_queue")
+          .select("user_id, dedupe_key")
+          .in("dedupe_key", eKeys.slice(i, i + 200));
+        for (const r of rows ?? []) eExisting.add(`${r.user_id}:${r.dedupe_key}`);
+      }
+      const eFresh = emailCandidates.filter((c) => !eExisting.has(`${c.user_id}:${c.dedupe_key}`));
+      for (let i = 0; i < eFresh.length; i += 200) {
+        const chunk = eFresh.slice(i, i + 200);
+        const { error } = await supabase.from("notification_email_queue").insert(chunk);
+        if (error) {
+          for (const row of chunk) {
+            const { error: rowErr } = await supabase.from("notification_email_queue").insert(row);
+            if (!rowErr) queued++;
+          }
+        } else {
+          queued += chunk.length;
+        }
+      }
+    }
+
+    return json({ ok: true, candidates: candidates.length, inserted, queued });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Internal error";
     return new Response(JSON.stringify({ error: msg }), {

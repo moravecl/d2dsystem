@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   Inbox, RefreshCw, Reply, FolderKanban, MailOpen, Mail as MailIcon,
-  Loader2, Search, Trash2, ExternalLink,
+  Loader2, Search, Trash2, ExternalLink, CheckCheck,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
@@ -214,6 +214,17 @@ export default function MailboxPage() {
     window.dispatchEvent(new Event('emails-changed'));
   };
 
+  const markAllRead = async () => {
+    const { error } = await supabase
+      .from('emails')
+      .update({ is_read: true })
+      .eq('is_read', false);
+    if (error) { toast('Označení se nepodařilo', 'error'); return; }
+    setEmails((prev) => prev.map((e) => e.is_read ? e : { ...e, is_read: true }));
+    window.dispatchEvent(new Event('emails-changed'));
+    toast('Vše označeno jako přečtené');
+  };
+
   const handleDelete = async () => {
     if (!selected) return;
     if (!confirm('Smazat tento e-mail? Zpráva zůstane ve vaší schránce, zmizí jen ze systému.')) return;
@@ -247,14 +258,25 @@ export default function MailboxPage() {
           </div>
           <p className="text-sm text-slate-500">Příchozí e-maily automaticky tříděné k projektům</p>
         </div>
-        <button
-          onClick={handleSync}
-          disabled={syncing}
-          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
-        >
-          <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-          {syncing ? 'Synchronizuji…' : 'Synchronizovat teď'}
-        </button>
+        <div className="flex items-center gap-2">
+          {emails.some((e) => !e.is_read) && (
+            <button
+              onClick={markAllRead}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] hover:bg-white/[0.10] text-slate-300 text-sm font-semibold rounded-xl transition"
+            >
+              <CheckCheck className="w-4 h-4" />
+              Označit vše jako přečtené
+            </button>
+          )}
+          <button
+            onClick={handleSync}
+            disabled={syncing}
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
+            {syncing ? 'Synchronizuji…' : 'Synchronizovat teď'}
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 mb-4 flex-wrap">
