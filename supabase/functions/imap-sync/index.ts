@@ -199,7 +199,7 @@ function addressList(addr: AddressObject | AddressObject[] | undefined): string[
 
 function sanitizeFilename(name: string): string {
   const trimmed = (name || "priloha").slice(0, 120);
-  return trimmed.replace(/[^\w.\-]+/g, "_");
+  return trimmed.replace(/[^\w.-]+/g, "_");
 }
 
 interface SyncResult {
@@ -253,7 +253,7 @@ async function syncAccount(
     for (const uid of newUids) {
       const msg = await client.fetchOne(String(uid), { source: true }, { uid: true });
       result.fetched++;
-      let maxUidSeen = uid;
+      const maxUidSeen = uid;
       try {
         const parsed: ParsedMail = await simpleParser(msg.source);
         const fromValue = parsed.from?.value?.[0];
