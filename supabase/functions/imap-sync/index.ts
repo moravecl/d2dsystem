@@ -38,6 +38,9 @@ function corsHeadersFor(req: Request): Record<string, string> {
 // klient i cron volaji sync opakovane, dokud `pending` nespadne na nulu
 const MAX_MESSAGES_PER_RUN = 10;
 const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+// zpravy vetsi nez X se nestahuji cele (pamet/CPU workeru) - ulozi se
+// jen hlavicka z obalky s poznamkou, ze obsah je v postovnim klientu
+const MAX_MESSAGE_BYTES = 4 * 1024 * 1024;
 // prvni synchronizace uctu: importuje se jen NEJNOVEJSICH 50 zprav,
 // starsi historie se preskoci a uz se k ni nevracime
 const INITIAL_SYNC_MESSAGES = 50;
@@ -271,15 +274,69 @@ async function syncAccount(
       : candidates;
     const newUids = windowUids.slice(0, MAX_MESSAGES_PER_RUN);
     let processed = 0;
+    console.log(`${account.name}: ${candidates.length} kandidatu, davka ${newUids.length}, od UID ${newUids[0] ?? "-"}`);
 
     for (const uid of newUids) {
       if (Date.now() > deadline) {
         result.note = "Časový limit běhu — zbytek stáhne příští synchronizace";
         break;
       }
-      const msg = await client.fetchOne(String(uid), { source: true }, { uid: true });
+
+      // UID se zabere PRED zpracovanim: kdyz zprava polozi worker
+      // (pamet/CPU), dalsi beh ji preskoci misto vecneho zacykleni
+      await supabase
+        .from("smtp_accounts")
+        .update({ imap_last_uid: uid, imap_last_synced_at: new Date().toISOString() })
+        .eq("id", account.id);
+      result.last_uid = uid;
+      processed++;
+
+      // nejdriv jen velikost a obalka - bez stahovani tela
+      const meta = await client.fetchOne(String(uid), { size: true, envelope: true }, { uid: true });
+      if (!meta) continue;
+      const msgSize = Number(meta.size ?? 0);
+      console.log(`${account.name}: uid ${uid}, ${Math.round(msgSize / 1024)} kB`);
       result.fetched++;
-      const maxUidSeen = uid;
+
+      if (msgSize > MAX_MESSAGE_BYTES) {
+        // prilis velka zprava: ulozit jen hlavicku z obalky (vc. prirazeni)
+        try {
+          const env = meta.envelope;
+          const envFrom = env?.from?.[0];
+          const fromEmail = (envFrom?.address ?? "").toLowerCase();
+          const fromName = envFrom?.name ?? "";
+          const subject = env?.subject ?? "";
+          const cls = await classify(supabase, orgId, { from_email: fromEmail, subject, body_text: "" });
+          const { data: stubRows } = await supabase
+            .from("emails")
+            .upsert({
+              organization_id: orgId,
+              account_id: account.id,
+              message_id: env?.messageId ?? `uid:${account.id}:${uid}`,
+              from_email: fromEmail,
+              from_name: fromName,
+              to_emails: (env?.to ?? []).map((a: { address?: string }) => a.address ?? "").filter(Boolean),
+              subject,
+              body_text: `Zpráva má ${(msgSize / (1024 * 1024)).toFixed(1)} MB a přesahuje limit pro import obsahu. Otevřete ji ve svém poštovním klientu.`,
+              received_at: (env?.date ?? new Date()).toISOString(),
+              project_id: cls.project_id,
+              client_id: cls.client_id,
+              assignment_status: cls.project_id ? "auto" : "unassigned",
+              assignment_confidence: cls.confidence,
+              assignment_reason: cls.reason,
+              assignment_engine: cls.engine,
+              attachments: [],
+            }, { onConflict: "account_id,message_id", ignoreDuplicates: true })
+            .select("id");
+          if (stubRows && stubRows.length > 0) result.inserted++;
+        } catch (stubErr) {
+          console.error(`${account.name} uid ${uid} (stub):`, stubErr);
+        }
+        continue;
+      }
+
+      const msg = await client.fetchOne(String(uid), { source: true }, { uid: true });
+      if (!msg?.source) continue;
       try {
         const parsed: ParsedMail = await simpleParser(msg.source);
         const fromValue = parsed.from?.value?.[0];
@@ -378,16 +435,10 @@ async function syncAccount(
           }
         }
       } catch (msgErr) {
-        // jedna vadna zprava nesmi zastavit sync; UID se presto posune,
-        // jinak by se na ni cron zasekaval donekonecna
+        // jedna vadna zprava nesmi zastavit sync; UID je uz zabrane,
+        // takze se k ni dalsi beh nevraci
         console.error(`account ${account.name} uid ${uid}:`, msgErr);
       }
-      result.last_uid = maxUidSeen;
-      processed++;
-      await supabase
-        .from("smtp_accounts")
-        .update({ imap_last_uid: maxUidSeen, imap_last_synced_at: new Date().toISOString() })
-        .eq("id", account.id);
     }
 
     result.pending = Math.max(0, windowUids.length - processed);
