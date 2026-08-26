@@ -215,6 +215,33 @@ function sanitizeFilename(name: string): string {
   return trimmed.replace(/[^\w.-]+/g, "_");
 }
 
+interface FetchedMessage {
+  uid?: number;
+  size?: number;
+  envelope?: {
+    subject?: string;
+    date?: Date;
+    messageId?: string;
+    from?: { address?: string; name?: string }[];
+    to?: { address?: string }[];
+  };
+  source?: Uint8Array;
+}
+
+// Stazeni jedne zpravy podle UID pres plural fetch se search-objektem
+// {uid: "..."} - jednoznacne UID adresovani (fetchOne s ciselnym rozsahem
+// muze byt dle verze knihovny interpretovan jako poradove cislo zpravy).
+async function fetchByUid(
+  client: ImapFlow,
+  uid: number,
+  query: Record<string, boolean>,
+): Promise<FetchedMessage | undefined> {
+  for await (const msg of client.fetch({ uid: `${uid}:${uid}` }, query, { uid: true })) {
+    return msg as unknown as FetchedMessage;
+  }
+  return undefined;
+}
+
 interface SyncResult {
   account: string;
   fetched: number;
@@ -223,6 +250,9 @@ interface SyncResult {
   last_uid: number;
   /** kolik zprav jeste ceka na dalsi beh (klient podle toho vola znovu) */
   pending: number;
+  /** kolik zprav se nepodarilo zpracovat (preskoceny, sync pokracoval) */
+  errors: number;
+  first_error?: string;
   note?: string;
   error?: string;
 }
@@ -239,6 +269,7 @@ async function syncAccount(
     unassigned: 0,
     last_uid: account.imap_last_uid,
     pending: 0,
+    errors: 0,
   };
   const orgId = account.organization_id;
   if (!orgId || !account.imap_host || !account.imap_username) {
@@ -292,8 +323,13 @@ async function syncAccount(
       processed++;
 
       // nejdriv jen velikost a obalka - bez stahovani tela
-      const meta = await client.fetchOne(String(uid), { size: true, envelope: true }, { uid: true });
-      if (!meta) continue;
+      const meta = await fetchByUid(client, uid, { size: true, envelope: true });
+      if (!meta) {
+        console.error(`${account.name}: uid ${uid} nenalezeno (fetch meta)`);
+        result.errors++;
+        result.first_error ??= `UID ${uid} se nepodařilo načíst ze schránky`;
+        continue;
+      }
       const msgSize = Number(meta.size ?? 0);
       console.log(`${account.name}: uid ${uid}, ${Math.round(msgSize / 1024)} kB`);
       result.fetched++;
@@ -331,12 +367,19 @@ async function syncAccount(
           if (stubRows && stubRows.length > 0) result.inserted++;
         } catch (stubErr) {
           console.error(`${account.name} uid ${uid} (stub):`, stubErr);
+          result.errors++;
+          result.first_error ??= stubErr instanceof Error ? stubErr.message : String(stubErr);
         }
         continue;
       }
 
-      const msg = await client.fetchOne(String(uid), { source: true }, { uid: true });
-      if (!msg?.source) continue;
+      const msg = await fetchByUid(client, uid, { source: true });
+      if (!msg?.source) {
+        console.error(`${account.name}: uid ${uid} bez tela (fetch source)`);
+        result.errors++;
+        result.first_error ??= `UID ${uid} nevrátilo obsah zprávy`;
+        continue;
+      }
       try {
         const parsed: ParsedMail = await simpleParser(msg.source);
         const fromValue = parsed.from?.value?.[0];
@@ -438,6 +481,8 @@ async function syncAccount(
         // jedna vadna zprava nesmi zastavit sync; UID je uz zabrane,
         // takze se k ni dalsi beh nevraci
         console.error(`account ${account.name} uid ${uid}:`, msgErr);
+        result.errors++;
+        result.first_error ??= msgErr instanceof Error ? msgErr.message : String(msgErr);
       }
     }
 

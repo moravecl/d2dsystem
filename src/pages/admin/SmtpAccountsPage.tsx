@@ -207,6 +207,12 @@ export default function SmtpAccountsPage() {
           return;
         }
         total += r.inserted ?? 0;
+        if (r.first_error && total === 0 && !r.pending) {
+          toast(`Nic se nestáhlo — ${r.first_error}`, 'error');
+          setTesting(null);
+          loadAccounts();
+          return;
+        }
         if (!r.pending) break;
       }
       toast(total > 0 ? `Synchronizace hotova — staženo ${total} nových e-mailů` : 'Žádné nové e-maily');

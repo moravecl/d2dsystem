@@ -120,6 +120,7 @@ export default function MailboxPage() {
     // funkce zpracuje malou davku na jedno zavolani (CPU limit) a vraci
     // `pending` - vola se opakovane, dokud je co stahovat
     let total = 0;
+    let firstError: string | null = null;
     try {
       const { data: { session } } = await supabase.auth.getSession();
       for (let i = 0; i < 10; i++) {
@@ -139,13 +140,22 @@ export default function MailboxPage() {
           setSyncing(false);
           return;
         }
-        const results = (result.results ?? []) as { inserted?: number; pending?: number; error?: string }[];
+        const results = (result.results ?? []) as {
+          inserted?: number; pending?: number; error?: string; first_error?: string;
+        }[];
         total += results.reduce((s, r) => s + (r.inserted ?? 0), 0);
+        firstError = firstError ?? results.map((r) => r.first_error).find(Boolean) ?? null;
         await load();
         const pending = results.reduce((s, r) => s + (r.pending ?? 0), 0);
         if (pending === 0) break;
       }
-      toast(total > 0 ? `Staženo ${total} nových e-mailů` : 'Žádné nové e-maily');
+      if (total > 0) {
+        toast(`Staženo ${total} nových e-mailů`);
+      } else if (firstError) {
+        toast(`Nic se nestáhlo — ${firstError}`, 'error');
+      } else {
+        toast('Žádné nové e-maily');
+      }
     } catch {
       toast(total > 0
         ? `Staženo ${total} e-mailů, pak synchronizace selhala — zkuste to znovu`
