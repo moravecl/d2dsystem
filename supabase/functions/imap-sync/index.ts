@@ -231,15 +231,19 @@ interface FetchedMessage {
 // Stazeni jedne zpravy podle UID pres plural fetch se search-objektem
 // {uid: "..."} - jednoznacne UID adresovani (fetchOne s ciselnym rozsahem
 // muze byt dle verze knihovny interpretovan jako poradove cislo zpravy).
+// DULEZITE: iterator se musi nechat DOBEHNOUT - predcasny return/break
+// necha spojeni zamcene a dalsi IMAP prikaz uz nikdy neprobehne (presne
+// tak vypadal zaseknuty sync: meta proslo, stazeni tela vecne viselo).
 async function fetchByUid(
   client: ImapFlow,
   uid: number,
   query: Record<string, boolean>,
 ): Promise<FetchedMessage | undefined> {
+  let out: FetchedMessage | undefined;
   for await (const msg of client.fetch({ uid: `${uid}:${uid}` }, query, { uid: true })) {
-    return msg as unknown as FetchedMessage;
+    out = out ?? (msg as unknown as FetchedMessage);
   }
-  return undefined;
+  return out;
 }
 
 interface SyncResult {
