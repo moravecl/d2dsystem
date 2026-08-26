@@ -127,14 +127,20 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
     const oldStatus = approvalFile.approval_status;
     const newStatus = approved ? 'approved' : 'rejected';
 
-    await supabase.from('project_files').update({
+    const { error: updateErr } = await supabase.from('project_files').update({
       approval_status: newStatus,
       approval_note: approvalNote,
       approved_at: new Date().toISOString(),
       approved_by: user.id,
     }).eq('id', approvalFile.id);
 
-    await supabase.from('document_audit_log').insert({
+    if (updateErr) {
+      toast('Rozhodnutí se nepodařilo uložit', 'error');
+      setApproving(false);
+      return;
+    }
+
+    const { error: auditErr } = await supabase.from('document_audit_log').insert({
       file_id: approvalFile.id,
       project_id: projectId,
       action: approved ? 'approve' : 'reject',
@@ -144,8 +150,11 @@ export default function PortalFilesTab({ projectId }: { projectId: string }) {
       new_status: newStatus,
       note: approvalNote,
     });
+    if (auditErr) {
+      console.error('document_audit_log:', auditErr.message);
+    }
 
-    toast(approved ? 'Dokument schvalen' : 'Dokument zamitnut');
+    toast(approved ? 'Dokument schválen' : 'Dokument zamítnut');
     setApprovalFile(null);
     setApprovalNote('');
     setApproving(false);

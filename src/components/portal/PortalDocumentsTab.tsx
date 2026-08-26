@@ -57,13 +57,13 @@ export default function PortalDocumentsTab({ projectId }: { projectId: string })
       return;
     }
 
-    const { data: urlData } = supabase.storage.from('documents').getPublicUrl(filePath);
-
+    // bucket documents je privatni - uklada se cesta, odkaz se podepisuje
+    // az pri stazeni (getPublicUrl na privatnim bucketu vraci 400)
     const { error } = await supabase.from('portal_documents').insert({
       project_id: projectId,
       name: uploadName || uploadFile.name,
       description: uploadDesc,
-      file_url: urlData.publicUrl,
+      file_url: filePath,
       file_type: fileExt,
       file_size: uploadFile.size,
       uploaded_by: user.id,
@@ -82,6 +82,22 @@ export default function PortalDocumentsTab({ projectId }: { projectId: string })
       loadDocs();
     }
     setUploading(false);
+  };
+
+  const handleDownload = async (doc: DocRow) => {
+    // starsi radky maji ulozene verejne URL, nove jen cestu v bucketu
+    const marker = '/documents/';
+    const path = doc.file_url.startsWith('http')
+      ? doc.file_url.slice(doc.file_url.indexOf(marker) + marker.length)
+      : doc.file_url;
+    const { data, error } = await supabase.storage
+      .from('documents')
+      .createSignedUrl(path, 3600);
+    if (error || !data?.signedUrl) {
+      toast('Soubor se nepodařilo otevřít', 'error');
+      return;
+    }
+    window.open(data.signedUrl, '_blank', 'noopener');
   };
 
   const handleDelete = async (doc: DocRow) => {
@@ -135,14 +151,13 @@ export default function PortalDocumentsTab({ projectId }: { projectId: string })
                 </p>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
-                <a
-                  href={doc.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => handleDownload(doc)}
+                  title="Stáhnout"
                   className="p-2 rounded-lg hover:bg-white/[0.06] text-slate-400 hover:text-blue-400 transition"
                 >
                   <Download className="w-4 h-4" />
-                </a>
+                </button>
                 {doc.uploaded_by === user?.id && (
                   <button
                     onClick={() => handleDelete(doc)}
