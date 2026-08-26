@@ -118,7 +118,9 @@ const ServicePage = lazyPage(() => import('./pages/service/ServicePage'));
 const QuickJobsPage = lazyPage(() => import('./pages/quickjobs/QuickJobsPage'));
 const InvoiceSettingsPage = lazyPage(() => import('./pages/admin/InvoiceSettingsPage'));
 const EmailingPage = lazyPage(() => import('./pages/emailing/EmailingPage'));
+const MailboxPage = lazyPage(() => import('./pages/mail/MailboxPage'));
 const SmtpAccountsPage = lazyPage(() => import('./pages/admin/SmtpAccountsPage'));
+const NotificationSettingsPage = lazyPage(() => import('./pages/admin/NotificationSettingsPage'));
 const EmailTemplatesPage = lazyPage(() => import('./pages/admin/EmailTemplatesPage'));
 const LicencePage = lazyPage(() => import('./pages/admin/LicencePage'));
 const GdprPage = lazyPage(() => import('./pages/admin/GdprPage'));
@@ -244,6 +246,7 @@ export default function App() {
               <Route path="/finance/cashflow" element={<CashflowPage />} />
               <Route path="/finance/banka" element={<BankPage />} />
               <Route path="/emailing" element={<PlanProtectedRoute requiredTier="pro" featureName="Hromadný emailing"><EmailingPage /></PlanProtectedRoute>} />
+              <Route path="/posta" element={<MailboxPage />} />
               <Route path="/zamestnanci" element={<EmployeesPage />} />
               <Route path="/gantt" element={<PlanProtectedRoute requiredTier="pro" featureName="Ganttův diagram"><GanttPage /></PlanProtectedRoute>} />
               <Route path="/dokumenty" element={<DocumentsPage />} />
@@ -300,6 +303,7 @@ export default function App() {
               <Route path="licence" element={<LicencePage />} />
               <Route path="gdpr" element={<GdprPage />} />
               <Route path="automatizace" element={<AutomationsPage />} />
+              <Route path="notifikace" element={<NotificationSettingsPage />} />
               <Route path="audit" element={<AuditLogPage />} />
               <Route path="sidebar" element={<SidebarSettingsPage />} />
               <Route path="resource-groups" element={<ResourceGroupsPage />} />

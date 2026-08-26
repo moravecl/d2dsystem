@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Mail, Plus, CreditCard as Edit2, Trash2, Check, X, Eye, EyeOff, Zap } from 'lucide-react';
+import { Mail, Plus, CreditCard as Edit2, Trash2, Check, X, Eye, EyeOff, Zap, Inbox, RefreshCw } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
@@ -18,6 +18,13 @@ interface SmtpAccount {
   is_default: boolean;
   is_active: boolean;
   created_at: string;
+  imap_host: string | null;
+  imap_port: number;
+  imap_username: string | null;
+  imap_password: string | null;
+  imap_use_ssl: boolean;
+  imap_enabled: boolean;
+  imap_last_synced_at: string | null;
 }
 
 const EMPTY_FORM = {
@@ -30,6 +37,12 @@ const EMPTY_FORM = {
   from_name: '',
   use_tls: true,
   is_default: false,
+  imap_host: '',
+  imap_port: 993,
+  imap_username: '',
+  imap_password: '',
+  imap_use_ssl: true,
+  imap_enabled: false,
 };
 
 export default function SmtpAccountsPage() {
@@ -74,6 +87,12 @@ export default function SmtpAccountsPage() {
       from_name: acc.from_name,
       use_tls: acc.use_tls,
       is_default: acc.is_default,
+      imap_host: acc.imap_host ?? '',
+      imap_port: acc.imap_port ?? 993,
+      imap_username: acc.imap_username ?? '',
+      imap_password: acc.imap_password ?? '',
+      imap_use_ssl: acc.imap_use_ssl !== false,
+      imap_enabled: acc.imap_enabled === true,
     });
     setShowPassword(false);
     setShowModal(true);
@@ -82,6 +101,10 @@ export default function SmtpAccountsPage() {
   const handleSave = async () => {
     if (!form.name || !form.host || !form.from_email) {
       toast('Vyplňte název, SMTP server a odesílací email', 'error');
+      return;
+    }
+    if (form.imap_enabled && (!form.imap_host || !form.imap_username)) {
+      toast('Pro zapnutí příchozí pošty vyplňte IMAP server a přihlašovací jméno', 'error');
       return;
     }
     setSaving(true);
@@ -128,6 +151,63 @@ export default function SmtpAccountsPage() {
     await supabase.from('smtp_accounts').update({ is_default: true }).eq('id', acc.id);
     loadAccounts();
     toast('Výchozí účet nastaven');
+  };
+
+  const handleTestImap = async (acc: SmtpAccount) => {
+    setTesting(acc.id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/imap-sync`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session?.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ mode: 'test', account_id: acc.id }),
+        }
+      );
+      const result = await res.json();
+      const r = result.results?.[0];
+      if (r?.ok) {
+        toast(`IMAP spojení funguje — ve schránce ${r.messages ?? 0} zpráv (${r.unseen ?? 0} nepřečtených)`);
+      } else {
+        toast(r?.error || result.error || 'IMAP test selhal', 'error');
+      }
+    } catch {
+      toast('IMAP test selhal', 'error');
+    }
+    setTesting(null);
+  };
+
+  const handleSyncNow = async (acc: SmtpAccount) => {
+    setTesting(acc.id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/imap-sync`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session?.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ account_id: acc.id }),
+        }
+      );
+      const result = await res.json();
+      const r = result.results?.[0];
+      if (r && !r.error) {
+        toast(`Synchronizace hotova — staženo ${r.inserted ?? 0} nových e-mailů`);
+        loadAccounts();
+      } else {
+        toast(r?.error || result.error || 'Synchronizace selhala', 'error');
+      }
+    } catch {
+      toast('Synchronizace selhala', 'error');
+    }
+    setTesting(null);
   };
 
   const handleTestConnection = async (acc: SmtpAccount) => {
@@ -218,6 +298,21 @@ export default function SmtpAccountsPage() {
                     <div className="text-xs text-slate-500 space-y-0.5">
                       <div>{acc.host}:{acc.port} {acc.use_tls ? '(TLS)' : ''}</div>
                       <div>{acc.from_name} &lt;{acc.from_email}&gt;</div>
+                      {acc.imap_enabled ? (
+                        <div className="flex items-center gap-1.5 text-emerald-400">
+                          <Inbox className="w-3 h-3" />
+                          IMAP zapnuto ({acc.imap_host}:{acc.imap_port})
+                          {acc.imap_last_synced_at && (
+                            <span className="text-slate-500">
+                              — poslední sync {new Date(acc.imap_last_synced_at).toLocaleString('cs-CZ')}
+                            </span>
+                          )}
+                        </div>
+                      ) : acc.imap_host ? (
+                        <div className="flex items-center gap-1.5 text-slate-500">
+                          <Inbox className="w-3 h-3" /> IMAP vyplněno, ale vypnuto
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -226,10 +321,30 @@ export default function SmtpAccountsPage() {
                     onClick={() => handleTestConnection(acc)}
                     disabled={testing === acc.id || !acc.is_active}
                     className="p-2 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition disabled:opacity-50"
-                    title="Otestovat spojení"
+                    title="Otestovat SMTP (odešle testovací e-mail)"
                   >
                     <Zap className={`w-4 h-4 ${testing === acc.id ? 'animate-pulse' : ''}`} />
                   </button>
+                  {acc.imap_host && (
+                    <button
+                      onClick={() => handleTestImap(acc)}
+                      disabled={testing === acc.id || !acc.is_active}
+                      className="p-2 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition disabled:opacity-50"
+                      title="Otestovat IMAP spojení"
+                    >
+                      <Inbox className={`w-4 h-4 ${testing === acc.id ? 'animate-pulse' : ''}`} />
+                    </button>
+                  )}
+                  {acc.imap_enabled && (
+                    <button
+                      onClick={() => handleSyncNow(acc)}
+                      disabled={testing === acc.id || !acc.is_active}
+                      className="p-2 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 transition disabled:opacity-50"
+                      title="Synchronizovat poštu teď"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${testing === acc.id ? 'animate-spin' : ''}`} />
+                    </button>
+                  )}
                   {!acc.is_default && acc.is_active && (
                     <button
                       onClick={() => handleSetDefault(acc)}
@@ -382,6 +497,77 @@ export default function SmtpAccountsPage() {
                 className="w-4 h-4 rounded border-slate-300 text-blue-400 focus:ring-blue-500"
               />
               <span className="text-sm font-medium text-slate-300">Výchozí účet</span>
+            </label>
+          </div>
+
+          <div className="pt-4 mt-2 border-t border-white/[0.08]">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Inbox className="w-4 h-4 text-cyan-400" />
+                <span className="text-sm font-bold text-white">Příchozí pošta (IMAP)</span>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.imap_enabled}
+                  onChange={(e) => setForm({ ...form, imap_enabled: e.target.checked })}
+                  className="w-4 h-4 rounded border-slate-300 text-blue-400 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-slate-300">Stahovat poštu</span>
+              </label>
+            </div>
+            <p className="text-xs text-slate-500 mb-3">
+              Schránka se synchronizuje automaticky každých 5 minut. E-maily se heuristicky
+              přiřazují k projektům, nepřiřazené najdete v Poště se štítkem „Nepřiřazeno".
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">IMAP server</label>
+                <input
+                  value={form.imap_host}
+                  onChange={(e) => setForm({ ...form, imap_host: e.target.value })}
+                  placeholder="imap.gmail.com"
+                  className="w-full px-3.5 py-2.5 text-sm border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none transition"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Port</label>
+                <input
+                  type="number"
+                  value={form.imap_port}
+                  onChange={(e) => setForm({ ...form, imap_port: parseInt(e.target.value) || 993 })}
+                  className="w-full px-3.5 py-2.5 text-sm border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none transition"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Přihlašovací jméno</label>
+                <input
+                  value={form.imap_username}
+                  onChange={(e) => setForm({ ...form, imap_username: e.target.value })}
+                  placeholder="user@example.com"
+                  className="w-full px-3.5 py-2.5 text-sm border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none transition"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Heslo</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={form.imap_password}
+                  onChange={(e) => setForm({ ...form, imap_password: e.target.value })}
+                  className="w-full px-3.5 py-2.5 text-sm border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none transition"
+                />
+              </div>
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer mt-4">
+              <input
+                type="checkbox"
+                checked={form.imap_use_ssl}
+                onChange={(e) => setForm({ ...form, imap_use_ssl: e.target.checked })}
+                className="w-4 h-4 rounded border-slate-300 text-blue-400 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-slate-300">Použít SSL (port 993)</span>
             </label>
           </div>
         </div>

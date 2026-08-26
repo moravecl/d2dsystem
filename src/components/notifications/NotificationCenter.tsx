@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, Check, CheckCheck, Trash2, Ticket } from 'lucide-react';
+import { Bell, Check, CheckCheck, Trash2, Ticket, Settings, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import Modal from '../ui/Modal';
+import NotificationPreferencesPanel from './NotificationPreferencesPanel';
 
 interface Notification {
   id: string;
@@ -12,6 +14,7 @@ interface Notification {
   message: string;
   entity_type: string | null;
   entity_id: string | null;
+  link: string | null;
   is_read: boolean;
   created_at: string;
 }
@@ -25,12 +28,14 @@ const TYPE_COLORS: Record<string, string> = {
   deadline: 'bg-red-500/20 text-red-300',
   comment: 'bg-cyan-500/20 text-cyan-300',
   service_ticket: 'bg-cyan-500/20 text-cyan-300',
+  email: 'bg-amber-500/20 text-amber-300',
 };
 
 export default function NotificationCenter() {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
+  const [prefsOpen, setPrefsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -100,6 +105,7 @@ export default function NotificationCenter() {
   };
 
   const getLink = (n: Notification): string | null => {
+    if (n.link) return n.link;
     if (!n.entity_type || !n.entity_id) return null;
     switch (n.entity_type) {
       case 'project': return `/projekty/${n.entity_id}`;
@@ -108,6 +114,7 @@ export default function NotificationCenter() {
       case 'asset': return `/majetek/${n.entity_id}`;
       case 'invoice': return '/finance';
       case 'service_ticket': return '/servis?tab=tickets';
+      case 'email': return `/posta?email=${n.entity_id}`;
       default: return null;
     }
   };
@@ -147,6 +154,13 @@ export default function NotificationCenter() {
                   <CheckCheck className="w-3 h-3" /> Přečíst vše
                 </button>
               )}
+              <button
+                onClick={() => { setOpen(false); setPrefsOpen(true); }}
+                className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/10 transition"
+                title="Nastavení notifikací"
+              >
+                <Settings className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
 
@@ -164,7 +178,11 @@ export default function NotificationCenter() {
                 const content = (
                   <div className={`flex items-start gap-3 px-4 py-3 hover:bg-white/[0.04] transition group ${!n.is_read ? 'bg-blue-500/[0.06]' : ''}`}>
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${colorClass}`}>
-                      {n.type === 'service_ticket' ? <Ticket className="w-3.5 h-3.5" /> : <Bell className="w-3.5 h-3.5" />}
+                      {n.type === 'service_ticket'
+                        ? <Ticket className="w-3.5 h-3.5" />
+                        : n.type === 'email'
+                          ? <Mail className="w-3.5 h-3.5" />
+                          : <Bell className="w-3.5 h-3.5" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -201,6 +219,10 @@ export default function NotificationCenter() {
           </div>
         </div>
       )}
+
+      <Modal open={prefsOpen} onClose={() => setPrefsOpen(false)} title="Nastavení notifikací" size="lg">
+        <NotificationPreferencesPanel />
+      </Modal>
     </div>
   );
 }

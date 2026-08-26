@@ -4,6 +4,7 @@ import { Users, Settings, LogOut, ChevronLeft, ChevronDown, X, Car, Cpu, Buildin
 import { useAuth } from '../../contexts/AuthContext';
 import { useSidebarSettings } from '../../hooks/useSidebarSettings';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useUnassignedEmailCount } from '../../hooks/useUnassignedEmails';
 import type { ModuleKey } from '../../lib/permissions';
 
 interface SidebarProps {
@@ -43,6 +44,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
   const { hasModule, loading: permissionsLoading } = usePermissions();
   const [assetExpanded, setAssetExpanded] = useState(location.pathname.startsWith('/majetek'));
   const [financeExpanded, setFinanceExpanded] = useState(location.pathname.startsWith('/finance'));
+  const unassignedEmails = useUnassignedEmailCount(!permissionsLoading && hasModule('posta'));
 
   const handleSignOut = async () => {
     await signOut();
@@ -117,12 +119,23 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
       return renderExpandable('finance', item.label, item.icon, '/finance', financeExpanded, setFinanceExpanded, financeSubItems);
     }
 
+    const badge = item.key === 'posta' && unassignedEmails > 0 ? unassignedEmails : null;
+
     return (
       <NavLink key={item.to} to={item.to} onClick={onMobileClose} className={({ isActive }) => linkClass(isActive)}>
         {({ isActive }) => (
           <>
             <item.icon className={`w-5 h-5 shrink-0 transition-colors ${isActive ? 'text-blue-400' : ''}`} />
-            {!collapsed && <span className="truncate">{item.label}</span>}
+            {!collapsed && <span className="truncate flex-1">{item.label}</span>}
+            {badge !== null && (
+              collapsed ? (
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400" />
+              ) : (
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 shrink-0">
+                  {badge > 99 ? '99+' : badge}
+                </span>
+              )
+            )}
           </>
         )}
       </NavLink>

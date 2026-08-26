@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, Package, Puzzle, Settings, ArrowLeft, LogOut, Users, Lightbulb, Cable, Flame, Menu, X, FileText, Building2, Sliders, Receipt, Mail, FileCode, CreditCard, Shield, ClipboardList, Tags, Sun, Zap, Settings2, FolderOpen, PanelLeft, Camera, FileCheck, ShieldAlert, Shapes, PenTool, Link2, GitMerge, ChevronDown, Layers, FormInput, Boxes } from 'lucide-react';
+import { LayoutGrid, Package, Puzzle, Settings, ArrowLeft, LogOut, Users, Lightbulb, Cable, Flame, Menu, X, FileText, Building2, Sliders, Receipt, Mail, FileCode, CreditCard, Shield, ClipboardList, Tags, Sun, Zap, Settings2, FolderOpen, PanelLeft, Camera, FileCheck, ShieldAlert, Shapes, PenTool, Link2, GitMerge, ChevronDown, Layers, FormInput, Boxes, BellRing } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const overviewItem = { to: '/admin', icon: LayoutGrid, label: 'Přehled' };
@@ -70,6 +70,7 @@ const NAV_GROUPS = [
     id: 'system', label: 'Systém',
     items: [
       { to: '/admin/system', icon: Sliders, label: 'Systémová nastavení' },
+      { to: '/admin/notifikace', icon: BellRing, label: 'Notifikace' },
       { to: '/admin/automatizace', icon: Zap, label: 'Automatizace' },
       { to: '/admin/sidebar', icon: PanelLeft, label: 'Nastavení sidebaru' },
       { to: '/admin/audit', icon: ClipboardList, label: 'Audit log' },

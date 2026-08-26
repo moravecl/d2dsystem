@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { sanitizeHtml } from '../../lib/sanitize';
 import {
-  Mail, Send, CheckCircle, XCircle, Clock, Eye, Inbox, RefreshCw, Users,
+  Mail, Send, CheckCircle, XCircle, Clock, Eye, Inbox, RefreshCw, Users, MailOpen,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import Modal from '../../components/ui/Modal';
 import EmailComposer from '../../pages/emailing/EmailComposer';
+import EmailDetail, { type IncomingEmail, formatEmailDate } from '../mail/EmailDetail';
 
 interface EmailLogEntry {
   id: string;
@@ -42,24 +43,33 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof
 };
 
 export default function ProjectEmailTab({ projectId, clientId }: Props) {
+  const [tab, setTab] = useState<'received' | 'sent'>('received');
   const [logs, setLogs] = useState<EmailLogEntry[]>([]);
+  const [received, setReceived] = useState<IncomingEmail[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [composerOpen, setComposerOpen] = useState(false);
   const [detailEntry, setDetailEntry] = useState<EmailLogEntry | null>(null);
+  const [receivedDetail, setReceivedDetail] = useState<IncomingEmail | null>(null);
   const [clientEmail, setClientEmail] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const [logsRes, profilesRes] = await Promise.all([
+    const [logsRes, receivedRes, profilesRes] = await Promise.all([
       supabase
         .from('email_log')
         .select('*')
         .eq('project_id', projectId)
         .order('created_at', { ascending: false }),
+      supabase
+        .from('emails')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('received_at', { ascending: false }),
       supabase.from('profiles').select('id, display_name, email'),
     ]);
     setLogs(logsRes.data || []);
+    setReceived((receivedRes.data ?? []) as IncomingEmail[]);
     setProfiles(profilesRes.data || []);
     setLoading(false);
   }, [projectId]);
@@ -109,7 +119,24 @@ export default function ProjectEmailTab({ projectId, clientId }: Props) {
         <div className="flex items-center gap-2.5">
           <Mail className="w-5 h-5 text-slate-400" />
           <h3 className="text-base font-bold text-white">E-maily projektu</h3>
-          <span className="text-xs font-bold text-slate-400 bg-white/[0.06] px-2 py-0.5 rounded-full">{logs.length}</span>
+          <div className="flex items-center gap-1 ml-2">
+            <button
+              onClick={() => setTab('received')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                tab === 'received' ? 'bg-blue-600 text-white' : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.10]'
+              }`}
+            >
+              Přijaté ({received.length})
+            </button>
+            <button
+              onClick={() => setTab('sent')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                tab === 'sent' ? 'bg-blue-600 text-white' : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.10]'
+              }`}
+            >
+              Odeslané ({logs.length})
+            </button>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -138,7 +165,41 @@ export default function ProjectEmailTab({ projectId, clientId }: Props) {
         </div>
       )}
 
-      {logs.length === 0 ? (
+      {tab === 'received' && (
+        received.length === 0 ? (
+          <div className="p-10 text-center bg-white/[0.04] rounded-2xl border border-white/[0.08]">
+            <Inbox className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+            <p className="text-sm font-semibold text-slate-400">Zatím žádné přijaté e-maily</p>
+            <p className="text-xs text-slate-400 mt-1">Příchozí pošta přiřazená k projektu se zobrazí zde</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {received.map((email) => (
+              <div
+                key={email.id}
+                className="flex items-center gap-4 p-3.5 bg-white/[0.06] rounded-xl border border-white/[0.08] hover:border-white/[0.12] transition cursor-pointer group"
+                onClick={() => setReceivedDetail(email)}
+              >
+                {email.is_read
+                  ? <MailOpen className="w-4 h-4 text-slate-500 shrink-0" />
+                  : <Mail className="w-4 h-4 text-blue-400 shrink-0" />}
+                <div className="flex-1 min-w-0">
+                  <span className={`text-sm truncate block ${email.is_read ? 'text-slate-300' : 'text-white font-semibold'}`}>
+                    {email.subject || '(bez předmětu)'}
+                  </span>
+                  <div className="text-xs text-slate-500 mt-0.5 truncate">
+                    Od: {email.from_name ? `${email.from_name} <${email.from_email}>` : email.from_email}
+                  </div>
+                </div>
+                <div className="text-xs text-slate-500 shrink-0">{formatEmailDate(email.received_at)}</div>
+                <Eye className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition shrink-0" />
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {tab === 'sent' && (logs.length === 0 ? (
         <div className="p-10 text-center bg-white/[0.04] rounded-2xl border border-white/[0.08]">
           <Inbox className="w-10 h-10 text-slate-300 mx-auto mb-2" />
           <p className="text-sm font-semibold text-slate-400">Zatím žádné emaily</p>
@@ -179,7 +240,16 @@ export default function ProjectEmailTab({ projectId, clientId }: Props) {
             );
           })}
         </div>
-      )}
+      ))}
+
+      <Modal
+        open={!!receivedDetail}
+        onClose={() => setReceivedDetail(null)}
+        title="Přijatý e-mail"
+        size="xl"
+      >
+        {receivedDetail && <EmailDetail email={receivedDetail} />}
+      </Modal>
 
       <EmailComposer
         open={composerOpen}

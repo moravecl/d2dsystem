@@ -88,17 +88,20 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // Caller's org — used both for authorization and for the log row
+    // (without organization_id the row is invisible to org-scoped RLS).
+    const { data: callerMembership } = await supabase
+      .from("organization_members")
+      .select("organization_id")
+      .eq("user_id", user.id)
+      .limit(1)
+      .maybeSingle();
+    const callerOrgId = callerMembership?.organization_id ?? null;
+
     // Authorization: the SMTP account must belong to the caller's organization,
     // or be the shared platform account. Prevents using foreign orgs' SMTP as a relay.
     if (!smtpAccount.is_platform_default) {
-      const { data: membership } = await supabase
-        .from("organization_members")
-        .select("organization_id")
-        .eq("user_id", user.id)
-        .eq("organization_id", smtpAccount.organization_id ?? "00000000-0000-0000-0000-000000000000")
-        .maybeSingle();
-
-      if (!smtpAccount.organization_id || !membership) {
+      if (!smtpAccount.organization_id || smtpAccount.organization_id !== callerOrgId) {
         return new Response(
           JSON.stringify({ error: "SMTP account does not belong to your organization" }),
           {
@@ -112,6 +115,7 @@ Deno.serve(async (req: Request) => {
     const logEntry = {
       smtp_account_id: payload.smtp_account_id,
       template_id: payload.template_id || null,
+      organization_id: smtpAccount.organization_id ?? callerOrgId,
       sender_user_id: user.id,
       project_id: payload.project_id || null,
       from_email: smtpAccount.from_email,

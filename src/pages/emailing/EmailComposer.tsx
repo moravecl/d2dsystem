@@ -36,11 +36,12 @@ interface EmailComposerProps {
   onSent: () => void;
   prefillTo?: string[];
   prefillProjectId?: string;
+  prefillSubject?: string;
   bulkMode?: boolean;
   bulkRecipients?: string[];
 }
 
-export default function EmailComposer({ open, onClose, onSent, prefillTo, prefillProjectId, bulkMode, bulkRecipients }: EmailComposerProps) {
+export default function EmailComposer({ open, onClose, onSent, prefillTo, prefillProjectId, prefillSubject, bulkMode, bulkRecipients }: EmailComposerProps) {
   const { toast } = useToast();
   const [smtpAccounts, setSmtpAccounts] = useState<SmtpAccount[]>([]);
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -85,7 +86,8 @@ export default function EmailComposer({ open, onClose, onSent, prefillTo, prefil
     if (prefillTo) setForm(f => ({ ...f, to_emails: prefillTo }));
     if (bulkRecipients) setForm(f => ({ ...f, to_emails: bulkRecipients }));
     if (prefillProjectId) setForm(f => ({ ...f, project_id: prefillProjectId }));
-  }, [prefillTo, bulkRecipients, prefillProjectId]);
+    if (prefillSubject) setForm(f => ({ ...f, subject: prefillSubject }));
+  }, [prefillTo, bulkRecipients, prefillProjectId, prefillSubject]);
 
   const handleSelectTemplate = (templateId: string) => {
     const tpl = templates.find(t => t.id === templateId);
