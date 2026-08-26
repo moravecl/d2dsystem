@@ -35,6 +35,13 @@ function corsHeadersFor(req: Request): Record<string, string> {
 
 const MAX_MESSAGES_PER_RUN = 50;
 const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+// prvni synchronizace uctu: importuji se jen NEJNOVEJSI zpravy,
+// starsi historie se preskoci a uz se k ni nevracime
+const INITIAL_SYNC_MESSAGES = 50;
+// o poste starsi nez X dni se neposilaji notifikace (import backlogu)
+const NOTIFY_MAX_AGE_DAYS = 7;
+// bezpecne pod wall-clock limitem edge funkce; zbytek dozene dalsi beh
+const RUN_TIME_BUDGET_MS = 100_000;
 
 interface ImapAccount {
   id: string;
@@ -208,12 +215,14 @@ interface SyncResult {
   inserted: number;
   unassigned: number;
   last_uid: number;
+  note?: string;
   error?: string;
 }
 
 async function syncAccount(
   supabase: SupabaseClient,
   account: ImapAccount,
+  deadline: number,
 ): Promise<SyncResult> {
   const result: SyncResult = {
     account: account.name,
@@ -245,12 +254,20 @@ async function syncAccount(
       { uid: true },
     );
     // rozsah "n:*" vraci i posledni zpravu, kdyz nic noveho neni - odfiltrovat
-    const newUids = (found ?? [])
+    const candidates = (found ?? [])
       .filter((u: number) => u > lastUid)
-      .sort((a: number, b: number) => a - b)
-      .slice(0, MAX_MESSAGES_PER_RUN);
+      .sort((a: number, b: number) => a - b);
+    // prvni beh bere NEJNOVEJSI zpravy (konec seznamu) - stara historie
+    // se neimportuje; dalsi behy dobihaji vse nove od posledniho UID
+    const newUids = lastUid === 0
+      ? candidates.slice(-INITIAL_SYNC_MESSAGES)
+      : candidates.slice(0, MAX_MESSAGES_PER_RUN);
 
     for (const uid of newUids) {
+      if (Date.now() > deadline) {
+        result.note = "Časový limit běhu — zbytek stáhne příští synchronizace";
+        break;
+      }
       const msg = await client.fetchOne(String(uid), { source: true }, { uid: true });
       result.fetched++;
       const maxUidSeen = uid;
@@ -330,8 +347,12 @@ async function syncAccount(
             await supabase.from("emails").update({ attachments: stored }).eq("id", emailId);
           }
 
+          // o starem backlogu se nenotifikuje - jen o cerstve poste
+          const ageDays = (Date.now() - (parsed.date ?? new Date()).getTime()) / 86_400_000;
           if (!cls.project_id) {
             result.unassigned++;
+          }
+          if (!cls.project_id && ageDays <= NOTIFY_MAX_AGE_DAYS) {
             await supabase.rpc("notify_org_users", {
               p_org: orgId,
               p_roles: ["owner", "admin", "manager"],
@@ -472,13 +493,14 @@ Deno.serve(async (req: Request) => {
       return json({ ok: true, results: [], note: "Žádný účet k synchronizaci" });
     }
 
+    const deadline = Date.now() + RUN_TIME_BUDGET_MS;
     const results: unknown[] = [];
     for (const account of accounts as ImapAccount[]) {
       if (payload.mode === "test") {
         results.push(await testAccount(account));
       } else {
         try {
-          results.push(await syncAccount(supabase, account));
+          results.push(await syncAccount(supabase, account, deadline));
         } catch (err) {
           results.push({
             account: account.name,
