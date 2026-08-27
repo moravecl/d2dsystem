@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 /**
- * Počet nepřiřazených příchozích e-mailů — badge u položky Pošta
- * v sidebaru. Lehký head-count dotaz + minutový polling.
+ * Počet nepřečtených (nově doručených) e-mailů — badge u položky Pošta
+ * v sidebaru. Lehký head-count dotaz + minutový polling; obnovuje se
+ * i eventem 'emails-changed' (přečtení, smazání, synchronizace).
  */
-export function useUnassignedEmailCount(enabled: boolean): number {
+export function useUnreadEmailCount(enabled: boolean): number {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export function useUnassignedEmailCount(enabled: boolean): number {
       const { count: c } = await supabase
         .from('emails')
         .select('id', { count: 'exact', head: true })
-        .eq('assignment_status', 'unassigned');
+        .eq('is_read', false);
       if (!cancelled) setCount(c ?? 0);
     };
 

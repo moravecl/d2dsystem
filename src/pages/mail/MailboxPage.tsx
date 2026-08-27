@@ -10,13 +10,18 @@ import Modal from '../../components/ui/Modal';
 import EmailDetail, { type IncomingEmail, formatEmailDate } from '../../components/mail/EmailDetail';
 import EmailComposer from '../emailing/EmailComposer';
 
-type Filter = 'unassigned' | 'all' | 'unread';
+type Filter = 'unassigned' | 'assigned' | 'all' | 'unread';
 
 interface ProjectOption {
   id: string;
   name: string;
   project_name: string;
   client_id: string | null;
+}
+
+interface MailAccountOption {
+  id: string;
+  name: string;
 }
 
 const PAGE_SIZE = 100;
@@ -31,9 +36,11 @@ export default function MailboxPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [emails, setEmails] = useState<IncomingEmail[]>([]);
   const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [accounts, setAccounts] = useState<MailAccountOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>('unassigned');
   const [projectFilter, setProjectFilter] = useState('');
+  const [accountFilter, setAccountFilter] = useState('');
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get('email'));
   const [syncing, setSyncing] = useState(false);
@@ -43,7 +50,7 @@ export default function MailboxPage() {
   const [replyOpen, setReplyOpen] = useState(false);
 
   const load = useCallback(async () => {
-    const [emailsRes, projectsRes] = await Promise.all([
+    const [emailsRes, projectsRes, accountsRes] = await Promise.all([
       supabase
         .from('emails')
         .select('*')
@@ -53,9 +60,15 @@ export default function MailboxPage() {
         .from('projects')
         .select('id, name, project_name, client_id')
         .order('updated_at', { ascending: false }),
+      supabase
+        .from('smtp_accounts')
+        .select('id, name')
+        .not('imap_host', 'is', null)
+        .order('name'),
     ]);
     setEmails((emailsRes.data ?? []) as IncomingEmail[]);
     setProjects((projectsRes.data ?? []) as ProjectOption[]);
+    setAccounts((accountsRes.data ?? []) as MailAccountOption[]);
     setLoading(false);
   }, []);
 
@@ -82,8 +95,10 @@ export default function MailboxPage() {
   const filtered = useMemo(() => {
     let list = emails;
     if (filter === 'unassigned') list = list.filter((e) => e.assignment_status === 'unassigned');
+    if (filter === 'assigned') list = list.filter((e) => e.assignment_status !== 'unassigned');
     if (filter === 'unread') list = list.filter((e) => !e.is_read);
     if (projectFilter) list = list.filter((e) => e.project_id === projectFilter);
+    if (accountFilter) list = list.filter((e) => e.account_id === accountFilter);
     const q = query.trim().toLowerCase();
     if (q) {
       list = list.filter((e) =>
@@ -239,6 +254,7 @@ export default function MailboxPage() {
 
   const FILTERS: { key: Filter; label: string; count?: number }[] = [
     { key: 'unassigned', label: 'Nepřiřazené', count: unassignedCount },
+    { key: 'assigned', label: 'Přiřazené' },
     { key: 'all', label: 'Vše' },
     { key: 'unread', label: 'Nepřečtené' },
   ];
@@ -293,6 +309,18 @@ export default function MailboxPage() {
             {f.label}{typeof f.count === 'number' && f.count > 0 ? ` (${f.count})` : ''}
           </button>
         ))}
+        {accounts.length > 1 && (
+          <select
+            value={accountFilter}
+            onChange={(e) => setAccountFilter(e.target.value)}
+            className="px-3 py-1.5 text-xs font-semibold border border-white/10 rounded-lg bg-white/[0.06] text-slate-300 outline-none"
+          >
+            <option value="">Všechny schránky</option>
+            {accounts.map((a) => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </select>
+        )}
         <select
           value={projectFilter}
           onChange={(e) => setProjectFilter(e.target.value)}
