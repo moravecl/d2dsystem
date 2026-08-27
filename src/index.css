@@ -631,7 +631,9 @@
 /* Svetle stranky (verejny konfigurator): vraci skutecne svetle hodnoty
    prepsane globalnim tmavym motivem vyse (vcetne !important pravidel) */
 @layer base {
-  .light-page { color: #0f172a; }
+  /* kotva svetleho motivu: plati i pro koren (descendant selektory
+     nize na samotny .light-page element nedosahnou) */
+  .light-page { background-color: #f8fafc !important; color: #0f172a; }
 
   .light-page input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
   .light-page select,
