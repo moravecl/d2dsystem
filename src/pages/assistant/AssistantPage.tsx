@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Sparkles, Loader2, Mail, ListChecks, Coins, CheckCircle2, FolderKanban,
   History, ChevronDown, FastForward,
