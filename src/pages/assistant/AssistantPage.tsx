@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Sparkles, Loader2, Mail, ListChecks, Coins, CheckCircle2, FolderKanban,
+  History, ChevronDown, FastForward,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../contexts/OrganizationContext';
 import { useToast } from '../../components/ui/Toast';
 import {
-  type ProposedAction, ACTION_TYPE_LABELS, actionSummary, executeAction,
+  type TrackedAction, ACTION_TYPE_LABELS, actionSummary, executeAction,
 } from '../../lib/aiActions';
 
 interface ClassifyProposal {
@@ -27,30 +28,32 @@ interface EmailBrief {
 interface ProjectOption { id: string; name: string; project_name: string }
 interface AssetOption { id: string; name: string }
 
-interface AiRun {
+interface SummaryRow {
   id: string;
-  action: string;
-  model: string;
-  input_tokens: number;
-  output_tokens: number;
-  cost_usd: number;
-  note: string;
+  date_from: string;
+  date_to: string;
+  emails_count: number;
+  summary: string;
+  actions: TrackedAction[];
   created_at: string;
 }
-
-const RUN_ACTION_LABELS: Record<string, string> = {
-  summarize_emails: 'Shrnutí pošty',
-  classify_emails: 'Třídění e-mailů',
-};
 
 function isoDaysAgo(days: number): string {
   return new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
 }
 
+function fmtDateTime(iso: string): string {
+  return new Date(iso).toLocaleString('cs-CZ', {
+    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  });
+}
+
 /**
  * AI Asistent — fáze 1: pošta a akce napříč systémem. Asistent navrhuje
- * (shrnutí, přiřazení, úkoly, termíny, leady), uživatel schvaluje;
- * zápisy běží pod jeho účtem přes executeAction (RLS).
+ * (shrnutí, přiřazení, úkoly, události, termíny, leady), uživatel
+ * schvaluje; zápisy běží pod jeho účtem přes executeAction (RLS).
+ * Každé shrnutí se ukládá do ai_summaries — z toho žije přírůstková
+ * analýza „od posledního shrnutí", deduplikace návrhů i historie dole.
  */
 export default function AssistantPage() {
   const { user } = useAuth();
@@ -63,8 +66,9 @@ export default function AssistantPage() {
   const [onlyUnassigned, setOnlyUnassigned] = useState(false);
   const [summarizing, setSummarizing] = useState(false);
   const [summary, setSummary] = useState('');
+  const [summaryId, setSummaryId] = useState<string | null>(null);
   const [summaryMeta, setSummaryMeta] = useState('');
-  const [actions, setActions] = useState<ProposedAction[]>([]);
+  const [actions, setActions] = useState<TrackedAction[]>([]);
   const [selectedActions, setSelectedActions] = useState<Set<number>>(new Set());
   const [executing, setExecuting] = useState(false);
 
@@ -76,33 +80,34 @@ export default function AssistantPage() {
   const [assigning, setAssigning] = useState(false);
   const [unassignedCount, setUnassignedCount] = useState(0);
 
-  // ciselniky + naklady
+  // ciselniky, historie, naklady
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [assets, setAssets] = useState<AssetOption[]>([]);
-  const [runs, setRuns] = useState<AiRun[]>([]);
+  const [historyRows, setHistoryRows] = useState<SummaryRow[]>([]);
+  const [expandedHistory, setExpandedHistory] = useState<Set<string>>(new Set());
+  const [monthCost, setMonthCost] = useState(0);
 
   const loadStatic = useCallback(async () => {
-    const [projRes, assetRes, runsRes, unassignedRes] = await Promise.all([
+    const monthStart = new Date();
+    monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+    const [projRes, assetRes, runsRes, unassignedRes, summariesRes] = await Promise.all([
       supabase.from('projects').select('id, name, project_name').order('updated_at', { ascending: false }),
       supabase.from('assets').select('id, name').order('name'),
-      supabase.from('ai_runs').select('*').order('created_at', { ascending: false }).limit(10),
+      supabase.from('ai_runs').select('cost_usd').gte('created_at', monthStart.toISOString()),
       supabase.from('emails').select('id', { count: 'exact', head: true }).eq('assignment_status', 'unassigned'),
+      supabase.from('ai_summaries').select('*').order('created_at', { ascending: false }).limit(10),
     ]);
     setProjects((projRes.data ?? []) as ProjectOption[]);
     setAssets((assetRes.data ?? []) as AssetOption[]);
-    setRuns((runsRes.data ?? []) as AiRun[]);
+    setMonthCost(((runsRes.data ?? []) as { cost_usd: number }[])
+      .reduce((s, r) => s + Number(r.cost_usd), 0));
     setUnassignedCount(unassignedRes.count ?? 0);
+    setHistoryRows((summariesRes.data ?? []) as SummaryRow[]);
   }, []);
 
   useEffect(() => { loadStatic(); }, [loadStatic]);
 
-  const monthCost = useMemo(() => {
-    const monthStart = new Date();
-    monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
-    return runs
-      .filter((r) => new Date(r.created_at) >= monthStart)
-      .reduce((s, r) => s + Number(r.cost_usd), 0);
-  }, [runs]);
+  const lastSummary = historyRows[0] ?? null;
 
   const callAssistant = async (body: Record<string, unknown>) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -130,20 +135,21 @@ export default function AssistantPage() {
     }
   };
 
-  const handleSummarize = async () => {
+  const runSummarize = async (fromIso: string, toIso: string) => {
     setSummarizing(true);
-    setSummary(''); setActions([]); setSelectedActions(new Set());
+    setSummary(''); setActions([]); setSelectedActions(new Set()); setSummaryId(null);
     try {
       const result = await callAssistant({
         action: 'summarize_emails',
-        date_from: `${dateFrom}T00:00:00Z`,
-        date_to: `${dateTo}T23:59:59Z`,
+        date_from: fromIso,
+        date_to: toIso,
         only_unassigned: onlyUnassigned,
       });
       if (!result.ok) { toast(result.error || 'Shrnutí selhalo', 'error'); setSummarizing(false); return; }
       setSummary(result.summary || '');
-      const acts = (result.actions ?? []) as ProposedAction[];
+      const acts = (result.actions ?? []) as TrackedAction[];
       setActions(acts);
+      setSummaryId(result.summary_id ?? null);
       setSelectedActions(new Set(acts.map((_, i) => i)));
       setSummaryMeta(`${result.emails_count} e-mailů${result.truncated ? ' (zkráceno)' : ''}`);
       loadStatic();
@@ -153,19 +159,33 @@ export default function AssistantPage() {
     setSummarizing(false);
   };
 
+  const handleSummarizeRange = () =>
+    runSummarize(`${dateFrom}T00:00:00Z`, `${dateTo}T23:59:59Z`);
+
+  const handleSummarizeSinceLast = () => {
+    if (!lastSummary) return;
+    runSummarize(lastSummary.date_to, new Date().toISOString());
+  };
+
+  const persistActionStatuses = async (id: string | null, acts: TrackedAction[]) => {
+    if (!id) return;
+    await supabase.from('ai_summaries').update({ actions: acts }).eq('id', id);
+  };
+
   const handleExecuteSelected = async () => {
     if (!user || !organization) return;
     setExecuting(true);
     let ok = 0; let failed = 0;
-    const remaining: ProposedAction[] = [];
+    const next = [...actions];
     for (const [i, action] of actions.entries()) {
-      if (!selectedActions.has(i)) { remaining.push(action); continue; }
+      if (!selectedActions.has(i) || action.status === 'executed') continue;
       const err = await executeAction(action, { userId: user.id, orgId: organization.id });
-      if (err) { failed++; remaining.push(action); toast(`${ACTION_TYPE_LABELS[action.type]}: ${err}`, 'error'); }
-      else ok++;
+      if (err) { failed++; toast(`${ACTION_TYPE_LABELS[action.type]}: ${err}`, 'error'); }
+      else { ok++; next[i] = { ...action, status: 'executed' }; }
     }
-    setActions(remaining);
+    setActions(next);
     setSelectedActions(new Set());
+    await persistActionStatuses(summaryId, next);
     setExecuting(false);
     if (ok > 0) toast(`Provedeno ${ok} akcí${failed ? `, ${failed} selhalo` : ''}`);
     loadStatic();
@@ -224,9 +244,58 @@ export default function AssistantPage() {
     return p ? (p.project_name || p.name) : '';
   };
 
-  const updateAction = (index: number, patch: Partial<ProposedAction>) => {
-    setActions((prev) => prev.map((a, i) => i === index ? { ...a, ...patch } as ProposedAction : a));
+  const updateAction = (index: number, patch: Partial<TrackedAction>) => {
+    setActions((prev) => prev.map((a, i) => i === index ? { ...a, ...patch } as TrackedAction : a));
   };
+
+  const renderActionRow = (a: TrackedAction, i: number, interactive: boolean) => (
+    <div key={i} className={`flex items-center gap-3 px-3.5 py-2.5 bg-white/[0.02] ${a.status === 'executed' ? 'opacity-70' : ''}`}>
+      {interactive && (
+        a.status === 'executed' ? (
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        ) : (
+          <input
+            type="checkbox"
+            checked={selectedActions.has(i)}
+            onChange={() => setSelectedActions((prev) => {
+              const next = new Set(prev);
+              if (next.has(i)) next.delete(i); else next.add(i);
+              return next;
+            })}
+            className="w-4 h-4 accent-emerald-500 shrink-0"
+          />
+        )
+      )}
+      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 shrink-0">
+        {ACTION_TYPE_LABELS[a.type] ?? a.type}
+      </span>
+      <span className="flex-1 text-sm text-slate-200 min-w-0 truncate">{actionSummary(a)}</span>
+      {interactive && a.type === 'create_due_item' && !a.asset_id && a.status !== 'executed' && (
+        <select
+          value={a.asset_id ?? ''}
+          onChange={(e) => updateAction(i, { asset_id: e.target.value || null })}
+          className="px-2 py-1 text-xs border border-amber-500/40 rounded-lg bg-white/[0.06] text-slate-300 outline-none shrink-0"
+        >
+          <option value="">Vyberte majetek…</option>
+          {assets.map((as) => <option key={as.id} value={as.id}>{as.name}</option>)}
+        </select>
+      )}
+      {a.type === 'assign_email' && (
+        <span className="text-xs text-slate-500 shrink-0 flex items-center gap-1">
+          <FolderKanban className="w-3 h-3" /> {projectName(a.project_id)}
+        </span>
+      )}
+      {!interactive && (
+        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+          a.status === 'executed'
+            ? 'bg-emerald-500/20 text-emerald-300'
+            : 'bg-white/[0.08] text-slate-400'
+        }`}>
+          {a.status === 'executed' ? 'Provedeno' : 'Neprovedeno'}
+        </span>
+      )}
+    </div>
+  );
 
   return (
     <div className="p-6 space-y-6 max-w-5xl">
@@ -252,6 +321,17 @@ export default function AssistantPage() {
           <Mail className="w-4 h-4 text-blue-400" /> Shrnutí pošty
         </h2>
         <div className="flex items-end gap-3 flex-wrap">
+          {lastSummary && (
+            <button
+              onClick={handleSummarizeSinceLast}
+              disabled={summarizing}
+              title={`Poslední shrnutí: ${fmtDateTime(lastSummary.created_at)}`}
+              className="flex items-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition disabled:opacity-50"
+            >
+              {summarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <FastForward className="w-4 h-4" />}
+              Od posledního shrnutí
+            </button>
+          )}
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1">Od</label>
             <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
@@ -268,14 +348,23 @@ export default function AssistantPage() {
             <span className="text-sm text-slate-300">Jen nepřiřazené</span>
           </label>
           <button
-            onClick={handleSummarize}
+            onClick={handleSummarizeRange}
             disabled={summarizing}
-            className="flex items-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition disabled:opacity-50"
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition disabled:opacity-50 ${
+              lastSummary
+                ? 'bg-white/[0.06] hover:bg-white/[0.10] text-slate-300'
+                : 'bg-violet-600 hover:bg-violet-700 text-white'
+            }`}
           >
             {summarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-            {summarizing ? 'Pracuji…' : 'Shrnout poštu'}
+            {summarizing ? 'Pracuji…' : 'Shrnout období'}
           </button>
         </div>
+        {lastSummary && !summarizing && (
+          <p className="text-xs text-slate-500">
+            Poslední shrnutí proběhlo {fmtDateTime(lastSummary.created_at)} (pokrývá poštu do {fmtDateTime(lastSummary.date_to)}).
+          </p>
+        )}
         {summarizing && (
           <p className="text-xs text-slate-500">
             Asistent čte e-maily a přemýšlí — obvykle do půl minuty, u delšího období i déle. Stránku nechte otevřenou.
@@ -307,39 +396,7 @@ export default function AssistantPage() {
                   </button>
                 </div>
                 <div className="divide-y divide-white/[0.06] rounded-xl border border-white/[0.08] overflow-hidden">
-                  {actions.map((a, i) => (
-                    <div key={i} className="flex items-center gap-3 px-3.5 py-2.5 bg-white/[0.02]">
-                      <input
-                        type="checkbox"
-                        checked={selectedActions.has(i)}
-                        onChange={() => setSelectedActions((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(i)) next.delete(i); else next.add(i);
-                          return next;
-                        })}
-                        className="w-4 h-4 accent-emerald-500 shrink-0"
-                      />
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 shrink-0">
-                        {ACTION_TYPE_LABELS[a.type]}
-                      </span>
-                      <span className="flex-1 text-sm text-slate-200 min-w-0 truncate">{actionSummary(a)}</span>
-                      {a.type === 'create_due_item' && !a.asset_id && (
-                        <select
-                          value={a.asset_id ?? ''}
-                          onChange={(e) => updateAction(i, { asset_id: e.target.value || null })}
-                          className="px-2 py-1 text-xs border border-amber-500/40 rounded-lg bg-white/[0.06] text-slate-300 outline-none shrink-0"
-                        >
-                          <option value="">Vyberte majetek…</option>
-                          {assets.map((as) => <option key={as.id} value={as.id}>{as.name}</option>)}
-                        </select>
-                      )}
-                      {a.type === 'assign_email' && (
-                        <span className="text-xs text-slate-500 shrink-0 flex items-center gap-1">
-                          <FolderKanban className="w-3 h-3" /> {projectName(a.project_id)}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                  {actions.map((a, i) => renderActionRow(a, i, true))}
                 </div>
               </div>
             )}
@@ -428,27 +485,56 @@ export default function AssistantPage() {
         )}
       </div>
 
-      {/* Naklady */}
-      {runs.length > 0 && (
+      {/* Historie shrnuti */}
+      {historyRows.length > 0 && (
         <div className="bg-navy-800/60 backdrop-blur-sm rounded-2xl border border-white/[0.08] p-5">
           <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-3">
-            <Coins className="w-4 h-4 text-amber-400" /> Poslední běhy
+            <History className="w-4 h-4 text-slate-400" /> Historie shrnutí
           </h2>
           <div className="divide-y divide-white/[0.06]">
-            {runs.map((r) => (
-              <div key={r.id} className="py-2 flex items-center gap-3 text-xs">
-                <span className="text-slate-300 font-semibold w-32 shrink-0">
-                  {RUN_ACTION_LABELS[r.action] ?? r.action}
-                </span>
-                <span className="text-slate-500 flex-1 min-w-0 truncate">{r.note}</span>
-                <span className="text-slate-500 shrink-0">
-                  {new Date(r.created_at).toLocaleString('cs-CZ', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                </span>
-                <span className="text-amber-300/80 font-semibold shrink-0 w-20 text-right">
-                  ${Number(r.cost_usd).toFixed(3)}
-                </span>
-              </div>
-            ))}
+            {historyRows.map((row) => {
+              const acts = (row.actions ?? []) as TrackedAction[];
+              const executed = acts.filter((a) => a.status === 'executed').length;
+              const open = expandedHistory.has(row.id);
+              return (
+                <div key={row.id} className="py-2">
+                  <button
+                    onClick={() => setExpandedHistory((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(row.id)) next.delete(row.id); else next.add(row.id);
+                      return next;
+                    })}
+                    className="w-full flex items-center gap-3 text-left py-1"
+                  >
+                    <ChevronDown className={`w-4 h-4 text-slate-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+                    <span className="text-sm text-slate-200 font-semibold shrink-0">
+                      {fmtDateTime(row.created_at)}
+                    </span>
+                    <span className="text-xs text-slate-500 flex-1 min-w-0 truncate">
+                      {new Date(row.date_from).toLocaleDateString('cs-CZ')} – {new Date(row.date_to).toLocaleDateString('cs-CZ')}
+                      {' · '}{row.emails_count} e-mailů
+                    </span>
+                    {acts.length > 0 && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/[0.08] text-slate-300 shrink-0">
+                        {executed}/{acts.length} akcí provedeno
+                      </span>
+                    )}
+                  </button>
+                  {open && (
+                    <div className="mt-2 ml-7 space-y-3">
+                      <div className="bg-white/[0.04] rounded-xl border border-white/[0.08] p-3 text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">
+                        {row.summary || '(bez textu)'}
+                      </div>
+                      {acts.length > 0 && (
+                        <div className="divide-y divide-white/[0.06] rounded-xl border border-white/[0.08] overflow-hidden">
+                          {acts.map((a, i) => renderActionRow(a, i, false))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

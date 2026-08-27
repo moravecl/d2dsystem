@@ -132,13 +132,16 @@ Vrať POUZE platný JSON (žádný jiný text) v této struktuře:
   "summary": "Přehledné shrnutí pošty v češtině. Odstavce odděluj prázdným řádkem, odrážky začínej '- '. Seřaď od nejdůležitějšího: co vyžaduje reakci, termíny, peníze, problémy. U každé podstatné věci uveď odesílatele.",
   "actions": [
     { "type": "create_task", "title": "...", "description": "...", "due_date": "YYYY-MM-DD nebo null", "project_id": "id projektu z kontextu nebo null", "source_email_id": "id e-mailu" },
+    { "type": "create_event", "title": "...", "description": "...", "start_date": "YYYY-MM-DD", "start_time": "HH:MM nebo null", "end_date": "YYYY-MM-DD nebo null", "location": "", "project_id": null, "source_email_id": "..." },
     { "type": "assign_email", "email_id": "...", "project_id": "...", "reason": "proč" },
     { "type": "create_due_item", "asset_id": "id majetku z kontextu nebo null", "asset_name": "název, když si nejsi jistý id", "due_type": "insurance|revision|stk|service|warranty|other", "label": "např. Pojistka Ford Transit", "due_date": "YYYY-MM-DD", "source_email_id": "..." },
     { "type": "create_lead", "name": "...", "email": "...", "phone": "", "message": "shrnutí poptávky", "source_email_id": "..." }
   ]
 }
 
-Pravidla pro akce: navrhuj jen to, co z e-mailů skutečně plyne (úkol s termínem, pojistka/revize k majetku, nová poptávka od neznámého odesílatele, zjevně špatně nepřiřazený e-mail). ID projektů a majetku ber VÝHRADNĚ z dodaného kontextu; když nenajdeš jistou shodu, dej null. Žádné akce nevymýšlej do počtu — klidně vrať prázdné pole.`;
+Pravidla pro akce: navrhuj jen to, co z e-mailů skutečně plyne. Schůzky, workshopy, školení, zkoušky a jiné události s konkrétním datem patří do kalendáře (create_event) — každý termín zvlášť; když z nich navíc plyne něco k vyřízení (např. poslat dokument do určitého data), navrhni k tomu i úkol. Pojistky/revize k majetku, nové poptávky od neznámých odesílatelů, zjevně špatně nepřiřazené e-maily. ID projektů a majetku ber VÝHRADNĚ z dodaného kontextu; když nenajdeš jistou shodu, dej null. Žádné akce nevymýšlej do počtu — klidně vrať prázdné pole.
+
+Pokud dostaneš seznam DŘÍVE NAVRŽENÝCH AKCÍ, nenavrhuj znovu nic, co se s nimi věcně shoduje (stejný úkol, stejná událost, stejný termín) — bez ohledu na to, zda byly provedeny.`;
 
 async function summarizeEmails(
   anthropic: Anthropic,
@@ -175,9 +178,28 @@ async function summarizeEmails(
     `[${i + 1}] id=${e.id}\nod: ${e.from_name || ""} <${e.from_email}>\npředmět: ${e.subject}\npřijato: ${e.received_at}\nprojekt: ${projectName(e.project_id) || "(nepřiřazeno)"}\ntext: ${textSnippet(e)}`,
   ).join("\n\n");
 
+  // deduplikace: akce z poslednich shrnuti se posilaji modelu, aby
+  // stejnou vec nenavrhoval znovu (i kdyz se obdobi prekryvaji)
+  const { data: prevSummaries } = await supabase
+    .from("ai_summaries")
+    .select("actions")
+    .eq("organization_id", orgId)
+    .order("created_at", { ascending: false })
+    .limit(3);
+  const prevActionLines: string[] = [];
+  for (const s of prevSummaries ?? []) {
+    for (const a of (s.actions ?? []) as Record<string, unknown>[]) {
+      const label = a.title ?? a.label ?? a.name ?? a.reason ?? "";
+      if (label) prevActionLines.push(`- [${a.type}] ${label}${a.status === "executed" ? " (provedeno)" : ""}`);
+    }
+  }
+
   const contextBlock =
     `PROJEKTY (id | název | klient | stav):\n${ctx.projects.map((p) => `${p.id} | ${p.name} | ${p.client} | ${p.status}`).join("\n")}\n\n` +
-    `MAJETEK (id | název):\n${ctx.assets.map((a) => `${a.id} | ${a.name}`).join("\n")}`;
+    `MAJETEK (id | název):\n${ctx.assets.map((a) => `${a.id} | ${a.name}`).join("\n")}` +
+    (prevActionLines.length > 0
+      ? `\n\nDŘÍVE NAVRŽENÉ AKCE (nenavrhuj znovu):\n${prevActionLines.slice(0, 60).join("\n")}`
+      : "");
 
   const response = await anthropic.messages.create({
     model: MODEL_SMART,
@@ -196,14 +218,32 @@ async function summarizeEmails(
   const parsed = extractJson(textBlock?.type === "text" ? textBlock.text : "") as {
     summary?: string; actions?: unknown[];
   };
+  const actions = (Array.isArray(parsed.actions) ? parsed.actions : [])
+    .map((a) => ({ ...(a as Record<string, unknown>), status: "proposed" }));
 
   await logRun(supabase, orgId, userId, "summarize_emails", MODEL_SMART,
     response.usage.input_tokens, response.usage.output_tokens,
     `${list.length} e-mailů, ${from.slice(0, 10)}–${to.slice(0, 10)}`);
 
+  // ulozit do historie (prirustkova analyza + rozbaleni na strance)
+  const { data: summaryRow } = await supabase
+    .from("ai_summaries")
+    .insert({
+      organization_id: orgId,
+      user_id: userId,
+      date_from: from,
+      date_to: to,
+      emails_count: list.length,
+      summary: parsed.summary ?? "",
+      actions,
+    })
+    .select("id")
+    .single();
+
   return {
     summary: parsed.summary ?? "",
-    actions: Array.isArray(parsed.actions) ? parsed.actions : [],
+    actions,
+    summary_id: summaryRow?.id ?? null,
     emails_count: list.length,
     truncated,
   };

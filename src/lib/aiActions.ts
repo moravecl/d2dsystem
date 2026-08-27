@@ -15,6 +15,19 @@ export interface CreateTaskAction {
   source_email_id?: string;
 }
 
+export interface CreateEventAction {
+  type: 'create_event';
+  title: string;
+  description?: string;
+  start_date: string;
+  start_time?: string | null;
+  end_date?: string | null;
+  end_time?: string | null;
+  location?: string;
+  project_id?: string | null;
+  source_email_id?: string;
+}
+
 export interface AssignEmailAction {
   type: 'assign_email';
   email_id: string;
@@ -43,12 +56,18 @@ export interface CreateLeadAction {
 
 export type ProposedAction =
   | CreateTaskAction
+  | CreateEventAction
   | AssignEmailAction
   | CreateDueItemAction
   | CreateLeadAction;
 
+/** Stav návrhu — doplňuje ho edge funkce a po provedení UI. */
+export type ActionStatus = 'proposed' | 'executed';
+export type TrackedAction = ProposedAction & { status?: ActionStatus };
+
 export const ACTION_TYPE_LABELS: Record<ProposedAction['type'], string> = {
   create_task: 'Úkol',
+  create_event: 'Kalendář',
   assign_email: 'Přiřazení e-mailu',
   create_due_item: 'Termín k majetku',
   create_lead: 'Nový lead',
@@ -58,6 +77,8 @@ export function actionSummary(a: ProposedAction): string {
   switch (a.type) {
     case 'create_task':
       return `${a.title}${a.due_date ? ` (do ${new Date(a.due_date).toLocaleDateString('cs-CZ')})` : ''}`;
+    case 'create_event':
+      return `${a.title} — ${new Date(a.start_date).toLocaleDateString('cs-CZ')}${a.start_time ? ` ${a.start_time.slice(0, 5)}` : ''}${a.location ? `, ${a.location}` : ''}`;
     case 'assign_email':
       return a.reason || 'Přiřadit e-mail k projektu';
     case 'create_due_item':
@@ -85,6 +106,22 @@ export async function executeAction(a: ProposedAction, ctx: ExecuteContext): Pro
         project_id: a.project_id || null,
         created_by: ctx.userId,
         organization_id: ctx.orgId,
+      });
+      return error ? error.message : null;
+    }
+    case 'create_event': {
+      const { error } = await supabase.from('events').insert({
+        organization_id: ctx.orgId,
+        title: a.title,
+        description: a.description ?? '',
+        start_date: a.start_date,
+        start_time: a.start_time || null,
+        end_date: a.end_date || a.start_date,
+        end_time: a.end_time || null,
+        all_day: !a.start_time,
+        location: a.location ?? '',
+        project_id: a.project_id || null,
+        created_by: ctx.userId,
       });
       return error ? error.message : null;
     }
