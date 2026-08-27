@@ -120,6 +120,9 @@ const InvoiceSettingsPage = lazyPage(() => import('./pages/admin/InvoiceSettings
 const EmailingPage = lazyPage(() => import('./pages/emailing/EmailingPage'));
 const MailboxPage = lazyPage(() => import('./pages/mail/MailboxPage'));
 const AssistantPage = lazyPage(() => import('./pages/assistant/AssistantPage'));
+const ConfiguratorListPage = lazyPage(() => import('./pages/configurator/ConfiguratorListPage'));
+const ConfiguratorEditorPage = lazyPage(() => import('./pages/configurator/ConfiguratorEditorPage'));
+const ConfiguratorPricesPage = lazyPage(() => import('./pages/admin/ConfiguratorPricesPage'));
 const SmtpAccountsPage = lazyPage(() => import('./pages/admin/SmtpAccountsPage'));
 const NotificationSettingsPage = lazyPage(() => import('./pages/admin/NotificationSettingsPage'));
 const EmailTemplatesPage = lazyPage(() => import('./pages/admin/EmailTemplatesPage'));
@@ -249,6 +252,8 @@ export default function App() {
               <Route path="/emailing" element={<PlanProtectedRoute requiredTier="pro" featureName="Hromadný emailing"><EmailingPage /></PlanProtectedRoute>} />
               <Route path="/posta" element={<MailboxPage />} />
               <Route path="/asistent" element={<AssistantPage />} />
+              <Route path="/konfigurator" element={<ConfiguratorListPage />} />
+              <Route path="/konfigurator/:id" element={<ConfiguratorEditorPage />} />
               <Route path="/zamestnanci" element={<EmployeesPage />} />
               <Route path="/gantt" element={<PlanProtectedRoute requiredTier="pro" featureName="Ganttův diagram"><GanttPage /></PlanProtectedRoute>} />
               <Route path="/dokumenty" element={<DocumentsPage />} />
@@ -300,6 +305,7 @@ export default function App() {
               <Route path="system" element={<SystemSettingsPage />} />
               <Route path="firma" element={<CompanyInfoPage />} />
               <Route path="fakturace" element={<InvoiceSettingsPage />} />
+              <Route path="konfigurator" element={<ConfiguratorPricesPage />} />
               <Route path="smtp" element={<SmtpAccountsPage />} />
               <Route path="email-sablony" element={<EmailTemplatesPage />} />
               <Route path="licence" element={<LicencePage />} />

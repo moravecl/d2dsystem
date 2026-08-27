@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, Package, Puzzle, Settings, ArrowLeft, LogOut, Users, Lightbulb, Cable, Flame, Menu, X, FileText, Building2, Sliders, Receipt, Mail, FileCode, CreditCard, Shield, ClipboardList, Tags, Sun, Zap, Settings2, FolderOpen, PanelLeft, Camera, FileCheck, ShieldAlert, Shapes, PenTool, Link2, GitMerge, ChevronDown, Layers, FormInput, Boxes, BellRing } from 'lucide-react';
+import { LayoutGrid, Package, Puzzle, Settings, ArrowLeft, LogOut, Users, Lightbulb, Cable, Flame, Menu, X, FileText, Building2, Sliders, Receipt, Mail, FileCode, CreditCard, Shield, ClipboardList, Tags, Sun, Zap, Settings2, FolderOpen, PanelLeft, Camera, FileCheck, ShieldAlert, Shapes, PenTool, Link2, GitMerge, ChevronDown, Layers, FormInput, Boxes, BellRing, Calculator } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const overviewItem = { to: '/admin', icon: LayoutGrid, label: 'Přehled' };
@@ -62,6 +62,7 @@ const NAV_GROUPS = [
     id: 'fakturace', label: 'Fakturace a e-mail',
     items: [
       { to: '/admin/fakturace', icon: Receipt, label: 'Nastavení fakturace' },
+      { to: '/admin/konfigurator', icon: Calculator, label: 'Ceník konfigurátoru' },
       { to: '/admin/smtp', icon: Mail, label: 'SMTP účty' },
       { to: '/admin/email-sablony', icon: FileCode, label: 'Emailové šablony' },
     ],

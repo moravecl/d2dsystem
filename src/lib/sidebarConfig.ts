@@ -25,6 +25,7 @@ import {
   MessageSquare,
   Zap,
   Sparkles,
+  Calculator,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -57,6 +58,7 @@ export const ALL_SIDEBAR_ITEMS: SidebarItemDef[] = [
   { key: 'finance', label: 'Finance', icon: DollarSign, to: '/finance', expandable: true },
   { key: 'posta', label: 'Pošta', icon: Inbox, to: '/posta' },
   { key: 'asistent', label: 'AI Asistent', icon: Sparkles, to: '/asistent' },
+  { key: 'konfigurator', label: 'Konfigurátor', icon: Calculator, to: '/konfigurator' },
   { key: 'emailing', label: 'Emailing', icon: Mail, to: '/emailing' },
   { key: 'zamestnanci', label: 'Zaměstnanci', icon: UserCog, to: '/zamestnanci' },
   { key: 'dokumenty', label: 'Dokumenty', icon: FileArchive, to: '/dokumenty' },
@@ -108,6 +110,7 @@ const DEFAULT_GROUP_MAP: Record<string, string> = {
   finance: 'provoz',
   posta: 'obchod',
   asistent: 'obchod',
+  konfigurator: 'obchod',
   emailing: 'ostatni',
   zamestnanci: 'ostatni',
   dokumenty: 'ostatni',
