@@ -26,7 +26,7 @@ export function exportQuotePdf(params: {
 
   const html = `<!DOCTYPE html><html lang="cs"><head><meta charset="utf-8">
 <title>${title.replace(/</g, '&lt;')}</title>
-<script src="https://cdn.tailwindcss.com"><\/script>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
   body { font-family: 'Inter', sans-serif; margin: 0; background: #e5e7eb; }
@@ -55,7 +55,7 @@ ${body}
   window.addEventListener('load', function () {
     setTimeout(function () { window.print(); }, 900);
   });
-<\/script>
+</script>
 </body></html>`;
 
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
