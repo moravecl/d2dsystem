@@ -2,20 +2,26 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calculator, Plus, Trash2, Loader2, FileEdit } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { useToast } from '../../components/ui/Toast';
+import { useToast } from '../ui/Toast';
 import { QUOTE_STATUS_LABELS } from '../../lib/configurator/defaults';
 
 interface QuoteRow {
   id: string;
   name: string;
-  client: { address?: string };
-  totals: { totalWithVat?: number };
+  totals: { totalWithVat?: number; finalPriceAfterSubsidy?: number };
   status: string;
   updated_at: string;
 }
 
-/** Seznam předběžných nabídek konfigurátoru. */
-export default function ConfiguratorListPage() {
+interface Props {
+  projectId: string;
+}
+
+/**
+ * Předběžné nabídky konfigurátoru patřící k projektu. Nová nabídka se
+ * otevře s předvyplněným klientem a adresou z projektu.
+ */
+export default function ProjectConfiguratorTab({ projectId }: Props) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [rows, setRows] = useState<QuoteRow[]>([]);
@@ -24,16 +30,17 @@ export default function ConfiguratorListPage() {
   const load = useCallback(async () => {
     const { data } = await supabase
       .from('preliminary_quotes')
-      .select('id, name, client, totals, status, updated_at')
+      .select('id, name, totals, status, updated_at')
+      .eq('project_id', projectId)
       .order('updated_at', { ascending: false });
     setRows((data ?? []) as QuoteRow[]);
     setLoading(false);
-  }, []);
+  }, [projectId]);
 
   useEffect(() => { load(); }, [load]);
 
   const handleDelete = async (row: QuoteRow) => {
-    if (!confirm(`Smazat nabídku „${row.name || 'bez názvu'}"?`)) return;
+    if (!confirm(`Smazat předběžnou nabídku „${row.name || 'bez názvu'}"?`)) return;
     const { error } = await supabase.from('preliminary_quotes').delete().eq('id', row.id);
     if (error) { toast('Smazání se nepodařilo', 'error'); return; }
     toast('Nabídka smazána');
@@ -45,49 +52,48 @@ export default function ConfiguratorListPage() {
     setRows((prev) => prev.map((r) => r.id === row.id ? { ...r, status } : r));
   };
 
+  if (loading) {
+    return <div className="py-10 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-500" /></div>;
+  }
+
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <Calculator className="w-6 h-6 text-slate-300" />
-            <h1 className="text-xl font-bold text-white">Konfigurátor nabídek</h1>
-          </div>
-          <p className="text-sm text-slate-500">
-            Předběžné cenové nabídky technologií — ceník upravíte v Administraci
-          </p>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <Calculator className="w-5 h-5 text-slate-400" />
+          <h3 className="text-base font-bold text-white">Předběžné nabídky</h3>
+          <span className="text-xs font-bold text-slate-400 bg-white/[0.06] px-2 py-0.5 rounded-full">{rows.length}</span>
         </div>
         <button
-          onClick={() => navigate('/konfigurator/novy')}
-          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition"
+          onClick={() => navigate(`/konfigurator/novy?project=${projectId}`)}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition"
         >
-          <Plus className="w-4 h-4" /> Nová nabídka
+          <Plus className="w-4 h-4" /> Nová předběžná nabídka
         </button>
       </div>
 
-      {loading ? (
-        <div className="py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>
-      ) : rows.length === 0 ? (
-        <div className="bg-navy-800/60 rounded-2xl border border-white/10 p-12 text-center">
-          <Calculator className="w-12 h-12 text-slate-500 mx-auto mb-3" />
+      {rows.length === 0 ? (
+        <div className="p-10 text-center bg-white/[0.04] rounded-2xl border border-white/[0.08]">
+          <Calculator className="w-10 h-10 text-slate-500 mx-auto mb-2" />
           <p className="text-sm font-semibold text-slate-400">Zatím žádná předběžná nabídka</p>
-          <p className="text-xs text-slate-500 mt-1">Vytvořte první tlačítkem Nová nabídka</p>
+          <p className="text-xs text-slate-500 mt-1">
+            Konfigurátor sestaví orientační cenu technologií — klient a adresa se předvyplní z projektu
+          </p>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="space-y-2">
           {rows.map((row) => {
             const st = QUOTE_STATUS_LABELS[row.status] ?? QUOTE_STATUS_LABELS.draft;
             return (
               <div
                 key={row.id}
-                className="bg-navy-800/60 backdrop-blur-sm rounded-2xl border border-white/[0.08] hover:border-white/[0.16] transition p-4 flex items-center gap-4 cursor-pointer"
+                className="flex items-center gap-4 p-3.5 bg-white/[0.06] rounded-xl border border-white/[0.08] hover:border-white/[0.12] transition cursor-pointer"
                 onClick={() => navigate(`/konfigurator/${row.id}`)}
               >
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold text-white truncate">{row.name || '(bez názvu)'}</div>
-                  <div className="text-xs text-slate-500 truncate">
-                    {row.client?.address || '—'}
-                    {' · '}upraveno {new Date(row.updated_at).toLocaleDateString('cs-CZ')}
+                  <div className="text-sm font-semibold text-white truncate">{row.name || '(bez názvu)'}</div>
+                  <div className="text-xs text-slate-500">
+                    upraveno {new Date(row.updated_at).toLocaleDateString('cs-CZ')}
                   </div>
                 </div>
                 <div className="text-sm font-bold text-white shrink-0">

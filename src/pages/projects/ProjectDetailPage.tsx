@@ -38,6 +38,7 @@ import ProjectWarehouseTab from '../../components/projects/ProjectWarehouseTab';
 import ProjectPhotosTab from '../../components/projects/ProjectPhotosTab';
 import ProjectFilesTab from '../../components/projects/ProjectFilesTab';
 import VicepraceTab from '../../components/projects/VicepraceTab';
+import ProjectConfiguratorTab from '../../components/projects/ProjectConfiguratorTab';
 import ProjectFinanceTab from '../../components/projects/ProjectFinanceTab';
 import ProjectEmailTab from '../../components/projects/ProjectEmailTab';
 import ProjectServiceTab from '../../components/projects/ProjectServiceTab';
@@ -1163,6 +1164,9 @@ export default function ProjectDetailPage() {
             <ExecutionTab projectId={project.id} />
           )}
 
+          {activeTab === 'konfigurator' && (
+            <ProjectConfiguratorTab projectId={project.id} />
+          )}
           {activeTab === 'viceprace' && (
             <VicepraceTab projectId={project.id} profiles={profiles} />
           )}

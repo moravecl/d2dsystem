@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Loader2, Printer, Save, Thermometer, Wind, Zap, Cable, Droplets,
   Brain, Shield, Flower2, KeyRound, Plus, Trash2, type LucideIcon,
@@ -199,6 +199,7 @@ function SectionCard(props: SectionCardProps) {
  */
 export default function ConfiguratorEditorPage() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { hasPermission } = usePermissions();
@@ -206,6 +207,8 @@ export default function ConfiguratorEditorPage() {
 
   const [state, setState] = useState<QuoteState | null>(null);
   const [quoteId, setQuoteId] = useState<string | null>(id === 'novy' ? null : id ?? null);
+  const [projectId, setProjectId] = useState<string | null>(searchParams.get('project'));
+  const [projectName, setProjectName] = useState('');
   const [status, setStatus] = useState('draft');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -215,14 +218,30 @@ export default function ConfiguratorEditorPage() {
   useEffect(() => {
     if (configLoading) return;
     let cancelled = false;
+
+    const loadProject = async (pid: string) => {
+      const { data: proj } = await supabase
+        .from('projects')
+        .select('name, project_name, client_name, address')
+        .eq('id', pid)
+        .maybeSingle();
+      if (!proj || cancelled) return null;
+      setProjectName(proj.project_name || proj.name || '');
+      return proj as { client_name?: string; address?: string };
+    };
+
     const init = async () => {
       if (id && id !== 'novy') {
         const { data } = await supabase
           .from('preliminary_quotes')
-          .select('state, status')
+          .select('state, status, project_id')
           .eq('id', id)
           .maybeSingle();
         if (cancelled) return;
+        if (data?.project_id) {
+          setProjectId(data.project_id);
+          await loadProject(data.project_id);
+        }
         if (data?.state && Object.keys(data.state).length > 0) {
           const base = createDefaultQuoteState(config);
           setState({ ...base, ...(data.state as QuoteState) });
@@ -231,12 +250,25 @@ export default function ConfiguratorEditorPage() {
           setState(createDefaultQuoteState(config));
         }
       } else {
-        setState(createDefaultQuoteState(config));
+        const base = createDefaultQuoteState(config);
+        // nova nabidka z projektu: predvyplnit klienta a adresu
+        const pid = searchParams.get('project');
+        if (pid) {
+          const proj = await loadProject(pid);
+          if (proj && !cancelled) {
+            const parts = (proj.client_name ?? '').trim().split(/\s+/).filter(Boolean);
+            base.client.firstName = parts.length > 1 ? parts.slice(0, -1).join(' ') : '';
+            base.client.lastName = parts.length > 0 ? parts[parts.length - 1] : '';
+            base.client.address = proj.address ?? '';
+          }
+        }
+        if (!cancelled) setState(base);
       }
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     };
     init();
     return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, config, configLoading]);
 
   const totals = useMemo(
@@ -260,6 +292,7 @@ export default function ConfiguratorEditorPage() {
     const row = {
       name: `${state.client.firstName} ${state.client.lastName}`.trim() || 'Bez názvu',
       client: state.client,
+      project_id: projectId,
       state,
       totals: {
         totalFinal: totals.totalFinal,
@@ -287,14 +320,9 @@ export default function ConfiguratorEditorPage() {
     setSaving(false);
   };
 
-  const handlePrint = async () => {
+  const handlePrint = () => {
     if (!state || !totals) return;
-    const { data: company } = await supabase
-      .from('company_info')
-      .select('company_name, address, city, zip, company_id, tax_id')
-      .limit(1)
-      .maybeSingle();
-    exportQuotePdf({ state, totals, company });
+    exportQuotePdf({ state, totals, config });
   };
 
   if (loading || configLoading || !state || !totals) {
@@ -307,14 +335,19 @@ export default function ConfiguratorEditorPage() {
     <div className="p-6">
       <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/konfigurator')} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition">
+          <button
+            onClick={() => navigate(projectId ? `/projekty/${projectId}?tab=konfigurator` : '/projekty')}
+            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition"
+          >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
             <h1 className="text-lg font-bold text-white">
               {quoteId ? 'Předběžná nabídka' : 'Nová předběžná nabídka'}
             </h1>
-            <p className="text-xs text-slate-500">Konfigurátor technologií</p>
+            <p className="text-xs text-slate-500">
+              {projectName ? `Projekt: ${projectName}` : 'Konfigurátor technologií'}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">

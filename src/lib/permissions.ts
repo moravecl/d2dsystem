@@ -1,7 +1,7 @@
 export const MODULE_KEYS = [
   'dashboard', 'crm', 'leady', 'projekty', 'realizace', 'ukoly',
   'servis', 'cas', 'gantt', 'udalosti', 'kalendar', 'dochazka',
-  'katalog', 'sklad', 'majetek', 'finance', 'emailing', 'posta', 'asistent', 'konfigurator', 'zamestnanci',
+  'katalog', 'sklad', 'majetek', 'finance', 'emailing', 'posta', 'asistent', 'zamestnanci',
   'dokumenty', 'znalosti', 'nastenka', 'reporty', 'archiv', 'admin',
 ] as const;
 
@@ -27,7 +27,6 @@ export const MODULE_LABELS: Record<ModuleKey, string> = {
   emailing: 'Emailing',
   posta: 'Pošta',
   asistent: 'AI Asistent',
-  konfigurator: 'Konfigurátor nabídek',
   zamestnanci: 'Zaměstnanci',
   dokumenty: 'Dokumenty',
   znalosti: 'Znalosti',

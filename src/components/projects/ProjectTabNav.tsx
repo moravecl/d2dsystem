@@ -46,6 +46,7 @@ export const projectTabGroups: TabGroup[] = [
       { key: 'design', label: 'Návrh' },
       { key: 'assignments', label: 'Přiřazení' },
       { key: 'selection', label: 'Souhrn' },
+      { key: 'konfigurator', label: 'Předběžná nabídka' },
       { key: 'quotes', label: 'Nabídky' },
     ],
   },

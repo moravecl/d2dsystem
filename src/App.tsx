@@ -120,7 +120,6 @@ const InvoiceSettingsPage = lazyPage(() => import('./pages/admin/InvoiceSettings
 const EmailingPage = lazyPage(() => import('./pages/emailing/EmailingPage'));
 const MailboxPage = lazyPage(() => import('./pages/mail/MailboxPage'));
 const AssistantPage = lazyPage(() => import('./pages/assistant/AssistantPage'));
-const ConfiguratorListPage = lazyPage(() => import('./pages/configurator/ConfiguratorListPage'));
 const ConfiguratorEditorPage = lazyPage(() => import('./pages/configurator/ConfiguratorEditorPage'));
 const ConfiguratorPricesPage = lazyPage(() => import('./pages/admin/ConfiguratorPricesPage'));
 const SmtpAccountsPage = lazyPage(() => import('./pages/admin/SmtpAccountsPage'));
@@ -252,7 +251,6 @@ export default function App() {
               <Route path="/emailing" element={<PlanProtectedRoute requiredTier="pro" featureName="Hromadný emailing"><EmailingPage /></PlanProtectedRoute>} />
               <Route path="/posta" element={<MailboxPage />} />
               <Route path="/asistent" element={<AssistantPage />} />
-              <Route path="/konfigurator" element={<ConfiguratorListPage />} />
               <Route path="/konfigurator/:id" element={<ConfiguratorEditorPage />} />
               <Route path="/zamestnanci" element={<EmployeesPage />} />
               <Route path="/gantt" element={<PlanProtectedRoute requiredTier="pro" featureName="Ganttův diagram"><GanttPage /></PlanProtectedRoute>} />
