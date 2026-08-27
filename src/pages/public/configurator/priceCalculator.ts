@@ -62,6 +62,7 @@ export function calculateEstimate(data: ConfigurationData, PRICES: PriceMap, sub
   let total = 0;
   const details: any[] = [];
 
+  const wantHeating = data.wantHeating !== false;
   let heatPrice = 0;
   const heatItems: string[] = [];
 
@@ -113,12 +114,14 @@ export function calculateEstimate(data: ConfigurationData, PRICES: PriceMap, sub
     heatItems.push('Hydraulické propojení');
   }
 
-  total += heatPrice;
-  details.push({
-    label: 'Vytápění',
-    items: heatItems,
-    price: heatPrice,
-  });
+  if (wantHeating) {
+    total += heatPrice;
+    details.push({
+      label: 'Vytápění',
+      items: heatItems,
+      price: heatPrice,
+    });
+  }
 
   let airPrice = 0;
   const airItems: string[] = [];
@@ -184,7 +187,8 @@ export function calculateEstimate(data: ConfigurationData, PRICES: PriceMap, sub
     details.push({ label: 'Fotovoltaika', items: fveItems, price: fvePrice });
   }
 
-  let electroPrice = getPrice(PRICES, 'electroPerM2', data.area);
+  const wantElectro = data.wantElectro !== false;
+  let electroPrice = wantElectro ? getPrice(PRICES, 'electroPerM2', data.area) : 0;
   const electroItems = [
     'Kompletní kabelové rozvody',
     'Rozvodnice včetně jističů',
@@ -214,7 +218,9 @@ export function calculateEstimate(data: ConfigurationData, PRICES: PriceMap, sub
   }
 
   total += electroPrice + smartPrice;
-  details.push({ label: 'Elektroinstalace', items: electroItems, price: electroPrice });
+  if (wantElectro) {
+    details.push({ label: 'Elektroinstalace', items: electroItems, price: electroPrice });
+  }
   if (smartPrice > 0) {
     details.push({
       label: 'Smart Home',
@@ -223,28 +229,31 @@ export function calculateEstimate(data: ConfigurationData, PRICES: PriceMap, sub
     });
   }
 
-  let waterPrice = getPrice(PRICES, 'waterBase');
+  const wantWater = data.wantWater !== false;
+  let waterPrice = wantWater ? getPrice(PRICES, 'waterBase') : 0;
   const waterItems = [
     'Kompletní vodovodní rozvody (studená + teplá voda)',
     'Kanalizační rozvody včetně ventilace',
     'Přípojka vody a kanalizace',
     'Základní vybavení (baterie, umyvadla, WC)',
   ];
-  if (data.waterExtras?.waterSoftener) {
+  if (wantWater && data.waterExtras?.waterSoftener) {
     waterPrice += getPrice(PRICES, 'waterSoftener');
     waterItems.push('Změkčovač vody (ochrana před vodním kamenem)');
   }
-  if (data.waterExtras?.smartValve) {
+  if (wantWater && data.waterExtras?.smartValve) {
     waterPrice += getPrice(PRICES, 'smartValve');
     waterItems.push('Smart Valve - automatické uzavření přívodu vody');
   }
-  if (data.waterExtras?.circulationPump) {
+  if (wantWater && data.waterExtras?.circulationPump) {
     waterPrice += getPrice(PRICES, 'circulationPump');
     waterItems.push('Cirkulace teplé vody (okamžitá teplá voda)');
   }
 
-  total += waterPrice;
-  details.push({ label: 'Voda a odpady', items: waterItems, price: waterPrice });
+  if (wantWater) {
+    total += waterPrice;
+    details.push({ label: 'Voda a odpady', items: waterItems, price: waterPrice });
+  }
 
   let secPrice = 0;
   const secItems: string[] = [];
@@ -283,7 +292,7 @@ export function calculateEstimate(data: ConfigurationData, PRICES: PriceMap, sub
   if (subsidySettings && subsidySettings.length > 0) {
     const enabledSubsidies = subsidySettings.filter(s => s.enabled);
     for (const subsidy of enabledSubsidies) {
-      if (subsidy.sector === 'heating' && source === 'heat_pump') {
+      if (subsidy.sector === 'heating' && wantHeating && source === 'heat_pump') {
         subsidyEstimate += subsidy.amount;
       } else if (subsidy.sector === 'air' && data.recuperation !== 'no') {
         subsidyEstimate += subsidy.amount;

@@ -98,24 +98,82 @@ const LABELS: Record<string, Record<string, string>> = {
   cameras: { none: "Bez kamer", prep: "Kamery - příprava", full: "Kamerový systém komplet" },
 };
 
-function summarize(data: Record<string, unknown>, pricing: { totalWithVat?: number; subsidyEstimate?: number }): string {
+interface PricingDetail { label: string; items?: string[]; price?: number }
+interface Pricing {
+  total?: number;
+  totalWithVat?: number;
+  subsidyEstimate?: number;
+  details?: PricingDetail[];
+}
+
+function kc(n: number): string {
+  return `${Math.round(n).toLocaleString("cs-CZ")} Kč`;
+}
+
+/** Kratky prehled voleb (hlavicka leadu i e-mailu). */
+function summarize(data: Record<string, unknown>, pricing: Pricing): string {
   const l = (group: string, key: unknown) => LABELS[group]?.[String(key)] ?? String(key ?? "");
+  const own = " — vlastní řešení zákazníka";
   const lines = [
     `Plocha: ${data.area} m², podlaží: ${data.floors}, osob: ${data.occupants}`,
-    `Vytápění: ${l("heatSource", data.heatSource)}`,
+    `Vytápění: ${data.wantHeating === false ? `neřešit${own}` : l("heatSource", data.heatSource)}`,
+    `Voda a odpady: ${data.wantWater === false ? `neřešit${own}` : "kompletní rozvody"}`,
+    `Elektroinstalace: ${data.wantElectro === false ? `neřešit${own}` : "kompletní"}`,
     `Vzduchotechnika: ${l("recuperation", data.recuperation)}${data.recuperationCooling ? " + chlazení" : ""}`,
     `Fotovoltaika: ${l("fve", data.fve)}`,
     `Smart home: ${l("smart", data.smart)}`,
     `Zabezpečení: ${l("alarm", data.alarm)}, kamery: ${l("cameras", data.cameras)}`,
   ];
   if (data.clientRegion) lines.push(`Kraj: ${data.clientRegion}`);
-  if (pricing?.totalWithVat) {
-    lines.push(`Orientační cena s DPH: ${Math.round(pricing.totalWithVat).toLocaleString("cs-CZ")} Kč`);
-  }
-  if (pricing?.subsidyEstimate) {
-    lines.push(`Možné dotace: ${Math.round(pricing.subsidyEstimate).toLocaleString("cs-CZ")} Kč`);
-  }
+  if (pricing?.totalWithVat) lines.push(`Orientační cena s DPH: ${kc(pricing.totalWithVat)}`);
+  if (pricing?.subsidyEstimate) lines.push(`Možné dotace: ${kc(pricing.subsidyEstimate)}`);
   return lines.join("\n");
+}
+
+/** Detailni rozpad po sekcich (stejny obsah, jaky vidi zakaznik). */
+function detailText(pricing: Pricing): string {
+  const details = Array.isArray(pricing?.details) ? pricing.details : [];
+  if (details.length === 0) return "";
+  const blocks = details.map((d) => {
+    const items = (d.items ?? []).map((i) => `   • ${i}`).join("\n");
+    return `${d.label} — ${kc(d.price ?? 0)}\n${items}`;
+  });
+  const totals = [
+    "─".repeat(34),
+    pricing.total !== undefined ? `Celkem bez DPH: ${kc(pricing.total)}` : "",
+    pricing.totalWithVat !== undefined ? `Celkem s DPH: ${kc(pricing.totalWithVat)}` : "",
+    pricing.subsidyEstimate ? `Možné dotace (NZÚ): −${kc(pricing.subsidyEstimate)}` : "",
+    pricing.totalWithVat !== undefined && pricing.subsidyEstimate
+      ? `Po odečtu dotací: ${kc(pricing.totalWithVat - pricing.subsidyEstimate)}` : "",
+  ].filter(Boolean);
+  return `${blocks.join("\n\n")}\n\n${totals.join("\n")}`;
+}
+
+/** HTML sekce pro e-mail zakaznikovi (styl vysledne stranky). */
+function detailHtml(pricing: Pricing, showPrices: boolean): string {
+  const details = Array.isArray(pricing?.details) ? pricing.details : [];
+  if (details.length === 0) return "";
+  const blocks = details.map((d) => {
+    const items = (d.items ?? []).map((i) =>
+      `<li style="margin:2px 0;color:#475569">${esc(i)}</li>`).join("");
+    const price = showPrices
+      ? `<span style="font-weight:800;color:#1d4ed8;white-space:nowrap">${kc(d.price ?? 0)}</span>` : "";
+    return `<div style="border:1px solid #e2e8f0;border-radius:10px;margin:10px 0;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;gap:12px;background:#f1f5f9;padding:10px 14px;font-weight:700;color:#0f172a">
+        <span>${esc(d.label)}</span>${price}
+      </div>
+      <ul style="margin:0;padding:10px 14px 10px 30px;font-size:13px">${items}</ul>
+    </div>`;
+  }).join("");
+  const totals = showPrices && pricing.totalWithVat !== undefined
+    ? `<div style="margin-top:14px;padding:14px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px">
+        ${pricing.total !== undefined ? `<div style="display:flex;justify-content:space-between;font-size:13px;color:#475569"><span>Celkem bez DPH</span><span>${kc(pricing.total)}</span></div>` : ""}
+        <div style="display:flex;justify-content:space-between;font-size:17px;font-weight:800;color:#1d4ed8;margin-top:4px"><span>Celkem s DPH</span><span>${kc(pricing.totalWithVat)}</span></div>
+        ${pricing.subsidyEstimate ? `<div style="display:flex;justify-content:space-between;font-size:13px;color:#059669;font-weight:700;margin-top:4px"><span>Možné dotace (NZÚ)</span><span>−${kc(pricing.subsidyEstimate)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;color:#047857;margin-top:2px"><span>Po odečtu dotací</span><span>${kc(pricing.totalWithVat - pricing.subsidyEstimate)}</span></div>` : ""}
+      </div>`
+    : "";
+  return blocks + totals;
 }
 
 function esc(s: string): string {
@@ -129,7 +187,7 @@ async function sendConfirmationEmail(
   clientEmail: string,
   summary: string,
   showPrices: boolean,
-  pricing: { totalWithVat?: number; subsidyEstimate?: number },
+  pricing: Pricing,
 ): Promise<boolean> {
   try {
     const { data: accounts } = await supabase
@@ -143,12 +201,7 @@ async function sendConfirmationEmail(
     if (!account) return false;
 
     const summaryHtml = esc(summary).replace(/\n/g, "<br>");
-    const priceBlock = showPrices && pricing?.totalWithVat
-      ? `<div style="margin-top:16px;padding:14px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px">
-           <div style="font-size:13px;color:#475569">Orientační cena s DPH</div>
-           <div style="font-size:24px;font-weight:800;color:#1d4ed8">${Math.round(pricing.totalWithVat).toLocaleString("cs-CZ")} Kč</div>
-         </div>`
-      : "";
+    const sectionsHtml = detailHtml(pricing, showPrices);
 
     const transporter = nodemailer.createTransport({
       host: account.host,
@@ -165,7 +218,7 @@ async function sendConfirmationEmail(
         <h2 style="margin:0 0 8px">Děkujeme za Vaši konfiguraci${clientName ? `, ${esc(clientName)}` : ""}!</h2>
         <p style="color:#475569;font-size:14px;line-height:1.6">Vaše poptávka byla přijata a náš tým se Vám co nejdříve ozve s upřesněnou nabídkou.</p>
         <div style="margin-top:12px;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;line-height:1.7">${summaryHtml}</div>
-        ${priceBlock}
+        ${sectionsHtml}
         <p style="color:#94a3b8;font-size:11px;margin-top:18px">Cena je orientační — finální nabídku připravíme po konzultaci a technickém upřesnění.</p>
       </div>`,
       text: summary,
@@ -233,8 +286,12 @@ Deno.serve(async (req: Request) => {
     }
     await supabase.from("public_config_log").insert({ ip });
 
-    const pricing = payload.pricing ?? {};
+    const pricing: Pricing = payload.pricing ?? {};
     const summary = summarize(d, pricing);
+    const detail = detailText(pricing);
+    const leadMessage = detail
+      ? `${summary}\n\n══ NACENĚNÍ PO SEKCÍCH ══\n\n${detail}`
+      : summary;
 
     const { data: lead, error: leadErr } = await supabase
       .from("leads")
@@ -243,7 +300,7 @@ Deno.serve(async (req: Request) => {
         name,
         email,
         phone,
-        message: summary,
+        message: leadMessage,
         source: "konfigurator",
         form_data: {
           typ: "verejny_konfigurator",

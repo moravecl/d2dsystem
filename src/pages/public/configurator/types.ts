@@ -16,6 +16,10 @@ export interface ConfigurationData {
   area: number;
   floors: string;
   occupants: number;
+  /** false = oblast si zakaznik resi sam, nenacenuje se */
+  wantHeating?: boolean;
+  wantWater?: boolean;
+  wantElectro?: boolean;
   heatSource: HeatSource;
   groundFloorHeating: HeatingDistribution;
   upperFloorHeating: HeatingDistribution;

@@ -1,5 +1,6 @@
 import { Thermometer, Zap, Flame, SquareStack, Battery, ArrowDown, TreePine } from 'lucide-react';
 import type { StepProps, HeatSource, HeatingDistribution } from '../types';
+import OptOutBanner from './OptOutBanner';
 
 const HEAT_SOURCES: { id: HeatSource; icon: typeof Thermometer; title: string; desc: string; hint: string }[] = [
   {
@@ -97,6 +98,14 @@ export default function HeatingStep({ data, setData }: StepProps) {
         </p>
       </div>
 
+      <OptOutBanner
+        optedOut={data.wantHeating === false}
+        onChange={(v) => setData({ ...data, wantHeating: !v })}
+        label="Vytápění si zajistím sám — nenaceňovat"
+        note="Sekce se do nabídky nezapočítá; v poptávce bude označena jako vlastní řešení."
+      />
+
+      {data.wantHeating !== false && (<>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {HEAT_SOURCES.map((source) => {
           const Icon = source.icon;
@@ -218,6 +227,7 @@ export default function HeatingStep({ data, setData }: StepProps) {
           )}
         </div>
       </div>
+      </>)}
     </div>
   );
 }

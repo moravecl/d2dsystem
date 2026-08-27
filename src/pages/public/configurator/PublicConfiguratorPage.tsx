@@ -28,6 +28,9 @@ const DEFAULT_DATA: ConfigurationData = {
   area: 150,
   floors: '1',
   occupants: 4,
+  wantHeating: true,
+  wantWater: true,
+  wantElectro: true,
   heatSource: 'heat_pump',
   groundFloorHeating: 'floor_wet',
   upperFloorHeating: 'floor_wet',
@@ -213,7 +216,7 @@ export default function PublicConfiguratorPage() {
 
   if (configError) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+      <div className="light-page min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center max-w-md shadow-sm">
           <AlertTriangle size={40} className="text-amber-500 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-slate-900 mb-2">Konfigurátor není dostupný</h1>
@@ -225,7 +228,7 @@ export default function PublicConfiguratorPage() {
 
   if (!config) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="light-page min-h-screen bg-slate-50 flex items-center justify-center">
         <Loader2 size={32} className="animate-spin text-blue-600" />
       </div>
     );
@@ -245,7 +248,7 @@ export default function PublicConfiguratorPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
+    <div className="light-page min-h-screen bg-slate-50 flex flex-col text-slate-900">
       <div className="bg-white border-b border-slate-200 sticky top-0 z-20 px-4 sm:px-6 py-4 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-3">
           <img src="/housesmartlogo.png" alt="HouseSmart" className="h-8 sm:h-9" />

@@ -1,5 +1,6 @@
 import { Droplets, ShieldCheck, Filter, Zap } from 'lucide-react';
 import type { StepProps } from '../types';
+import OptOutBanner from './OptOutBanner';
 
 function fmtPrice(prices: StepProps['prices'], key: string, showPrices?: boolean): string {
   if (!showPrices) return '';
@@ -15,6 +16,15 @@ export default function WaterStep({ data, setData, prices, showPrices }: StepPro
       <p className="text-center text-slate-500 mb-6 max-w-lg mx-auto">
         Důležitá infrastruktura pro komfortní bydlení.
       </p>
+
+      <OptOutBanner
+        optedOut={data.wantWater === false}
+        onChange={(v) => setData({ ...data, wantWater: !v })}
+        label="Vodu a odpady si zajistím sám — nenaceňovat"
+        note="Sekce se do nabídky nezapočítá; v poptávce bude označena jako vlastní řešení."
+      />
+
+      {data.wantWater !== false && (<>
 
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="bg-white p-6 rounded-xl border border-slate-200">
@@ -107,6 +117,7 @@ export default function WaterStep({ data, setData, prices, showPrices }: StepPro
           </ul>
         </div>
       </div>
+      </>)}
     </div>
   );
 }

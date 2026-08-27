@@ -1,11 +1,19 @@
 import { Zap, Wifi, Brain, CheckCircle2 } from 'lucide-react';
 import type { StepProps } from '../types';
+import OptOutBanner from './OptOutBanner';
 import OptionCard from './OptionCard';
 
 export default function SmartStep({ data, setData }: StepProps) {
   return (
     <div className="space-y-6 animate-in">
       <h2 className="text-2xl font-bold text-center mb-2">Inteligence domu</h2>
+
+      <OptOutBanner
+        optedOut={data.wantElectro === false}
+        onChange={(v) => setData({ ...data, wantElectro: !v })}
+        label="Elektroinstalaci si zajistím sám — nenaceňovat"
+        note="Kompletní silnoproud (rozvody, rozvaděč, zásuvky). Smart home lze poptat i samostatně."
+      />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <OptionCard
           icon={Zap}

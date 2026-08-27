@@ -257,7 +257,11 @@ export default function LeadsPage() {
         <KanbanBoard<Lead>
           columns={columns}
           items={filtered}
-          getItemStatus={(l) => l.status}
+          getItemStatus={(l) =>
+            // lead se stavem bez sloupce (napr. po uprave sloupcu) nesmi
+            // z kanbanu zmizet - spadne do prvniho sloupce
+            columns.some((c) => c.key === l.status) ? l.status : (columns[0]?.key ?? l.status)
+          }
           getItemId={(l) => l.id}
           renderCard={renderLeadCard}
           onMoveItem={updateStatus}

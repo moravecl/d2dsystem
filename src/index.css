@@ -627,3 +627,53 @@
     to { opacity: 1; transform: translateY(0); }
   }
 }
+
+/* Svetle stranky (verejny konfigurator): vraci skutecne svetle hodnoty
+   prepsane globalnim tmavym motivem vyse (vcetne !important pravidel) */
+@layer base {
+  .light-page { color: #0f172a; }
+
+  .light-page input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+  .light-page select,
+  .light-page textarea {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+  }
+
+  .light-page input::placeholder,
+  .light-page textarea::placeholder {
+    color: #94a3b8;
+  }
+
+  .light-page select option {
+    background-color: #ffffff;
+    color: #0f172a;
+  }
+
+  .light-page [class*="bg-amber-50"] { background-color: #fffbeb !important; }
+  .light-page [class*="bg-red-50"] { background-color: #fef2f2 !important; }
+  .light-page [class*="bg-blue-50"] { background-color: #eff6ff !important; }
+  .light-page [class*="bg-emerald-50"] { background-color: #ecfdf5 !important; }
+  .light-page [class*="bg-green-50"] { background-color: #f0fdf4 !important; }
+  .light-page [class*="bg-orange-50"] { background-color: #fff7ed !important; }
+  .light-page [class*="bg-teal-50"] { background-color: #f0fdfa !important; }
+  .light-page [class*="bg-cyan-50"] { background-color: #ecfeff !important; }
+  .light-page [class*="bg-slate-50"] { background-color: #f8fafc !important; }
+  .light-page [class*="bg-sky-50"] { background-color: #f0f9ff !important; }
+  .light-page [class*="bg-rose-50"] { background-color: #fff1f2 !important; }
+  .light-page [class*="bg-slate-100"] { background-color: #f1f5f9 !important; }
+
+  .light-page [class*="border-amber-200"] { border-color: #fde68a !important; }
+  .light-page [class*="border-red-200"] { border-color: #fecaca !important; }
+  .light-page [class*="border-blue-200"] { border-color: #bfdbfe !important; }
+  .light-page [class*="border-emerald-200"] { border-color: #a7f3d0 !important; }
+  .light-page [class*="border-green-200"] { border-color: #bbf7d0 !important; }
+  .light-page [class*="border-orange-200"] { border-color: #fed7aa !important; }
+  .light-page [class*="border-teal-200"] { border-color: #99f6e4 !important; }
+  .light-page [class*="border-cyan-200"] { border-color: #a5f3fc !important; }
+  .light-page [class*="border-slate-200"] { border-color: #e2e8f0 !important; }
+  .light-page [class*="border-slate-300"] { border-color: #cbd5e1 !important; }
+  .light-page [class*="border-sky-200"] { border-color: #bae6fd !important; }
+  .light-page [class*="border-rose-200"] { border-color: #fecdd3 !important; }
+}
