@@ -37,6 +37,24 @@ export interface ConfiguratorCatalog {
 /** Jednotkové ceny (Kč) — vše, co editor umožňuje ladit. */
 export type ConfiguratorPrices = Record<string, number>;
 
+export interface PublicPriceItem { value: number; unit: string }
+
+export interface PublicSubsidy {
+  sector: string;
+  label: string;
+  description: string;
+  amount: number;
+  enabled: boolean;
+}
+
+/** Zjednodušený ceník veřejného konfigurátoru (port z Bolt prototypu). */
+export interface PublicConfiguratorSettings {
+  prices: Record<string, PublicPriceItem>;
+  subsidies: PublicSubsidy[];
+  showLivePrices: boolean;
+  showResultPrices: boolean;
+}
+
 export interface ConfiguratorConfig {
   catalog: ConfiguratorCatalog;
   prices: ConfiguratorPrices;
@@ -47,6 +65,8 @@ export interface ConfiguratorConfig {
     projectFee: number;
     coordinationDiscount: number;
   };
+  /** veřejný konfigurátor pro zákazníky (leady) */
+  public: PublicConfiguratorSettings;
 }
 
 export interface CustomItem { label: string; price: number }

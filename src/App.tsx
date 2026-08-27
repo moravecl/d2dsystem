@@ -121,6 +121,7 @@ const EmailingPage = lazyPage(() => import('./pages/emailing/EmailingPage'));
 const MailboxPage = lazyPage(() => import('./pages/mail/MailboxPage'));
 const AssistantPage = lazyPage(() => import('./pages/assistant/AssistantPage'));
 const ConfiguratorEditorPage = lazyPage(() => import('./pages/configurator/ConfiguratorEditorPage'));
+const PublicConfiguratorPage = lazyPage(() => import('./pages/public/configurator/PublicConfiguratorPage'));
 const ConfiguratorPricesPage = lazyPage(() => import('./pages/admin/ConfiguratorPricesPage'));
 const SmtpAccountsPage = lazyPage(() => import('./pages/admin/SmtpAccountsPage'));
 const NotificationSettingsPage = lazyPage(() => import('./pages/admin/NotificationSettingsPage'));
@@ -178,6 +179,7 @@ export default function App() {
             <Route path="/admin/login" element={<Navigate to="/login" replace />} />
             <Route path="/admin/register" element={<Navigate to="/register" replace />} />
 
+            <Route path="/kalkulacka/:token" element={<PublicConfiguratorPage />} />
             <Route path="/inspirace" element={<InspiracePage />} />
             <Route path="/inspirace/:slug" element={<InspirationDetailPage />} />
 

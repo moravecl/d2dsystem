@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Calculator, Loader2, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
+import { Calculator, Copy, Globe, Loader2, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { useToast } from '../../components/ui/Toast';
 import { useConfiguratorConfig } from '../../hooks/useConfiguratorConfig';
-import { DEFAULT_CONFIGURATOR_CONFIG } from '../../lib/configurator/defaults';
+import { DEFAULT_CONFIGURATOR_CONFIG, PUBLIC_PRICE_LABELS } from '../../lib/configurator/defaults';
 import type { CatalogOption, ConfiguratorCatalog, ConfiguratorConfig } from '../../lib/configurator/types';
 
 const inputCls = 'bg-navy-900/70 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-blue-400';
@@ -88,12 +88,16 @@ const PRICE_LABELS: Record<string, string> = {
  */
 export default function ConfiguratorPricesPage() {
   const { toast } = useToast();
-  const { config, loading, saving, save } = useConfiguratorConfig();
+  const { config, publicToken, publicEnabled, loading, saving, save } = useConfiguratorConfig();
   const [draft, setDraft] = useState<ConfiguratorConfig | null>(null);
+  const [draftPublicEnabled, setDraftPublicEnabled] = useState(false);
 
   useEffect(() => {
-    if (!loading) setDraft(JSON.parse(JSON.stringify(config)) as ConfiguratorConfig);
-  }, [loading, config]);
+    if (!loading) {
+      setDraft(JSON.parse(JSON.stringify(config)) as ConfiguratorConfig);
+      setDraftPublicEnabled(publicEnabled);
+    }
+  }, [loading, config, publicEnabled]);
 
   if (loading || !draft) {
     return <div className="p-6 py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>;
@@ -130,10 +134,12 @@ export default function ConfiguratorPricesPage() {
   };
 
   const handleSave = async () => {
-    const err = await save(draft);
+    const err = await save(draft, { publicEnabled: draftPublicEnabled });
     if (err) toast(`Uložení se nepodařilo: ${err}`, 'error');
     else toast('Ceník konfigurátoru uložen');
   };
+
+  const publicUrl = publicToken ? `${window.location.origin}/kalkulacka/${publicToken}` : null;
 
   const handleReset = () => {
     if (!confirm('Vrátit celý ceník na výchozí hodnoty? Změna se projeví až po uložení.')) return;
@@ -192,6 +198,133 @@ export default function ConfiguratorPricesPage() {
               />
             </label>
           ))}
+        </div>
+      </div>
+
+      {/* Verejny konfigurator */}
+      <div className="bg-navy-800/60 backdrop-blur-sm rounded-2xl border border-emerald-500/20 p-4 space-y-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+            <Globe className="w-4 h-4" /> Veřejný konfigurátor
+          </div>
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-300">
+            <input
+              type="checkbox"
+              checked={draftPublicEnabled}
+              onChange={(e) => setDraftPublicEnabled(e.target.checked)}
+              className="w-4 h-4 accent-emerald-500"
+            />
+            Zapnuto pro veřejnost
+          </label>
+        </div>
+        <p className="text-xs text-slate-500">
+          Zákazník si na veřejné adrese naklikne konfiguraci domu; odeslání vytvoří lead
+          (zdroj „konfigurátor") a zákazníkovi odejde potvrzovací e-mail přes výchozí SMTP účet.
+        </p>
+        {publicUrl ? (
+          <div className="flex items-center gap-2">
+            <code className="flex-1 min-w-0 truncate text-xs text-emerald-300 bg-navy-900/70 border border-white/10 rounded-lg px-3 py-2">
+              {publicUrl}
+            </code>
+            <button
+              onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Odkaz zkopírován'); }}
+              className="p-2 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition shrink-0"
+              title="Kopírovat odkaz"
+            >
+              <Copy className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <p className="text-xs text-amber-300">Odkaz se vygeneruje prvním uložením ceníku.</p>
+        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-white/[0.06]">
+          <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+            <input
+              type="checkbox"
+              checked={draft.public.showLivePrices}
+              onChange={(e) => setDraft((p) => p ? {
+                ...p, public: { ...p.public, showLivePrices: e.target.checked },
+              } : p)}
+              className="w-4 h-4 accent-emerald-500"
+            />
+            Průběžné ceny během klikání
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+            <input
+              type="checkbox"
+              checked={draft.public.showResultPrices}
+              onChange={(e) => setDraft((p) => p ? {
+                ...p, public: { ...p.public, showResultPrices: e.target.checked },
+              } : p)}
+              className="w-4 h-4 accent-emerald-500"
+            />
+            Ceny ve výsledku a e-mailu
+          </label>
+        </div>
+
+        <div className="pt-2 border-t border-white/[0.06]">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+            Ceny veřejného konfigurátoru (Kč)
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-1.5">
+            {Object.keys(draft.public.prices).map((key) => (
+              <label key={key} className="flex items-center justify-between gap-2 text-xs text-slate-300 py-0.5">
+                <span className="min-w-0 truncate" title={key}>{PUBLIC_PRICE_LABELS[key] ?? key}</span>
+                <input
+                  type="number"
+                  value={draft.public.prices[key]?.value ?? 0}
+                  onChange={(e) => setDraft((p) => p ? {
+                    ...p,
+                    public: {
+                      ...p.public,
+                      prices: {
+                        ...p.public.prices,
+                        [key]: { ...p.public.prices[key], value: Number(e.target.value) || 0 },
+                      },
+                    },
+                  } : p)}
+                  className={`${inputCls} w-24 text-right shrink-0`}
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="pt-2 border-t border-white/[0.06]">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+            Dotace (NZÚ) nabízené ve veřejném konfigurátoru
+          </div>
+          <div className="space-y-1.5">
+            {draft.public.subsidies.map((sub, i) => (
+              <div key={sub.sector} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={sub.enabled}
+                  onChange={(e) => setDraft((p) => p ? {
+                    ...p,
+                    public: {
+                      ...p.public,
+                      subsidies: p.public.subsidies.map((s, j) => j === i ? { ...s, enabled: e.target.checked } : s),
+                    },
+                  } : p)}
+                  className="w-4 h-4 accent-emerald-500 shrink-0"
+                />
+                <span className="flex-1 min-w-0 truncate text-xs text-slate-300" title={sub.description}>{sub.label}</span>
+                <input
+                  type="number"
+                  value={sub.amount}
+                  onChange={(e) => setDraft((p) => p ? {
+                    ...p,
+                    public: {
+                      ...p.public,
+                      subsidies: p.public.subsidies.map((s, j) => j === i ? { ...s, amount: Number(e.target.value) || 0 } : s),
+                    },
+                  } : p)}
+                  className={`${inputCls} w-28 text-right shrink-0`}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

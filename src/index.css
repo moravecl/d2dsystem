@@ -600,3 +600,30 @@
     page-break-after: auto;
   }
 }
+
+/* === Verejny konfigurator (port Bolt prototypu) === */
+@layer components {
+  .form-input {
+    @apply w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: pubcfg-fade-in 0.5s ease-out forwards;
+  }
+
+  @keyframes pubcfg-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-slide-up {
+    animation: pubcfg-slide-up 0.4s ease-out forwards;
+  }
+
+  @keyframes pubcfg-slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
