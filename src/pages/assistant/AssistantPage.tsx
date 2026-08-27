@@ -106,15 +106,28 @@ export default function AssistantPage() {
 
   const callAssistant = async (body: Record<string, unknown>) => {
     const { data: { session } } = await supabase.auth.getSession();
-    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-assistant`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${session?.access_token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-    return res.json();
+    // AI muze premyslet i desitky sekund; po 4 minutach to vzdavame
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 240_000);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-assistant`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      return await res.json();
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return { error: 'Časový limit vypršel — zkuste kratší období' };
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeout);
+    }
   };
 
   const handleSummarize = async () => {
@@ -263,6 +276,11 @@ export default function AssistantPage() {
             {summarizing ? 'Pracuji…' : 'Shrnout poštu'}
           </button>
         </div>
+        {summarizing && (
+          <p className="text-xs text-slate-500">
+            Asistent čte e-maily a přemýšlí — obvykle do půl minuty, u delšího období i déle. Stránku nechte otevřenou.
+          </p>
+        )}
 
         {summary && (
           <div className="space-y-4">

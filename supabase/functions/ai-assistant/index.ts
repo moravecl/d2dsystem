@@ -41,8 +41,10 @@ const PRICE_PER_MTOK: Record<string, { input: number; output: number }> = {
   [MODEL_FAST]: { input: 1, output: 5 },
 };
 
-const MAX_EMAILS_SUMMARY = 80;
-const SNIPPET_CHARS = 600;
+// mensi davka = odpoved do ~pul minuty; delsi obdobi se zkrati na
+// nejnovejsi zpravy (UI to u vysledku prizna)
+const MAX_EMAILS_SUMMARY = 40;
+const SNIPPET_CHARS = 400;
 const CLASSIFY_BATCH = 25;
 
 interface OrgContext {
@@ -179,7 +181,10 @@ async function summarizeEmails(
 
   const response = await anthropic.messages.create({
     model: MODEL_SMART,
-    max_tokens: 16000,
+    max_tokens: 8000,
+    // stredni usili: shrnuti posty nepotrebuje dlouhe premysleni a
+    // odpoved prijde nekolikanasobne rychleji
+    output_config: { effort: "medium" },
     system: SUMMARY_SYSTEM,
     messages: [{
       role: "user",
