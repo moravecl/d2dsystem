@@ -7,7 +7,7 @@ import { useCatalogData } from '../../hooks/useCatalogData';
 import { useMaterials } from '../../hooks/useMaterials';
 import { useHeatingSystems } from '../../hooks/useHeatingSystems';
 import { loadProjectById } from '../catalog/SaveLoadModals';
-import { exportSelectionPdf } from '../projects/selectionPdfExport';
+import ExportPdfDialog from '../projects/pdf/ExportPdfDialog';
 import { listAllPinsGlobal } from '../catalog/floorplan/pinUtils';
 import { polylineLength, normalizedToMeters } from '../catalog/floorplan/geometry';
 import { useCategoryColors } from '../../hooks/useCategoryColors';
@@ -189,22 +189,21 @@ export default function PortalSelectionTab({ projectId }: Props) {
 
   const grandTotal = totalProductPrice + totalMaterialPrice;
 
-  const handleExportPdf = () => {
-    if (!designData) return;
-    exportSelectionPdf({
-      selected: designData.selected,
-      products,
-      categories,
-      floors: designData.floors,
-      materials,
-      heatingSystems,
-      wastePercents: {},
-      designModules: [],
-      projectName: designData.projectName,
-      clientName: designData.clientName,
-      categoryColorMap,
-    });
-  };
+  const [showPdfExport, setShowPdfExport] = useState(false);
+
+  const buildExportData = () => ({
+    selected: designData?.selected ?? {},
+    products,
+    categories,
+    floors: designData?.floors ?? [],
+    materials,
+    heatingSystems,
+    wastePercents: {},
+    designModules: [],
+    projectName: designData?.projectName,
+    clientName: designData?.clientName,
+    categoryColorMap,
+  });
 
   if (loading || versionLoading) {
     return (
@@ -303,7 +302,7 @@ export default function PortalSelectionTab({ projectId }: Props) {
           </div>
         </div>
         <button
-          onClick={handleExportPdf}
+          onClick={() => setShowPdfExport(true)}
           className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm font-semibold"
         >
           <FileDown className="w-4 h-4" />
@@ -427,6 +426,13 @@ export default function PortalSelectionTab({ projectId }: Props) {
           </div>
         </div>
       </div>
+
+      <ExportPdfDialog
+        open={showPdfExport}
+        onClose={() => setShowPdfExport(false)}
+        data={buildExportData()}
+        storageKey={`portal:${designData?.projectName ?? 'projekt'}`}
+      />
     </div>
   );
 }

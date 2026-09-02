@@ -24,9 +24,9 @@ interface PdmEntry extends ProductDesignModule {
   module: DesignModule;
 }
 
-type SectionKey = 'products' | 'rooms' | 'ventilation' | 'lighting' | 'cables' | 'materials' | 'fittings' | 'breakers' | 'floorplans' | 'trades' | 'heating' | 'fv_system' | 'camera_system' | 'schematic';
+export type SectionKey = 'products' | 'rooms' | 'ventilation' | 'lighting' | 'cables' | 'materials' | 'fittings' | 'breakers' | 'floorplans' | 'trades' | 'heating' | 'fv_system' | 'camera_system' | 'schematic';
 
-interface FvSummaryPdf {
+export interface FvSummaryPdf {
   totalKwp: number;
   panelCount: number;
   inverterName: string;
@@ -44,7 +44,7 @@ interface FvSummaryPdf {
   customItems: { name: string; qty: number; unit: string; unitPrice: number }[];
 }
 
-interface CameraSummaryPdf {
+export interface CameraSummaryPdf {
   cameraCount: number;
   cameras: { modelName: string; count: number; price: number }[];
   nvrs: { name: string; count: number; price: number }[];
@@ -54,14 +54,14 @@ interface CameraSummaryPdf {
   accessories: { name: string; qty: number; price: number }[];
 }
 
-interface EpsSummaryPdf {
+export interface EpsSummaryPdf {
   detectorCount: number;
   totalElements: number;
   totalPrice: number;
   zones: number;
 }
 
-interface ExportData {
+export interface ExportData {
   selected: SelectionState;
   products: Product[];
   categories: Category[];
@@ -301,10 +301,14 @@ function buildPinTable(pins: PinData[], categories: Category[], circuits: any[],
   return html;
 }
 
-function buildFullFloorplanHtml(
+/**
+ * Kompletni overlay pudorysu (mistnosti, trubky, kabely, objekty, prvky
+ * navrhu, viceramecky, piny) jako vnitrni SVG markup pro viewBox "0 0 1 1".
+ * Sdili ho HTML tisk i nativni PDF export - zmeny se musi projevit v obou.
+ */
+export function buildFullFloorplanOverlaySvg(
   floor: Floor, selected: SelectionState, products: Product[],
   categories: Category[], heatingSystems: HeatingSystemFull[],
-  roomIdToName: (id: string) => string,
   designElements: ProjectDesignElement[] = [],
   elementTypes: DesignElementType[] = [],
   mountingGroups: MountingGroupWithSlots[] = [],
@@ -312,7 +316,6 @@ function buildFullFloorplanHtml(
   schematicSymbolScale = 24,
   categoryColorMap: Record<string, string> = {},
 ): string {
-  if (!floor.floorplanImg) return '';
   const floorPins = listAllPins(selected, products, floor.id);
   const floorObjects = floor.objects ?? [];
   const rooms = floor.rooms ?? [];
@@ -391,6 +394,26 @@ function buildFullFloorplanHtml(
 
   for (const pin of floorPins) svgContent += buildPinSvg(pin, categories, circuits);
 
+  return svgContent;
+}
+
+function buildFullFloorplanHtml(
+  floor: Floor, selected: SelectionState, products: Product[],
+  categories: Category[], heatingSystems: HeatingSystemFull[],
+  roomIdToName: (id: string) => string,
+  designElements: ProjectDesignElement[] = [],
+  elementTypes: DesignElementType[] = [],
+  mountingGroups: MountingGroupWithSlots[] = [],
+  floors: Floor[] = [],
+  schematicSymbolScale = 24,
+  categoryColorMap: Record<string, string> = {},
+): string {
+  if (!floor.floorplanImg) return '';
+  const floorPins = listAllPins(selected, products, floor.id);
+  const floorObjects = floor.objects ?? [];
+  const circuits = floor.circuits ?? [];
+  const svgContent = buildFullFloorplanOverlaySvg(floor, selected, products, categories, heatingSystems, designElements, elementTypes, mountingGroups, floors, schematicSymbolScale, categoryColorMap);
+
   let tableHtml = '';
   if (floorPins.length > 0 || floorObjects.length > 0) {
     tableHtml = '<table class="sm" style="margin-top:6px;margin-bottom:8px"><thead><tr>';
@@ -423,6 +446,51 @@ function buildFullFloorplanHtml(
     </div>
     ${tableHtml}
   </div>`;
+}
+
+/**
+ * Overlay pudorysu pro jedno remeslo (mistnosti, u topeni trubky, kabely a
+ * piny daneho remesla) - vnitrni SVG markup pro viewBox "0 0 1 1".
+ * Sdili ho HTML tisk i nativni PDF export - zmeny se musi projevit v obou.
+ */
+export function buildTradeFloorplanOverlaySvg(
+  trade: string, floor: Floor, selected: SelectionState, products: Product[],
+  categories: Category[], heatingSystems: HeatingSystemFull[],
+): string {
+  const fAllCircuits = floor.circuits ?? [];
+  const fCircuits = fAllCircuits.filter(c => (c.type ?? 'electric') === trade);
+  const fCables = (floor.cables ?? []).filter(cable => {
+    const circuit = fAllCircuits.find(c => c.id === cable.circuitId);
+    return (circuit?.type ?? 'electric') === trade;
+  });
+  const tradePins = listAllPins(selected, products, floor.id).filter(pin => (pin.product.trade || 'electric') === trade);
+
+  let svgContent = buildRoomSvg(floor.rooms);
+
+  if (trade === 'heating' && floor.scale) {
+    for (const room of (floor.rooms ?? []).filter(r => r.heatingSystemId)) {
+      const sys = heatingSystems.find(s => s.system.id === room.heatingSystemId);
+      if (!sys || !sys.options.some(o => o.slug === 'pipe_spacing')) continue;
+      const cfg = room.heatingConfig ?? {};
+      const spacingMm = parseInt(cfg['pipe_spacing'] || '150', 10);
+      const spacingNorm = pipeSpacingToNorm(spacingMm, floor.scale);
+      if (spacingNorm <= 0) continue;
+      const pattern = (cfg['pipe_pattern'] || 'meandr') as PipePattern;
+      const pipePath = generateHeatingPipes(room.points, spacingNorm, pattern);
+      if (pipePath.length >= 2) {
+        svgContent += `<polyline points="${pipePath.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="#ef4444" stroke-width="0.0018" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>`;
+      }
+    }
+  }
+
+  for (const cable of fCables) {
+    const circuit = fCircuits.find(ci => ci.id === cable.circuitId);
+    svgContent += `<polyline points="${cable.points.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="${circuit?.color ?? '#888'}" stroke-width="0.004" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }
+
+  for (const pin of tradePins) svgContent += buildPinSvg(pin, categories, fCircuits);
+
+  return svgContent;
 }
 
 function buildTradeSection(
@@ -472,30 +540,7 @@ function buildTradeSection(
     html += `<div style="margin-bottom:12px"><div style="font-weight:700;font-size:10px;color:#334155;margin-bottom:4px">${esc(floor.name)}</div>`;
 
     if (floor.floorplanImg) {
-      let svgContent = buildRoomSvg(floor.rooms);
-
-      if (trade === 'heating' && floor.scale) {
-        for (const room of (floor.rooms ?? []).filter(r => r.heatingSystemId)) {
-          const sys = heatingSystems.find(s => s.system.id === room.heatingSystemId);
-          if (!sys || !sys.options.some(o => o.slug === 'pipe_spacing')) continue;
-          const cfg = room.heatingConfig ?? {};
-          const spacingMm = parseInt(cfg['pipe_spacing'] || '150', 10);
-          const spacingNorm = pipeSpacingToNorm(spacingMm, floor.scale);
-          if (spacingNorm <= 0) continue;
-          const pattern = (cfg['pipe_pattern'] || 'meandr') as PipePattern;
-          const pipePath = generateHeatingPipes(room.points, spacingNorm, pattern);
-          if (pipePath.length >= 2) {
-            svgContent += `<polyline points="${pipePath.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="#ef4444" stroke-width="0.0018" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>`;
-          }
-        }
-      }
-
-      for (const cable of fCables) {
-        const circuit = fCircuits.find(ci => ci.id === cable.circuitId);
-        svgContent += `<polyline points="${cable.points.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="${circuit?.color ?? '#888'}" stroke-width="0.004" stroke-linecap="round" stroke-linejoin="round"/>`;
-      }
-
-      for (const pin of tradePins) svgContent += buildPinSvg(pin, categories, fCircuits);
+      const svgContent = buildTradeFloorplanOverlaySvg(trade, floor, selected, products, categories, heatingSystems);
 
       html += `<div class="fp-wrap" style="margin-bottom:6px">
         <img src="${floor.floorplanImg}" alt="${esc(floor.name)}" />

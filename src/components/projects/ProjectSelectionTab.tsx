@@ -19,7 +19,7 @@ import { getPrintColor } from '../catalog/summary/summaryUtils';
 import SummaryFloorplanView from '../catalog/summary/SummaryFloorplanView';
 import SummaryTradePrint from '../catalog/summary/SummaryTradePrint';
 import SummaryHeatingPrint from '../catalog/summary/SummaryHeatingPrint';
-import { exportSelectionPdf } from './selectionPdfExport';
+import ExportPdfDialog from './pdf/ExportPdfDialog';
 import { calculateRequiredLumens } from '../../hooks/useLightingNorms';
 import { exportSupplierQuoteXLS } from './supplierQuoteExport';
 import { buildSectionsFromCatalog } from '../catalog/quoteHelpers';
@@ -317,6 +317,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
     });
   }, [selected, designModules, products]);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
+  const [showPdfExport, setShowPdfExport] = useState(false);
   const [selectedTrades, setSelectedTrades] = useState<string[]>([]);
   const [hiddenSections, setHiddenSections] = useState<Set<SectionKey>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
@@ -689,8 +690,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
     return rows;
   }, [floors, selected, products]);
 
-  const handleExportPdf = () => {
-    exportSelectionPdf({
+  const buildExportData = () => ({
       selected, products, categories, floors, materials, heatingSystems,
       wastePercents, designModules, productModulesMap: pdmMap, projectName, clientName,
       hiddenSections: hiddenSections.size > 0 ? hiddenSections : undefined,
@@ -713,8 +713,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
       designSeriesLinks,
       schematicSymbolScale,
       categoryColorMap,
-    });
-  };
+  });
 
   const toggleTrade = (trade: string) => {
     setSelectedTrades(prev =>
@@ -938,7 +937,7 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
         )}
         <div className="flex items-center gap-2">
           <button
-            onClick={handleExportPdf}
+            onClick={() => setShowPdfExport(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm font-semibold"
           >
             <FileDown className="w-4 h-4" />
@@ -1964,6 +1963,13 @@ export default function ProjectSelectionTab({ selected, products, categories, fl
         </div>
       )}
       </div>
+
+      <ExportPdfDialog
+        open={showPdfExport}
+        onClose={() => setShowPdfExport(false)}
+        data={buildExportData()}
+        storageKey={projectId ?? projectName ?? 'projekt'}
+      />
 
       <Modal
         open={showSupplierModal}
