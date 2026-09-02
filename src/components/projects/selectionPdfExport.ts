@@ -610,6 +610,11 @@ function buildHeatingCalcHtml(floors: Floor[], heatingSystems: HeatingSystemFull
 
 export function exportSelectionPdf(data: ExportData) {
   const { selected, products, categories, floors, materials, heatingSystems, wastePercents, designModules, productModulesMap, projectName, clientName, hiddenSections, pinSize, fvSummary, cameraSummary, fvIncluded = true, cameraIncluded = true, showPrices = true, floorplanLabel, epsSummary, epsIncluded = true, designElements = [], elementTypes = [], mountingGroups = [], productAssignments = [], productKindMap = new Map(), designSeriesLinks = [], schematicSymbolScale = 24, categoryColorMap = {} } = data;
+
+  // pinSize je kalibrovana pro obrazovku (plan ~1400px, vychozi 28);
+  // tiskove platno je polovicni (~700px), takze se prevadi 2:1 - jinak
+  // jsou piny v PDF relativne dvakrat vetsi a prekryvaji se
+  const printPinSize = Math.max(8, Math.min(24, Math.round((pinSize ?? 28) / 2)));
   const show = (key: SectionKey) => !hiddenSections?.has(key);
   const dateStr = new Date().toLocaleDateString('cs-CZ');
 
@@ -1272,13 +1277,13 @@ export function exportSelectionPdf(data: ExportData) {
 
   if (show('floorplans')) {
     for (const floor of floors.filter(f => f.floorplanImg)) {
-      sectionsHtml += buildFullFloorplanHtml(floor, selected, products, categories, heatingSystems, roomIdToName, pinSize, designElements, elementTypes, mountingGroups, floors, schematicSymbolScale, categoryColorMap);
+      sectionsHtml += buildFullFloorplanHtml(floor, selected, products, categories, heatingSystems, roomIdToName, printPinSize, designElements, elementTypes, mountingGroups, floors, schematicSymbolScale, categoryColorMap);
     }
   }
 
   if (show('trades')) {
     for (const trade of ALL_TRADES) {
-      sectionsHtml += buildTradeSection(trade, floors, selected, products, categories, heatingSystems, roomIdToName, getWastePercent, getMaterialPrice, pinSize, showPrices);
+      sectionsHtml += buildTradeSection(trade, floors, selected, products, categories, heatingSystems, roomIdToName, getWastePercent, getMaterialPrice, printPinSize, showPrices);
     }
   }
 
