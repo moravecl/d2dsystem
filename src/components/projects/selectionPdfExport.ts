@@ -151,8 +151,11 @@ table.sm .amber { color: #b45309; }
 .total-box .total-grand .tr-val { font-weight: 800; color: #1e40af; }
 .circ-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 .section { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
-.fp-wrap { position: relative; display: inline-block; width: 100%; border: 1px solid #e2e8f0; }
-.fp-wrap img { width: 100%; height: auto; display: block; }
+/* Pudorys se pri tisku NESMI zlomit pres stranky - fragmentace kontejneru
+   rozhazi absolutne pozicovane piny. Vysoke plany se zmensi pres max-height,
+   piny drzi, protoze wrap (inline-block) kopiruje skutecny box obrazku. */
+.fp-wrap { position: relative; display: inline-block; max-width: 100%; border: 1px solid #e2e8f0; break-inside: avoid; page-break-inside: avoid; }
+.fp-wrap img { display: block; max-width: 100%; max-height: 228mm; width: auto; height: auto; }
 .fp-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .fp-pin { position: absolute; transform: translate(-50%, -50%); text-align: center; }
 .fp-pin-dot { width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15); border: 1.5px solid #fff; margin: 0 auto; }
