@@ -192,6 +192,9 @@ function buildRoomSvg(rooms: Floor['rooms']): string {
   return svg;
 }
 
+/** Verze exportu v paticce PDF - okamzite prozradi, kterym kodem PDF vzniklo. */
+const EXPORT_VERSION = '2026-09-02b';
+
 function buildPinHtml(pin: PinData, categories: Category[], circuits: { id: string; color: string }[], pinSize = 14): string {
   const pcat = categories.find(c => c.id === pin.product.category_id);
   const pc = getPrintColor(pcat?.pill_color ?? '');
@@ -1314,7 +1317,7 @@ export function exportSelectionPdf(data: ExportData) {
   ${showPrices ? `<div class="stat"><div class="lbl">Cena celkem</div><div class="val">${combinedGrandTotal > 0 ? `${fmt(combinedGrandTotal)} Kč` : '—'}</div></div>` : ''}
 </div>
 ${sectionsHtml}
-<div class="footer-bar"><span>Vygenerováno: ${dateStr} | HouseSmart</span><span>${esc(projectName || '')}</span></div>
+<div class="footer-bar"><span>Vygenerováno: ${dateStr} | HouseSmart | export ${EXPORT_VERSION}</span><span>${esc(projectName || '')}</span></div>
 </div></body></html>`;
 
   const blob = new Blob([html], { type: 'text/html' });
