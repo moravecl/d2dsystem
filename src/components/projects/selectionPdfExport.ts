@@ -157,10 +157,6 @@ table.sm .amber { color: #b45309; }
 .fp-wrap { position: relative; display: inline-block; max-width: 100%; border: 1px solid #e2e8f0; break-inside: avoid; page-break-inside: avoid; }
 .fp-wrap img { display: block; max-width: 100%; max-height: 228mm; width: auto; height: auto; }
 .fp-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-.fp-pin { position: absolute; transform: translate(-50%, -50%); text-align: center; }
-.fp-pin-dot { width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15); border: 1.5px solid #fff; margin: 0 auto; }
-.fp-pin-dot span { font-size: 6px; font-weight: 800; color: #fff; }
-.fp-pin-label { background: rgba(255,255,255,0.92); font-size: 5.5px; font-weight: 800; color: #334155; padding: 0 2px; border-radius: 2px; margin-top: 1px; white-space: nowrap; box-shadow: 0 0.5px 1px rgba(0,0,0,0.08); }
 .trade-hdr { display: flex; align-items: center; gap: 8px; padding-bottom: 6px; border-bottom: 2px solid; margin-bottom: 10px; margin-top: 24px; }
 .trade-hdr .trade-dot { width: 12px; height: 12px; border-radius: 50%; }
 .trade-hdr .trade-name { font-size: 14px; font-weight: 800; color: #0f172a; }
@@ -193,32 +189,35 @@ function buildRoomSvg(rooms: Floor['rooms']): string {
 }
 
 /** Verze exportu v paticce PDF - okamzite prozradi, kterym kodem PDF vzniklo. */
-const EXPORT_VERSION = '2026-09-02b';
+const EXPORT_VERSION = '2026-09-02c';
 
-function buildPinHtml(pin: PinData, categories: Category[], circuits: { id: string; color: string }[], pinSize = 14): string {
+/**
+ * Piny se kresli do normalizovaneho SVG overlaye (viewBox 0 0 1 1), aby se
+ * skalovaly s planem - pevne pixely vychazi na kazdem podlazi jinak velke.
+ * Geometrie MUSI zustat shodna s tiskovou vetvi SummaryFloorplanView
+ * (print:block svg), jinak se PDF rozjede od zobrazeni v systemu.
+ */
+function buildPinSvg(pin: PinData, categories: Category[], circuits: { id: string; color: string }[]): string {
   const pcat = categories.find(c => c.id === pin.product.category_id);
   const pc = getPrintColor(pcat?.pill_color ?? '');
   const pinCircuit = pin.placement.circuitId ? circuits.find(c => c.id === pin.placement.circuitId) : null;
   const color = pinCircuit?.color ?? pc.dot;
-  const fontSize = Math.max(4, Math.round(pinSize * 0.38));
-  const labelSize = Math.max(4, Math.round(pinSize * 0.35));
-  const iconSize = Math.round(pinSize * 0.55);
-
   const svgPath = renderPinIconSvgPath(pin.placement.icon);
   const customLetter = getCustomIconLetter(pin.placement.icon);
+  const r = 0.012;
+  const x = pin.placement.x;
+  const y = pin.placement.y;
 
   let innerContent: string;
   if (svgPath) {
-    innerContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="${svgPath}"/></svg>`;
+    innerContent = `<svg x="${x - r * 0.6}" y="${y - r * 0.6}" width="${r * 1.2}" height="${r * 1.2}" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="${svgPath}"/></svg>`;
   } else if (customLetter) {
-    innerContent = `<span style="font-size:${fontSize}px;font-weight:800;color:#fff">${esc(customLetter)}</span>`;
+    innerContent = `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${r * 1.2}" font-weight="800">${esc(customLetter)}</text>`;
   } else {
-    innerContent = `<span style="font-size:${fontSize}px">${esc(pin.label)}</span>`;
+    innerContent = `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${r * 0.9}" font-weight="800">${esc(pin.label)}</text>`;
   }
 
-  return `<div class="fp-pin" style="left:${pin.placement.x * 100}%;top:${pin.placement.y * 100}%">
-    <div class="fp-pin-dot" style="background:${color};width:${pinSize}px;height:${pinSize}px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:50%">${innerContent}</div>
-    <div class="fp-pin-label" style="font-size:${labelSize}px">${esc(pin.label)}</div></div>`;
+  return `<g><circle cx="${x}" cy="${y}" r="${r}" fill="${color}" stroke="#fff" stroke-width="0.002"/>${innerContent}<text x="${x}" y="${y + r + 0.008}" text-anchor="middle" dominant-baseline="hanging" fill="#334155" font-size="0.008" font-weight="800">${esc(pin.label)}</text></g>`;
 }
 
 function getCachedImageAspectRatio(url: string): number {
@@ -306,7 +305,6 @@ function buildFullFloorplanHtml(
   floor: Floor, selected: SelectionState, products: Product[],
   categories: Category[], heatingSystems: HeatingSystemFull[],
   roomIdToName: (id: string) => string,
-  pinSize = 14,
   designElements: ProjectDesignElement[] = [],
   elementTypes: DesignElementType[] = [],
   mountingGroups: MountingGroupWithSlots[] = [],
@@ -391,8 +389,7 @@ function buildFullFloorplanHtml(
     }
   }
 
-  let pinsHtml = '';
-  for (const pin of floorPins) pinsHtml += buildPinHtml(pin, categories, circuits, pinSize);
+  for (const pin of floorPins) svgContent += buildPinSvg(pin, categories, circuits);
 
   let tableHtml = '';
   if (floorPins.length > 0 || floorObjects.length > 0) {
@@ -423,7 +420,6 @@ function buildFullFloorplanHtml(
     <div class="fp-wrap">
       <img src="${floor.floorplanImg}" alt="${esc(floor.name)}" />
       <svg viewBox="0 0 1 1" preserveAspectRatio="none">${svgContent}</svg>
-      ${pinsHtml}
     </div>
     ${tableHtml}
   </div>`;
@@ -435,7 +431,6 @@ function buildTradeSection(
   roomIdToName: (id: string) => string,
   getWastePercent: (name: string) => number,
   getMaterialPrice: (name: string) => number,
-  pinSize = 14,
   showPrices = true,
 ): string {
   const tradeInfo = CIRCUIT_TYPE_LABELS[trade as keyof typeof CIRCUIT_TYPE_LABELS];
@@ -500,13 +495,11 @@ function buildTradeSection(
         svgContent += `<polyline points="${cable.points.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="${circuit?.color ?? '#888'}" stroke-width="0.004" stroke-linecap="round" stroke-linejoin="round"/>`;
       }
 
-      let pinsOverlay = '';
-      for (const pin of tradePins) pinsOverlay += buildPinHtml(pin, categories, fCircuits, pinSize);
+      for (const pin of tradePins) svgContent += buildPinSvg(pin, categories, fCircuits);
 
       html += `<div class="fp-wrap" style="margin-bottom:6px">
         <img src="${floor.floorplanImg}" alt="${esc(floor.name)}" />
         <svg viewBox="0 0 1 1" preserveAspectRatio="none">${svgContent}</svg>
-        ${pinsOverlay}
       </div>`;
     }
 
@@ -612,12 +605,8 @@ function buildHeatingCalcHtml(floors: Floor[], heatingSystems: HeatingSystemFull
 }
 
 export function exportSelectionPdf(data: ExportData) {
-  const { selected, products, categories, floors, materials, heatingSystems, wastePercents, designModules, productModulesMap, projectName, clientName, hiddenSections, pinSize, fvSummary, cameraSummary, fvIncluded = true, cameraIncluded = true, showPrices = true, floorplanLabel, epsSummary, epsIncluded = true, designElements = [], elementTypes = [], mountingGroups = [], productAssignments = [], productKindMap = new Map(), designSeriesLinks = [], schematicSymbolScale = 24, categoryColorMap = {} } = data;
+  const { selected, products, categories, floors, materials, heatingSystems, wastePercents, designModules, productModulesMap, projectName, clientName, hiddenSections, fvSummary, cameraSummary, fvIncluded = true, cameraIncluded = true, showPrices = true, floorplanLabel, epsSummary, epsIncluded = true, designElements = [], elementTypes = [], mountingGroups = [], productAssignments = [], productKindMap = new Map(), designSeriesLinks = [], schematicSymbolScale = 24, categoryColorMap = {} } = data;
 
-  // pinSize je kalibrovana pro obrazovku (plan ~1400px, vychozi 28);
-  // tiskove platno je polovicni (~700px), takze se prevadi 2:1 - jinak
-  // jsou piny v PDF relativne dvakrat vetsi a prekryvaji se
-  const printPinSize = Math.max(8, Math.min(24, Math.round((pinSize ?? 28) / 2)));
   const show = (key: SectionKey) => !hiddenSections?.has(key);
   const dateStr = new Date().toLocaleDateString('cs-CZ');
 
@@ -1280,13 +1269,13 @@ export function exportSelectionPdf(data: ExportData) {
 
   if (show('floorplans')) {
     for (const floor of floors.filter(f => f.floorplanImg)) {
-      sectionsHtml += buildFullFloorplanHtml(floor, selected, products, categories, heatingSystems, roomIdToName, printPinSize, designElements, elementTypes, mountingGroups, floors, schematicSymbolScale, categoryColorMap);
+      sectionsHtml += buildFullFloorplanHtml(floor, selected, products, categories, heatingSystems, roomIdToName, designElements, elementTypes, mountingGroups, floors, schematicSymbolScale, categoryColorMap);
     }
   }
 
   if (show('trades')) {
     for (const trade of ALL_TRADES) {
-      sectionsHtml += buildTradeSection(trade, floors, selected, products, categories, heatingSystems, roomIdToName, getWastePercent, getMaterialPrice, printPinSize, showPrices);
+      sectionsHtml += buildTradeSection(trade, floors, selected, products, categories, heatingSystems, roomIdToName, getWastePercent, getMaterialPrice, showPrices);
     }
   }
 
