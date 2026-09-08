@@ -31,18 +31,21 @@ DROP POLICY IF EXISTS "Authenticated users can insert project documents" ON proj
 DROP POLICY IF EXISTS "Admins can update any project document" ON project_documents;
 DROP POLICY IF EXISTS "Admins can delete any draft document" ON project_documents;
 
+DROP POLICY IF EXISTS "Org members can view project documents" ON project_documents;
 CREATE POLICY "Org members can view project documents"
   ON project_documents FOR SELECT TO authenticated
   USING (EXISTS (SELECT 1 FROM projects p
                  WHERE p.id = project_documents.project_id
                    AND p.organization_id = current_org_id()));
 
+DROP POLICY IF EXISTS "Org members can insert project documents" ON project_documents;
 CREATE POLICY "Org members can insert project documents"
   ON project_documents FOR INSERT TO authenticated
   WITH CHECK (EXISTS (SELECT 1 FROM projects p
                       WHERE p.id = project_documents.project_id
                         AND p.organization_id = current_org_id()));
 
+DROP POLICY IF EXISTS "Org admins can update any project document" ON project_documents;
 CREATE POLICY "Org admins can update any project document"
   ON project_documents FOR UPDATE TO authenticated
   USING (is_full_admin() AND EXISTS (SELECT 1 FROM projects p
@@ -52,6 +55,7 @@ CREATE POLICY "Org admins can update any project document"
               WHERE p.id = project_documents.project_id
                 AND p.organization_id = current_org_id()));
 
+DROP POLICY IF EXISTS "Org admins can delete any draft document" ON project_documents;
 CREATE POLICY "Org admins can delete any draft document"
   ON project_documents FOR DELETE TO authenticated
   USING (status = 'DRAFT' AND is_full_admin()
@@ -65,16 +69,19 @@ DROP POLICY IF EXISTS "Authenticated users can insert service work items" ON ser
 DROP POLICY IF EXISTS "Authenticated users can update service work items" ON service_work_items;
 DROP POLICY IF EXISTS "Authenticated users can delete service work items" ON service_work_items;
 
+DROP POLICY IF EXISTS "Org members can read service work items" ON service_work_items;
 CREATE POLICY "Org members can read service work items"
   ON service_work_items FOR SELECT TO authenticated
   USING (EXISTS (SELECT 1 FROM service_protocols sp JOIN projects p ON p.id = sp.project_id
                  WHERE sp.id = service_work_items.protocol_id
                    AND p.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org members can insert service work items" ON service_work_items;
 CREATE POLICY "Org members can insert service work items"
   ON service_work_items FOR INSERT TO authenticated
   WITH CHECK (EXISTS (SELECT 1 FROM service_protocols sp JOIN projects p ON p.id = sp.project_id
                       WHERE sp.id = service_work_items.protocol_id
                         AND p.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org members can update service work items" ON service_work_items;
 CREATE POLICY "Org members can update service work items"
   ON service_work_items FOR UPDATE TO authenticated
   USING (EXISTS (SELECT 1 FROM service_protocols sp JOIN projects p ON p.id = sp.project_id
@@ -83,6 +90,7 @@ CREATE POLICY "Org members can update service work items"
   WITH CHECK (EXISTS (SELECT 1 FROM service_protocols sp JOIN projects p ON p.id = sp.project_id
                       WHERE sp.id = service_work_items.protocol_id
                         AND p.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org members can delete service work items" ON service_work_items;
 CREATE POLICY "Org members can delete service work items"
   ON service_work_items FOR DELETE TO authenticated
   USING (EXISTS (SELECT 1 FROM service_protocols sp JOIN projects p ON p.id = sp.project_id
@@ -93,11 +101,13 @@ CREATE POLICY "Org members can delete service work items"
 DROP POLICY IF EXISTS "Authenticated users can view viceprace items" ON viceprace_items;
 DROP POLICY IF EXISTS "Authenticated users can update viceprace items" ON viceprace_items;
 
+DROP POLICY IF EXISTS "Org members can view viceprace items" ON viceprace_items;
 CREATE POLICY "Org members can view viceprace items"
   ON viceprace_items FOR SELECT TO authenticated
   USING (EXISTS (SELECT 1 FROM viceprace v
                  WHERE v.id = viceprace_items.viceprace_id
                    AND v.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org members can update viceprace items" ON viceprace_items;
 CREATE POLICY "Org members can update viceprace items"
   ON viceprace_items FOR UPDATE TO authenticated
   USING (EXISTS (SELECT 1 FROM viceprace v
@@ -111,10 +121,12 @@ CREATE POLICY "Org members can update viceprace items"
 DROP POLICY IF EXISTS "Users can view own sent emails" ON email_log;
 DROP POLICY IF EXISTS "Admins can update email log" ON email_log;
 
+DROP POLICY IF EXISTS "Users can view own sent emails" ON email_log;
 CREATE POLICY "Users can view own sent emails"
   ON email_log FOR SELECT TO authenticated
   USING (sender_user_id = auth.uid()
          OR (organization_id = current_org_id() AND is_full_admin()));
+DROP POLICY IF EXISTS "Org admins can update email log" ON email_log;
 CREATE POLICY "Org admins can update email log"
   ON email_log FOR UPDATE TO authenticated
   USING (organization_id = current_org_id() AND is_full_admin())
@@ -122,6 +134,7 @@ CREATE POLICY "Org admins can update email log"
 
 -- ============================================================ attendance (legacy)
 DROP POLICY IF EXISTS "Admins and managers can view all attendance" ON attendance;
+DROP POLICY IF EXISTS "Org admins can view org attendance" ON attendance;
 CREATE POLICY "Org admins can view org attendance"
   ON attendance FOR SELECT TO authenticated
   USING (is_full_admin() AND user_id IN (
@@ -132,11 +145,13 @@ CREATE POLICY "Org admins can view org attendance"
 DROP POLICY IF EXISTS "Admins can insert heating system options" ON heating_system_options;
 DROP POLICY IF EXISTS "Admins can update heating system options" ON heating_system_options;
 DROP POLICY IF EXISTS "Admins can delete heating system options" ON heating_system_options;
+DROP POLICY IF EXISTS "Org admins can insert heating system options" ON heating_system_options;
 CREATE POLICY "Org admins can insert heating system options"
   ON heating_system_options FOR INSERT TO authenticated
   WITH CHECK (is_full_admin() AND EXISTS (SELECT 1 FROM heating_systems h
               WHERE h.id = heating_system_options.heating_system_id
                 AND h.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org admins can update heating system options" ON heating_system_options;
 CREATE POLICY "Org admins can update heating system options"
   ON heating_system_options FOR UPDATE TO authenticated
   USING (is_full_admin() AND EXISTS (SELECT 1 FROM heating_systems h
@@ -145,6 +160,7 @@ CREATE POLICY "Org admins can update heating system options"
   WITH CHECK (EXISTS (SELECT 1 FROM heating_systems h
               WHERE h.id = heating_system_options.heating_system_id
                 AND h.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org admins can delete heating system options" ON heating_system_options;
 CREATE POLICY "Org admins can delete heating system options"
   ON heating_system_options FOR DELETE TO authenticated
   USING (is_full_admin() AND EXISTS (SELECT 1 FROM heating_systems h
@@ -154,11 +170,13 @@ CREATE POLICY "Org admins can delete heating system options"
 DROP POLICY IF EXISTS "Admins can insert heating system materials" ON heating_system_materials;
 DROP POLICY IF EXISTS "Admins can update heating system materials" ON heating_system_materials;
 DROP POLICY IF EXISTS "Admins can delete heating system materials" ON heating_system_materials;
+DROP POLICY IF EXISTS "Org admins can insert heating system materials" ON heating_system_materials;
 CREATE POLICY "Org admins can insert heating system materials"
   ON heating_system_materials FOR INSERT TO authenticated
   WITH CHECK (is_full_admin() AND EXISTS (SELECT 1 FROM heating_systems h
               WHERE h.id = heating_system_materials.heating_system_id
                 AND h.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org admins can update heating system materials" ON heating_system_materials;
 CREATE POLICY "Org admins can update heating system materials"
   ON heating_system_materials FOR UPDATE TO authenticated
   USING (is_full_admin() AND EXISTS (SELECT 1 FROM heating_systems h
@@ -167,6 +185,7 @@ CREATE POLICY "Org admins can update heating system materials"
   WITH CHECK (EXISTS (SELECT 1 FROM heating_systems h
               WHERE h.id = heating_system_materials.heating_system_id
                 AND h.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org admins can delete heating system materials" ON heating_system_materials;
 CREATE POLICY "Org admins can delete heating system materials"
   ON heating_system_materials FOR DELETE TO authenticated
   USING (is_full_admin() AND EXISTS (SELECT 1 FROM heating_systems h
@@ -176,11 +195,13 @@ CREATE POLICY "Org admins can delete heating system materials"
 DROP POLICY IF EXISTS "Admins can insert product design modules" ON product_design_modules;
 DROP POLICY IF EXISTS "Admins can update product design modules" ON product_design_modules;
 DROP POLICY IF EXISTS "Admins can delete product design modules" ON product_design_modules;
+DROP POLICY IF EXISTS "Org admins can insert product design modules" ON product_design_modules;
 CREATE POLICY "Org admins can insert product design modules"
   ON product_design_modules FOR INSERT TO authenticated
   WITH CHECK (is_full_admin() AND EXISTS (SELECT 1 FROM products p
               WHERE p.id = product_design_modules.product_id
                 AND p.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org admins can update product design modules" ON product_design_modules;
 CREATE POLICY "Org admins can update product design modules"
   ON product_design_modules FOR UPDATE TO authenticated
   USING (is_full_admin() AND EXISTS (SELECT 1 FROM products p
@@ -189,6 +210,7 @@ CREATE POLICY "Org admins can update product design modules"
   WITH CHECK (EXISTS (SELECT 1 FROM products p
               WHERE p.id = product_design_modules.product_id
                 AND p.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org admins can delete product design modules" ON product_design_modules;
 CREATE POLICY "Org admins can delete product design modules"
   ON product_design_modules FOR DELETE TO authenticated
   USING (is_full_admin() AND EXISTS (SELECT 1 FROM products p
@@ -197,6 +219,7 @@ CREATE POLICY "Org admins can delete product design modules"
 
 -- ============================================================ zakázky (jobs)
 DROP POLICY IF EXISTS "Project owners can update jobs" ON jobs;
+DROP POLICY IF EXISTS "Org members can update jobs" ON jobs;
 CREATE POLICY "Org members can update jobs"
   ON jobs FOR UPDATE TO authenticated
   USING (organization_id = current_org_id()
@@ -208,12 +231,14 @@ CREATE POLICY "Org members can update jobs"
 DROP POLICY IF EXISTS "Auth users can insert job worklogs" ON job_worklogs;
 DROP POLICY IF EXISTS "Users can update own worklogs" ON job_worklogs;
 DROP POLICY IF EXISTS "Users can delete own worklogs" ON job_worklogs;
+DROP POLICY IF EXISTS "Org members can insert job worklogs" ON job_worklogs;
 CREATE POLICY "Org members can insert job worklogs"
   ON job_worklogs FOR INSERT TO authenticated
   WITH CHECK ((user_id = auth.uid() OR is_admin_or_manager(auth.uid()))
               AND EXISTS (SELECT 1 FROM jobs j
                   WHERE j.id = job_worklogs.job_id
                     AND j.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org members can update own worklogs" ON job_worklogs;
 CREATE POLICY "Org members can update own worklogs"
   ON job_worklogs FOR UPDATE TO authenticated
   USING ((user_id = auth.uid() OR is_admin_or_manager(auth.uid()))
@@ -223,6 +248,7 @@ CREATE POLICY "Org members can update own worklogs"
   WITH CHECK (EXISTS (SELECT 1 FROM jobs j
               WHERE j.id = job_worklogs.job_id
                 AND j.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org members can delete own worklogs" ON job_worklogs;
 CREATE POLICY "Org members can delete own worklogs"
   ON job_worklogs FOR DELETE TO authenticated
   USING ((user_id = auth.uid() OR is_admin_or_manager(auth.uid()))
@@ -233,12 +259,14 @@ CREATE POLICY "Org members can delete own worklogs"
 DROP POLICY IF EXISTS "Auth users can insert job materials" ON job_material_entries;
 DROP POLICY IF EXISTS "Creators can update job materials" ON job_material_entries;
 DROP POLICY IF EXISTS "Creators can delete job materials" ON job_material_entries;
+DROP POLICY IF EXISTS "Org members can insert job materials" ON job_material_entries;
 CREATE POLICY "Org members can insert job materials"
   ON job_material_entries FOR INSERT TO authenticated
   WITH CHECK ((created_by = auth.uid() OR is_admin_or_manager(auth.uid()))
               AND EXISTS (SELECT 1 FROM jobs j
                   WHERE j.id = job_material_entries.job_id
                     AND j.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org creators can update job materials" ON job_material_entries;
 CREATE POLICY "Org creators can update job materials"
   ON job_material_entries FOR UPDATE TO authenticated
   USING ((created_by = auth.uid() OR is_admin_or_manager(auth.uid()))
@@ -248,6 +276,7 @@ CREATE POLICY "Org creators can update job materials"
   WITH CHECK (EXISTS (SELECT 1 FROM jobs j
               WHERE j.id = job_material_entries.job_id
                 AND j.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org creators can delete job materials" ON job_material_entries;
 CREATE POLICY "Org creators can delete job materials"
   ON job_material_entries FOR DELETE TO authenticated
   USING ((created_by = auth.uid() OR is_admin_or_manager(auth.uid()))
@@ -258,12 +287,14 @@ CREATE POLICY "Org creators can delete job materials"
 DROP POLICY IF EXISTS "Auth users can insert diary entries" ON job_diary_entries;
 DROP POLICY IF EXISTS "Creators can update diary entries" ON job_diary_entries;
 DROP POLICY IF EXISTS "Creators can delete diary entries" ON job_diary_entries;
+DROP POLICY IF EXISTS "Org members can insert diary entries" ON job_diary_entries;
 CREATE POLICY "Org members can insert diary entries"
   ON job_diary_entries FOR INSERT TO authenticated
   WITH CHECK ((created_by = auth.uid() OR is_admin_or_manager(auth.uid()))
               AND EXISTS (SELECT 1 FROM jobs j
                   WHERE j.id = job_diary_entries.job_id
                     AND j.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org creators can update diary entries" ON job_diary_entries;
 CREATE POLICY "Org creators can update diary entries"
   ON job_diary_entries FOR UPDATE TO authenticated
   USING ((created_by = auth.uid() OR is_admin_or_manager(auth.uid()))
@@ -273,6 +304,7 @@ CREATE POLICY "Org creators can update diary entries"
   WITH CHECK (EXISTS (SELECT 1 FROM jobs j
               WHERE j.id = job_diary_entries.job_id
                 AND j.organization_id = current_org_id()));
+DROP POLICY IF EXISTS "Org creators can delete diary entries" ON job_diary_entries;
 CREATE POLICY "Org creators can delete diary entries"
   ON job_diary_entries FOR DELETE TO authenticated
   USING ((created_by = auth.uid() OR is_admin_or_manager(auth.uid()))
@@ -282,12 +314,14 @@ CREATE POLICY "Org creators can delete diary entries"
 
 DROP POLICY IF EXISTS "Auth users can insert diary photos" ON job_diary_photos;
 DROP POLICY IF EXISTS "Creators can delete diary photos" ON job_diary_photos;
+DROP POLICY IF EXISTS "Org members can insert diary photos" ON job_diary_photos;
 CREATE POLICY "Org members can insert diary photos"
   ON job_diary_photos FOR INSERT TO authenticated
   WITH CHECK (EXISTS (SELECT 1 FROM job_diary_entries de JOIN jobs j ON j.id = de.job_id
               WHERE de.id = job_diary_photos.diary_entry_id
                 AND j.organization_id = current_org_id()
                 AND (de.created_by = auth.uid() OR is_admin_or_manager(auth.uid()))));
+DROP POLICY IF EXISTS "Org creators can delete diary photos" ON job_diary_photos;
 CREATE POLICY "Org creators can delete diary photos"
   ON job_diary_photos FOR DELETE TO authenticated
   USING (EXISTS (SELECT 1 FROM job_diary_entries de JOIN jobs j ON j.id = de.job_id
@@ -297,6 +331,7 @@ CREATE POLICY "Org creators can delete diary photos"
 
 -- ============================================================ zápisy vázané na projekt
 DROP POLICY IF EXISTS "Authenticated users can insert installed devices" ON installed_devices;
+DROP POLICY IF EXISTS "Org members can insert installed devices" ON installed_devices;
 CREATE POLICY "Org members can insert installed devices"
   ON installed_devices FOR INSERT TO authenticated
   WITH CHECK (created_by = auth.uid()
@@ -305,6 +340,7 @@ CREATE POLICY "Org members can insert installed devices"
                     AND p.organization_id = current_org_id()));
 
 DROP POLICY IF EXISTS "Authenticated users can insert project photos" ON project_photos;
+DROP POLICY IF EXISTS "Org members can insert project photos" ON project_photos;
 CREATE POLICY "Org members can insert project photos"
   ON project_photos FOR INSERT TO authenticated
   WITH CHECK (uploaded_by = auth.uid()
@@ -313,6 +349,7 @@ CREATE POLICY "Org members can insert project photos"
                     AND p.organization_id = current_org_id()));
 
 DROP POLICY IF EXISTS "Authenticated users can insert defects" ON project_defects;
+DROP POLICY IF EXISTS "Org members can insert defects" ON project_defects;
 CREATE POLICY "Org members can insert defects"
   ON project_defects FOR INSERT TO authenticated
   WITH CHECK (reported_by = auth.uid()
