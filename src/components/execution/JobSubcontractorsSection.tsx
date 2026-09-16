@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../ui/Toast';
 import Modal from '../ui/Modal';
 import { logAudit } from '../../lib/auditLog';
+import ProjectMiniGantt from './ProjectMiniGantt';
 import { renderTemplate } from '../../lib/placeholderEngine';
 import type { DocumentTemplate } from '../../types/database';
 import {
@@ -265,7 +266,7 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
         open={showAdd}
         onClose={() => setShowAdd(false)}
         title="Přiřadit subdodavatele k zakázce"
-        size="md"
+        size="lg"
         footer={
           <>
             <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrušit</button>
@@ -309,6 +310,10 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
             <label className={labelCls}>Rozsah prací (propíše se do smlouvy)</label>
             <textarea rows={3} value={form.scope} onChange={e => setForm(p => ({ ...p, scope: e.target.value }))} placeholder="Např. Kompletní rozvod vody a odpadů dle PD, včetně tlakové zkoušky…" className={inputCls} />
           </div>
+          <ProjectMiniGantt
+            projectId={projectId}
+            onPickRange={(from, to) => setForm(p => ({ ...p, date_from: from, date_to: to }))}
+          />
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className={labelCls}>Cena (Kč bez DPH)</label>

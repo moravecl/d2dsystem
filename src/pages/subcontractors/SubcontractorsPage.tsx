@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Plus, Search, Edit2, Trash2, HardHat, Building2, User, Phone, Mail,
   Star, FileText, Upload, ExternalLink, AlertTriangle, ShieldCheck, X,
@@ -11,8 +12,14 @@ import Modal from '../../components/ui/Modal';
 import { logAudit } from '../../lib/auditLog';
 import {
   type Subcontractor, type SubcontractorDocument, type SubDocType,
-  SUB_TRADE_LABELS, SUB_DOC_TYPE_LABELS, docValidity,
+  type JobSubcontractor, type JobSubStatus,
+  SUB_TRADE_LABELS, SUB_DOC_TYPE_LABELS, JOB_SUB_STATUS_LABELS, docValidity,
 } from '../../types/subcontractors';
+
+interface AssignmentRow extends JobSubcontractor {
+  subcontractors?: Subcontractor;
+  jobs?: { id: string; project_id: string; projects?: { id: string; project_name: string } };
+}
 
 const EMPTY_FORM = {
   sub_type: 'company' as 'company' | 'individual',
@@ -55,6 +62,7 @@ function RatingStars({ rating, onChange }: { rating: number; onChange?: (r: numb
 }
 
 export default function SubcontractorsPage() {
+  const navigate = useNavigate();
   const { setConfig } = useHeader();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -68,6 +76,9 @@ export default function SubcontractorsPage() {
   const [editSub, setEditSub] = useState<Subcontractor | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [detailSub, setDetailSub] = useState<Subcontractor | null>(null);
+  const [view, setView] = useState<'subs' | 'assignments'>('subs');
+  const [assignments, setAssignments] = useState<AssignmentRow[]>([]);
+  const [assignmentStatusFilter, setAssignmentStatusFilter] = useState('');
   const [uploading, setUploading] = useState(false);
   const [docForm, setDocForm] = useState({ doc_type: 'pojisteni' as SubDocType, name: '', valid_until: '', file: null as File | null });
 
@@ -83,12 +94,16 @@ export default function SubcontractorsPage() {
   }, [setConfig]);
 
   const loadData = useCallback(async () => {
-    const [subsRes, docsRes] = await Promise.all([
+    const [subsRes, docsRes, assignRes] = await Promise.all([
       supabase.from('subcontractors').select('*').order('name'),
       supabase.from('subcontractor_documents').select('*').order('created_at', { ascending: false }),
+      supabase.from('job_subcontractors')
+        .select('*, subcontractors(*), jobs(id, project_id, projects(id, project_name))')
+        .order('created_at', { ascending: false }),
     ]);
     setSubs((subsRes.data || []) as Subcontractor[]);
     setDocs((docsRes.data || []) as SubcontractorDocument[]);
+    setAssignments((assignRes.data || []) as AssignmentRow[]);
     setLoading(false);
   }, []);
 
@@ -178,6 +193,13 @@ export default function SubcontractorsPage() {
     loadData();
   };
 
+  const handleAssignmentStatus = async (row: AssignmentRow, status: JobSubStatus) => {
+    const { error } = await supabase.from('job_subcontractors')
+      .update({ status, updated_at: new Date().toISOString() }).eq('id', row.id);
+    if (error) { toast('Chyba při změně stavu', 'error'); return; }
+    loadData();
+  };
+
   const subDocs = (subId: string) => docs.filter(d => d.subcontractor_id === subId);
   const worstValidity = (subId: string): 'expired' | 'expiring' | 'ok' => {
     const list = subDocs(subId);
@@ -202,6 +224,24 @@ export default function SubcontractorsPage() {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        {([['subs', 'Subdodavatelé'], ['assignments', 'Poptávky a zakázky']] as const).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setView(key)}
+            className={`px-4 py-2 rounded-xl text-sm font-extrabold transition ${
+              view === key ? 'bg-blue-600 text-white' : 'bg-white/[0.06] text-slate-400 hover:text-white'
+            }`}
+          >
+            {label}
+            {key === 'assignments' && assignments.length > 0 && (
+              <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/20">{assignments.length}</span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {view === 'subs' && (<>
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-52">
           <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -292,6 +332,81 @@ export default function SubcontractorsPage() {
           })}
         </div>
       )}
+      </>)}
+
+      {view === 'assignments' && (<>
+      <div className="flex flex-wrap items-center gap-3">
+        <select value={assignmentStatusFilter} onChange={e => setAssignmentStatusFilter(e.target.value)} className={`${inputCls} w-56`}>
+          <option value="">Všechny stavy</option>
+          {Object.entries(JOB_SUB_STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+        </select>
+        <span className="text-xs text-slate-500">
+          {assignments.filter(a => !assignmentStatusFilter || a.status === assignmentStatusFilter).length} záznamů
+        </span>
+      </div>
+
+      {assignments.length === 0 ? (
+        <div className="text-center py-16">
+          <FileText className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+          <p className="text-sm font-semibold text-slate-500">Zatím žádné poptávky ani přiřazení</p>
+          <p className="text-xs text-slate-600 mt-1">Subdodavatele přiřadíte k zakázce v projektu na záložce Realizace.</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {assignments
+            .filter(a => !assignmentStatusFilter || a.status === assignmentStatusFilter)
+            .map(row => {
+              const meta = JOB_SUB_STATUS_LABELS[row.status];
+              const projectId = row.jobs?.project_id;
+              const projectName = row.jobs?.projects?.project_name || 'Neznámý projekt';
+              return (
+                <div key={row.id} className="flex flex-wrap items-center gap-3 bg-navy-800/60 border border-white/[0.08] rounded-xl px-4 py-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        onClick={() => projectId && navigate(`/projekty/${projectId}`)}
+                        className="text-sm font-extrabold text-white hover:text-blue-300 transition truncate"
+                      >
+                        {projectName}
+                      </button>
+                      <span className="text-slate-600">·</span>
+                      <span className="text-sm font-semibold text-slate-300 truncate">{row.subcontractors?.name || '—'}</span>
+                      {row.trade && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-slate-300">
+                          {SUB_TRADE_LABELS[row.trade] || row.trade}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] text-slate-500 truncate">
+                      {row.agreed_price > 0 ? `${row.agreed_price.toLocaleString('cs-CZ')} Kč` : 'Cena nedohodnuta'}
+                      {row.date_from ? ` · od ${new Date(row.date_from).toLocaleDateString('cs-CZ')}` : ''}
+                      {row.date_to ? ` do ${new Date(row.date_to).toLocaleDateString('cs-CZ')}` : ''}
+                      {row.scope ? ` · ${row.scope}` : ''}
+                    </div>
+                  </div>
+                  <select
+                    value={row.status}
+                    onChange={e => handleAssignmentStatus(row, e.target.value as JobSubStatus)}
+                    className={`text-[11px] font-bold px-2 py-1 rounded-lg border bg-transparent ${meta.cls}`}
+                  >
+                    {Object.entries(JOB_SUB_STATUS_LABELS).map(([k, v]) => (
+                      <option key={k} value={k} className="bg-slate-900">{v.label}</option>
+                    ))}
+                  </select>
+                  {row.contract_document_id && projectId && (
+                    <button
+                      onClick={() => navigate(`/projekty/${projectId}/dokument/${row.contract_document_id}`)}
+                      className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition"
+                    >
+                      <ExternalLink className="w-3 h-3" /> Smlouva
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+        </div>
+      )}
+      </>)}
 
       {/* -------- formulář -------- */}
       <Modal
