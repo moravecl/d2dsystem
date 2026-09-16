@@ -90,6 +90,8 @@ const DocumentEditorPage = lazyPage(() => import('./pages/projects/DocumentEdito
 const InspiracePage = lazyPage(() => import('./pages/InspiracePage'));
 const InspirationDetailPage = lazyPage(() => import('./pages/InspirationDetailPage'));
 const PortalLoginPage = lazyPage(() => import('./pages/portal/PortalLoginPage'));
+const PartnerLoginPage = lazyPage(() => import('./pages/partner/PartnerLoginPage'));
+const PartnerPortalPage = lazyPage(() => import('./pages/partner/PartnerPortalPage'));
 const PortalProjectsPage = lazyPage(() => import('./pages/portal/PortalProjectsPage'));
 const PortalProjectDetailPage = lazyPage(() => import('./pages/portal/PortalProjectDetailPage'));
 const AttendancePage = lazyPage(() => import('./pages/AttendancePage'));
@@ -185,6 +187,9 @@ export default function App() {
             <Route path="/inspirace/:slug" element={<InspirationDetailPage />} />
 
             <Route path="/designer" element={<CatalogPage />} />
+
+            <Route path="/partner/login" element={<PartnerLoginPage />} />
+            <Route path="/partner" element={<PartnerPortalPage />} />
 
             <Route
               path="/portal/login"

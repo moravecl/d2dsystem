@@ -179,3 +179,33 @@ export async function sendWelcomeEmail(params: {
     html,
   });
 }
+
+export async function sendSubInquiryEmail(params: {
+  organizationId: string;
+  organizationName: string;
+  recipients: { email: string; name: string }[];
+  title: string;
+  place: string;
+  dateFrom?: string | null;
+  dateTo?: string | null;
+  deadline?: string | null;
+}) {
+  const link = `${window.location.origin}/partner`;
+  const fmtDate = (d?: string | null) => (d ? new Date(d).toLocaleDateString('cs-CZ') : '');
+  const term = [fmtDate(params.dateFrom), fmtDate(params.dateTo)].filter(Boolean).join(' – ');
+  for (const r of params.recipients) {
+    if (!r.email) continue;
+    await sendTransactional({
+      organizationId: params.organizationId,
+      to: [r.email],
+      subject: `Nová poptávka: ${params.title}`,
+      html: `<p>Dobrý den,</p>
+<p>společnost <strong>${params.organizationName}</strong> vám zaslala poptávku na subdodávku:</p>
+<p><strong>${params.title}</strong>${params.place ? `<br>Lokalita: ${params.place}` : ''}${term ? `<br>Termín realizace: ${term}` : ''}${params.deadline ? `<br>Odpovězte prosím do: <strong>${fmtDate(params.deadline)}</strong>` : ''}</p>
+<p>Detail poptávky a odpověď najdete v portálu subdodavatele:</p>
+<p><a href="${link}">${link}</a></p>
+<p>Pokud v portálu ještě nemáte účet, zaregistrujte se na stejné adrese s tímto e-mailem (${r.email}) — poptávka se vám přiřadí automaticky.</p>`,
+      text: `Nová poptávka: ${params.title}. Odpovězte v portálu: ${link}`,
+    });
+  }
+}

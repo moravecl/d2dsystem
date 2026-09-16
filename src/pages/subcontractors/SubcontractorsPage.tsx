@@ -10,11 +10,18 @@ import { supabase } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
 import { logAudit } from '../../lib/auditLog';
+import SubInquiryDetailModal from '../../components/subcontractors/SubInquiryDetailModal';
 import {
   type Subcontractor, type SubcontractorDocument, type SubDocType,
-  type JobSubcontractor, type JobSubStatus,
-  SUB_TRADE_LABELS, SUB_DOC_TYPE_LABELS, JOB_SUB_STATUS_LABELS, docValidity,
+  type JobSubcontractor, type JobSubStatus, type SubInquiry, type SubInquiryRecipient,
+  SUB_TRADE_LABELS, SUB_DOC_TYPE_LABELS, JOB_SUB_STATUS_LABELS,
+  SUB_INQUIRY_STATUS_LABELS, docValidity,
 } from '../../types/subcontractors';
+
+interface InquiryRow extends SubInquiry {
+  jobs?: { id: string; project_id: string; projects?: { id: string; project_name: string } };
+  sub_inquiry_recipients?: SubInquiryRecipient[];
+}
 
 interface AssignmentRow extends JobSubcontractor {
   subcontractors?: Subcontractor;
@@ -78,6 +85,8 @@ export default function SubcontractorsPage() {
   const [detailSub, setDetailSub] = useState<Subcontractor | null>(null);
   const [view, setView] = useState<'subs' | 'assignments'>('subs');
   const [assignments, setAssignments] = useState<AssignmentRow[]>([]);
+  const [inquiries, setInquiries] = useState<InquiryRow[]>([]);
+  const [inquiryDetail, setInquiryDetail] = useState<SubInquiry | null>(null);
   const [assignmentStatusFilter, setAssignmentStatusFilter] = useState('');
   const [uploading, setUploading] = useState(false);
   const [docForm, setDocForm] = useState({ doc_type: 'pojisteni' as SubDocType, name: '', valid_until: '', file: null as File | null });
@@ -94,16 +103,20 @@ export default function SubcontractorsPage() {
   }, [setConfig]);
 
   const loadData = useCallback(async () => {
-    const [subsRes, docsRes, assignRes] = await Promise.all([
+    const [subsRes, docsRes, assignRes, inqRes] = await Promise.all([
       supabase.from('subcontractors').select('*').order('name'),
       supabase.from('subcontractor_documents').select('*').order('created_at', { ascending: false }),
       supabase.from('job_subcontractors')
         .select('*, subcontractors(*), jobs(id, project_id, projects(id, project_name))')
         .order('created_at', { ascending: false }),
+      supabase.from('sub_inquiries')
+        .select('*, jobs(id, project_id, projects(id, project_name)), sub_inquiry_recipients(*)')
+        .order('created_at', { ascending: false }),
     ]);
     setSubs((subsRes.data || []) as Subcontractor[]);
     setDocs((docsRes.data || []) as SubcontractorDocument[]);
     setAssignments((assignRes.data || []) as AssignmentRow[]);
+    setInquiries((inqRes.data || []) as InquiryRow[]);
     setLoading(false);
   }, []);
 
@@ -335,6 +348,41 @@ export default function SubcontractorsPage() {
       </>)}
 
       {view === 'assignments' && (<>
+      {inquiries.length > 0 && (
+        <div className="space-y-2">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Hromadné poptávky</div>
+          {inquiries.map(inq => {
+            const imeta = SUB_INQUIRY_STATUS_LABELS[inq.status];
+            const recs = inq.sub_inquiry_recipients || [];
+            const responded = recs.filter(r => ['offered', 'accepted', 'declined'].includes(r.status)).length;
+            const offers = recs.filter(r => r.status === 'offered' || r.status === 'accepted').length;
+            const confirmed = recs.filter(r => r.confirmed_at).length;
+            return (
+              <button
+                key={inq.id}
+                onClick={() => setInquiryDetail(inq)}
+                className="w-full text-left bg-navy-800/60 border border-white/[0.08] hover:border-blue-400/40 rounded-xl px-4 py-3 transition"
+              >
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm font-extrabold text-white">{inq.title}</span>
+                  <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border ${imeta.cls}`}>{imeta.label}</span>
+                  {inq.trade && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-slate-300">
+                      {SUB_TRADE_LABELS[inq.trade] || inq.trade}
+                    </span>
+                  )}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  {inq.jobs?.projects?.project_name || ''}
+                  {' · '}osloveno {recs.length}, odpovědělo {responded}, nabídek {offers}, potvrzeno {confirmed}/{inq.people_needed}
+                  {inq.response_deadline ? ` · odpovědi do ${new Date(inq.response_deadline).toLocaleDateString('cs-CZ')}` : ''}
+                </div>
+              </button>
+            );
+          })}
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 pt-3">Přiřazení k zakázkám</div>
+        </div>
+      )}
       <div className="flex flex-wrap items-center gap-3">
         <select value={assignmentStatusFilter} onChange={e => setAssignmentStatusFilter(e.target.value)} className={`${inputCls} w-56`}>
           <option value="">Všechny stavy</option>
@@ -407,6 +455,14 @@ export default function SubcontractorsPage() {
         </div>
       )}
       </>)}
+
+      {inquiryDetail && (
+        <SubInquiryDetailModal
+          inquiry={inquiryDetail}
+          onClose={() => setInquiryDetail(null)}
+          onChanged={loadData}
+        />
+      )}
 
       {/* -------- formulář -------- */}
       <Modal

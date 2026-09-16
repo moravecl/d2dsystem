@@ -89,3 +89,59 @@ export function docValidity(validUntil: string | null): 'expired' | 'expiring' |
   if (due <= soon) return 'expiring';
   return 'valid';
 }
+
+export type SubInquiryMode = 'fixed_price' | 'bid';
+export type SubInquiryStatus = 'draft' | 'sent' | 'closed' | 'awarded' | 'cancelled';
+export type SubRecipientStatus = 'sent' | 'viewed' | 'declined' | 'offered' | 'accepted';
+
+export interface SubInquiry {
+  id: string;
+  organization_id: string;
+  job_id: string;
+  project_id: string | null;
+  title: string;
+  scope: string;
+  trade: string;
+  mode: SubInquiryMode;
+  fixed_price: number;
+  people_needed: number;
+  reveal_client: boolean;
+  place: string;
+  date_from: string | null;
+  date_to: string | null;
+  response_deadline: string | null;
+  status: SubInquiryStatus;
+  note: string;
+  created_at: string;
+}
+
+export interface SubInquiryRecipient {
+  id: string;
+  inquiry_id: string;
+  subcontractor_id: string;
+  status: SubRecipientStatus;
+  offer_price: number | null;
+  offer_note: string;
+  people_offered: number | null;
+  responded_at: string | null;
+  confirmed_at: string | null;
+  awarded_job_subcontractor_id: string | null;
+  subcontractors?: Subcontractor;
+  sub_inquiries?: SubInquiry;
+}
+
+export const SUB_INQUIRY_STATUS_LABELS: Record<SubInquiryStatus, { label: string; cls: string }> = {
+  draft: { label: 'Koncept', cls: 'text-slate-400 bg-white/[0.06] border-white/[0.08]' },
+  sent: { label: 'Otevřená', cls: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+  closed: { label: 'Uzavřená', cls: 'text-slate-300 bg-white/[0.06] border-white/[0.08]' },
+  awarded: { label: 'Zadaná', cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+  cancelled: { label: 'Zrušená', cls: 'text-red-400 bg-red-500/10 border-red-500/20' },
+};
+
+export const SUB_RECIPIENT_STATUS_LABELS: Record<SubRecipientStatus, { label: string; cls: string }> = {
+  sent: { label: 'Odesláno', cls: 'text-slate-400 bg-white/[0.06] border-white/[0.08]' },
+  viewed: { label: 'Zobrazeno', cls: 'text-sky-400 bg-sky-500/10 border-sky-500/20' },
+  declined: { label: 'Odmítnuto', cls: 'text-red-400 bg-red-500/10 border-red-500/20' },
+  offered: { label: 'Nabídka', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
+  accepted: { label: 'Přijato', cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+};

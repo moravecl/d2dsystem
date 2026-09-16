@@ -7,6 +7,7 @@ import { useToast } from '../ui/Toast';
 import Modal from '../ui/Modal';
 import { logAudit } from '../../lib/auditLog';
 import ProjectMiniGantt from './ProjectMiniGantt';
+import SubInquiryModal from '../subcontractors/SubInquiryModal';
 import { renderTemplate } from '../../lib/placeholderEngine';
 import type { DocumentTemplate } from '../../types/database';
 import {
@@ -30,6 +31,7 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
   const [subs, setSubs] = useState<Subcontractor[]>([]);
   const [expiredSubIds, setExpiredSubIds] = useState<Set<string>>(new Set());
   const [showAdd, setShowAdd] = useState(false);
+  const [showInquiry, setShowInquiry] = useState(false);
   const [saving, setSaving] = useState(false);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [templatePicker, setTemplatePicker] = useState<{ row: JobSubcontractor; templates: DocumentTemplate[] } | null>(null);
@@ -201,12 +203,20 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
         <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
           <HardHat className="w-4 h-4 text-orange-400" /> Subdodavatelé
         </h3>
-        <button
-          onClick={() => setShowAdd(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 rounded-lg transition"
-        >
-          <Plus className="w-3.5 h-3.5" /> Přiřadit subdodavatele
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowInquiry(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition"
+          >
+            <Plus className="w-3.5 h-3.5" /> Poptat subdodavatele
+          </button>
+          <button
+            onClick={() => setShowAdd(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 rounded-lg transition"
+          >
+            <Plus className="w-3.5 h-3.5" /> Přiřadit napřímo
+          </button>
+        </div>
       </div>
 
       {rows.length === 0 ? (
@@ -345,6 +355,14 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
           <div><label className={labelCls}>Poznámka</label><input value={form.note} onChange={e => setForm(p => ({ ...p, note: e.target.value }))} className={inputCls} /></div>
         </div>
       </Modal>
+
+      <SubInquiryModal
+        open={showInquiry}
+        onClose={() => setShowInquiry(false)}
+        onCreated={loadData}
+        jobId={jobId}
+        projectId={projectId}
+      />
 
       <Modal
         open={!!templatePicker}
