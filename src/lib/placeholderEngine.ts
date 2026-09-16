@@ -13,6 +13,8 @@ export const PLACEHOLDER_CATEGORIES = [
   { key: 'client', label: 'Klient' },
   { key: 'quote', label: 'Nabídka' },
   { key: 'job', label: 'Zakázka' },
+  { key: 'subcontractor', label: 'Subdodavatel' },
+  { key: 'contract', label: 'Smlouva (subdodávka)' },
   { key: 'general', label: 'Obecné' },
 ] as const;
 
@@ -42,6 +44,18 @@ export const PLACEHOLDER_REGISTRY: PlaceholderDef[] = [
   { key: 'quote.version', label: 'Verze nabídky', category: 'quote', description: 'Číslo verze nabídky' },
   { key: 'quote.total', label: 'Celková cena', category: 'quote', description: 'Celková cena nabídky' },
   { key: 'quote.status', label: 'Stav nabídky', category: 'quote', description: 'Aktuální stav nabídky' },
+  { key: 'subcontractor.name', label: 'Jméno subdodavatele', category: 'subcontractor', description: 'Název/jméno subdodavatele' },
+  { key: 'subcontractor.ico', label: 'IČO subdodavatele', category: 'subcontractor', description: 'IČO subdodavatele' },
+  { key: 'subcontractor.dic', label: 'DIČ subdodavatele', category: 'subcontractor', description: 'DIČ subdodavatele' },
+  { key: 'subcontractor.address', label: 'Adresa subdodavatele', category: 'subcontractor', description: 'Adresa subdodavatele' },
+  { key: 'subcontractor.city', label: 'Město subdodavatele', category: 'subcontractor', description: 'Město subdodavatele' },
+  { key: 'subcontractor.email', label: 'E-mail subdodavatele', category: 'subcontractor', description: 'E-mail subdodavatele' },
+  { key: 'subcontractor.phone', label: 'Telefon subdodavatele', category: 'subcontractor', description: 'Telefon subdodavatele' },
+  { key: 'contract.scope', label: 'Rozsah prací', category: 'contract', description: 'Rozsah prací subdodávky' },
+  { key: 'contract.price', label: 'Smluvní cena', category: 'contract', description: 'Dohodnutá cena subdodávky' },
+  { key: 'contract.trade', label: 'Řemeslo', category: 'contract', description: 'Řemeslo subdodávky' },
+  { key: 'contract.date_from', label: 'Zahájení prací', category: 'contract', description: 'Datum zahájení subdodávky' },
+  { key: 'contract.date_to', label: 'Dokončení prací', category: 'contract', description: 'Datum dokončení subdodávky' },
   { key: 'job.status', label: 'Stav zakázky', category: 'job', description: 'Aktuální stav zakázky' },
   { key: 'job.started_at', label: 'Datum zahájení', category: 'job', description: 'Datum zahájení zakázky' },
   { key: 'today', label: 'Dnešní datum', category: 'general', description: 'Aktuální datum' },
@@ -65,6 +79,8 @@ export interface RenderContext {
   client?: Record<string, unknown>;
   quote?: Record<string, unknown>;
   job?: Record<string, unknown>;
+  subcontractor?: Record<string, unknown>;
+  contract?: Record<string, unknown>;
   currentUser?: string;
 }
 

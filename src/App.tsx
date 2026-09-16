@@ -70,6 +70,7 @@ const ProjectDetailPage = lazyPage(() => import('./pages/projects/ProjectDetailP
 const CatalogListPage = lazyPage(() => import('./pages/catalog/CatalogListPage'));
 const CatalogPage = lazyPage(() => import('./pages/CatalogPage'));
 const ExecutionPage = lazyPage(() => import('./pages/ExecutionPage'));
+const SubcontractorsPage = lazyPage(() => import('./pages/subcontractors/SubcontractorsPage'));
 const DesignEditorPage = lazyPage(() => import('./pages/projects/DesignEditorPage'));
 const ProductAssignmentPage = lazyPage(() => import('./pages/projects/ProductAssignmentPage'));
 const FvDesignerPage = lazyPage(() => import('./pages/projects/FvDesignerPage'));
@@ -229,6 +230,7 @@ export default function App() {
               <Route path="/projekty/:id/dokument/:docId" element={<DocumentEditorPage />} />
               <Route path="/katalog" element={<CatalogListPage />} />
               <Route path="/realizace" element={<ExecutionPage />} />
+              <Route path="/subdodavatele" element={<SubcontractorsPage />} />
               <Route path="/dochazka" element={<AttendancePage />} />
               <Route path="/ukoly" element={<TasksBoardPage />} />
               <Route path="/cas" element={<TimeTrackingPage />} />
