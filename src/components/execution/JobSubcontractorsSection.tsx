@@ -32,6 +32,8 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
   const [showAdd, setShowAdd] = useState(false);
   const [saving, setSaving] = useState(false);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
+  const [templatePicker, setTemplatePicker] = useState<{ row: JobSubcontractor; templates: DocumentTemplate[] } | null>(null);
+  const [pickedTemplateId, setPickedTemplateId] = useState('');
   const [form, setForm] = useState({
     subcontractor_id: '', trade: '', scope: '', agreed_price: 0, date_from: '', date_to: '', note: '',
   });
@@ -95,18 +97,30 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
    * projektu a přilinkuje ji k vazbě zakázka×subdodavatel.
    */
   const handleGenerateContract = async (row: JobSubcontractor) => {
+    const { data } = await supabase.from('document_templates')
+      .select('*').eq('template_type', 'smlouva').eq('is_active', true).order('name');
+    const templates = (data || []) as DocumentTemplate[];
+    if (templates.length === 0) {
+      toast('Chybí aktivní šablona typu „Smlouva" — vytvořte ji v Dokumentech', 'error');
+      return;
+    }
+    if (templates.length === 1) {
+      generateWithTemplate(row, templates[0]);
+      return;
+    }
+    // vic sablon typu smlouva (napr. pracovni) -> nechat vybrat,
+    // predvolit subdodavatelskou podle nazvu
+    const preferred = templates.find(t => /subdodavatel|o d[íi]lo/i.test(t.name)) || templates[0];
+    setPickedTemplateId(preferred.id);
+    setTemplatePicker({ row, templates });
+  };
+
+  const generateWithTemplate = async (row: JobSubcontractor, template: DocumentTemplate) => {
     const sub = row.subcontractors;
     if (!sub) return;
+    setTemplatePicker(null);
     setGeneratingId(row.id);
     try {
-      const { data: templates } = await supabase.from('document_templates')
-        .select('*').eq('template_type', 'smlouva').eq('is_active', true).order('name');
-      const template = (templates || [])[0] as DocumentTemplate | undefined;
-      if (!template) {
-        toast('Chybí aktivní šablona typu „Smlouva o dílo" — vytvořte ji v Dokumentech', 'error');
-        return;
-      }
-
       const [{ data: proj }, { data: companyRow }, { data: authUser }] = await Promise.all([
         supabase.from('projects').select('*').eq('id', projectId).maybeSingle(),
         supabase.from('company_info').select('*').limit(1).maybeSingle(),
@@ -329,6 +343,50 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
             </div>
           </div>
           <div><label className={labelCls}>Poznámka</label><input value={form.note} onChange={e => setForm(p => ({ ...p, note: e.target.value }))} className={inputCls} /></div>
+        </div>
+      </Modal>
+
+      <Modal
+        open={!!templatePicker}
+        onClose={() => setTemplatePicker(null)}
+        title="Vyberte šablonu smlouvy"
+        size="md"
+        footer={
+          <>
+            <button onClick={() => setTemplatePicker(null)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.06] rounded-lg transition">Zrušit</button>
+            <button
+              onClick={() => {
+                const tpl = templatePicker?.templates.find(t => t.id === pickedTemplateId);
+                if (templatePicker && tpl) generateWithTemplate(templatePicker.row, tpl);
+              }}
+              className="px-5 py-2 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition"
+            >
+              Vygenerovat smlouvu
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-2">
+          {(templatePicker?.templates || []).map(t => (
+            <label
+              key={t.id}
+              className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition ${
+                pickedTemplateId === t.id ? 'border-blue-500 bg-blue-500/10' : 'border-white/[0.08] hover:border-white/20'
+              }`}
+            >
+              <input
+                type="radio"
+                name="sodTemplate"
+                checked={pickedTemplateId === t.id}
+                onChange={() => setPickedTemplateId(t.id)}
+                className="mt-1 w-4 h-4 accent-blue-600"
+              />
+              <div className="min-w-0">
+                <div className={`text-sm font-bold ${pickedTemplateId === t.id ? 'text-blue-300' : 'text-slate-200'}`}>{t.name}</div>
+                {t.description && <div className="text-[11px] text-slate-500 mt-0.5">{t.description}</div>}
+              </div>
+            </label>
+          ))}
         </div>
       </Modal>
     </div>
