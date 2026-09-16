@@ -188,10 +188,12 @@ export default function InvoiceFromProjectModal({ open, onClose, projectId, defa
         supabase.from('job_worklogs')
           .select('id, activity, started_at, duration_minutes, hourly_rate')
           .eq('job_id', jobId).is('billed_invoice_id', null).eq('is_running', false)
+          .eq('approval_status', 'approved')
           .order('started_at'),
         supabase.from('job_material_entries')
           .select('id, material_name, unit, actual_qty, unit_price')
           .eq('job_id', jobId).is('billed_invoice_id', null).gt('actual_qty', 0)
+          .eq('approval_status', 'approved')
           .order('created_at'),
       ]);
       setWorklogs(((workRes.data ?? []) as Omit<UnbilledWorklog, 'selected'>[])

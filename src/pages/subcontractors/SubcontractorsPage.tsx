@@ -11,6 +11,7 @@ import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
 import { logAudit } from '../../lib/auditLog';
 import SubInquiryDetailModal from '../../components/subcontractors/SubInquiryDetailModal';
+import SubInquiryModal from '../../components/subcontractors/SubInquiryModal';
 import {
   type Subcontractor, type SubcontractorDocument, type SubDocType,
   type JobSubcontractor, type JobSubStatus, type SubInquiry, type SubInquiryRecipient,
@@ -87,6 +88,7 @@ export default function SubcontractorsPage() {
   const [assignments, setAssignments] = useState<AssignmentRow[]>([]);
   const [inquiries, setInquiries] = useState<InquiryRow[]>([]);
   const [inquiryDetail, setInquiryDetail] = useState<SubInquiry | null>(null);
+  const [showNewInquiry, setShowNewInquiry] = useState(false);
   const [assignmentStatusFilter, setAssignmentStatusFilter] = useState('');
   const [uploading, setUploading] = useState(false);
   const [docForm, setDocForm] = useState({ doc_type: 'pojisteni' as SubDocType, name: '', valid_until: '', file: null as File | null });
@@ -348,6 +350,14 @@ export default function SubcontractorsPage() {
       </>)}
 
       {view === 'assignments' && (<>
+      <div className="flex justify-end">
+        <button
+          onClick={() => setShowNewInquiry(true)}
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition"
+        >
+          <Plus className="w-4 h-4" /> Nová poptávka
+        </button>
+      </div>
       {inquiries.length > 0 && (
         <div className="space-y-2">
           <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Hromadné poptávky</div>
@@ -455,6 +465,12 @@ export default function SubcontractorsPage() {
         </div>
       )}
       </>)}
+
+      <SubInquiryModal
+        open={showNewInquiry}
+        onClose={() => setShowNewInquiry(false)}
+        onCreated={loadData}
+      />
 
       {inquiryDetail && (
         <SubInquiryDetailModal

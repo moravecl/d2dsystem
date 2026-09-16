@@ -15,8 +15,9 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onCreated: () => void;
-  jobId: string;
-  projectId: string;
+  /** Bez jobId/projectId se v modalu vybírá projekt (vstup z modulu Subdodavatelé). */
+  jobId?: string;
+  projectId?: string;
 }
 
 const inputCls = 'w-full px-3 py-2 rounded-xl border border-white/10 bg-white/[0.06] text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition';
@@ -26,6 +27,9 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
   const { user } = useAuth();
   const { toast } = useToast();
   const [subs, setSubs] = useState<Subcontractor[]>([]);
+  const [projectOptions, setProjectOptions] = useState<{ jobId: string; projectId: string; name: string }[]>([]);
+  const [selJobId, setSelJobId] = useState('');
+  const [selProjectId, setSelProjectId] = useState('');
   const [expiredSubIds, setExpiredSubIds] = useState<Set<string>>(new Set());
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [sending, setSending] = useState(false);
@@ -40,11 +44,12 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
     if (!open) return;
     setSelectedIds(new Set());
     setFiles([]);
+    setSelJobId(jobId || '');
+    setSelProjectId(projectId || '');
     const load = async () => {
-      const [subsRes, docsRes, projRes] = await Promise.all([
+      const [subsRes, docsRes] = await Promise.all([
         supabase.from('subcontractors').select('*').eq('is_active', true).order('name'),
         supabase.from('subcontractor_documents').select('subcontractor_id, valid_until'),
-        supabase.from('projects').select('project_name, address').eq('id', projectId).maybeSingle(),
       ]);
       setSubs((subsRes.data || []) as Subcontractor[]);
       const expired = new Set<string>();
@@ -52,17 +57,38 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
         if (docValidity(d.valid_until) === 'expired') expired.add(d.subcontractor_id);
       }
       setExpiredSubIds(expired);
-      const proj = projRes.data as { project_name?: string; address?: string } | null;
-      // lokalita: posledni cast adresy (obec) — bez cisla popisneho a jmena klienta
-      const place = (proj?.address || '').split(',').pop()?.trim().replace(/^\d+\s*/, '') || '';
-      setForm(p => ({
-        ...p,
-        title: p.title || `Subdodávka — ${proj?.project_name || 'zakázka'}`,
-        place: p.place || place,
-      }));
+      if (!jobId) {
+        // vstup z modulu Subdodavatele: nabidnout projekty se zahajenou realizaci
+        const { data: jobsData } = await supabase.from('jobs')
+          .select('id, project_id, projects(id, project_name)')
+          .order('created_at', { ascending: false });
+        const seen = new Set<string>();
+        const opts: { jobId: string; projectId: string; name: string }[] = [];
+        for (const j of (jobsData || []) as { id: string; project_id: string; projects?: { project_name?: string } }[]) {
+          if (!j.project_id || seen.has(j.project_id)) continue;
+          seen.add(j.project_id);
+          opts.push({ jobId: j.id, projectId: j.project_id, name: j.projects?.project_name || 'Projekt' });
+        }
+        setProjectOptions(opts);
+      }
     };
     load();
-  }, [open, projectId]);
+  }, [open, jobId, projectId]);
+
+  // prefill nazvu a lokality podle zvoleneho projektu
+  useEffect(() => {
+    if (!open || !selProjectId) return;
+    supabase.from('projects').select('project_name, address').eq('id', selProjectId).maybeSingle()
+      .then(({ data }) => {
+        const proj = data as { project_name?: string; address?: string } | null;
+        const place = (proj?.address || '').split(',').pop()?.trim().replace(/^\d+\s*/, '') || '';
+        setForm(p => ({
+          ...p,
+          title: p.title || `Subdodávka — ${proj?.project_name || 'zakázka'}`,
+          place: p.place || place,
+        }));
+      });
+  }, [open, selProjectId]);
 
   const toggleSub = (id: string) => {
     setSelectedIds(prev => {
@@ -75,14 +101,15 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
   const filteredSubs = form.trade ? subs.filter(s => (s.trades || []).includes(form.trade)) : subs;
 
   const handleSend = async () => {
+    if (!selJobId || !selProjectId) { toast('Vyberte projekt', 'error'); return; }
     if (!form.title.trim()) { toast('Zadejte název poptávky', 'error'); return; }
     if (selectedIds.size === 0) { toast('Vyberte alespoň jednoho subdodavatele', 'error'); return; }
     if (form.mode === 'fixed_price' && form.fixed_price <= 0) { toast('Zadejte pevnou cenu', 'error'); return; }
     setSending(true);
     try {
       const { data: inquiry, error } = await supabase.from('sub_inquiries').insert({
-        job_id: jobId,
-        project_id: projectId,
+        job_id: selJobId,
+        project_id: selProjectId,
         title: form.title.trim(),
         scope: form.scope,
         trade: form.trade,
@@ -183,6 +210,26 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
       }
     >
       <div className="space-y-4">
+        {!jobId && (
+          <div>
+            <label className={labelCls}>Projekt *</label>
+            <select
+              value={selProjectId}
+              onChange={e => {
+                const opt = projectOptions.find(o => o.projectId === e.target.value);
+                setSelProjectId(e.target.value);
+                setSelJobId(opt?.jobId || '');
+              }}
+              className={inputCls}
+            >
+              <option value="">-- Vyberte projekt --</option>
+              {projectOptions.map(o => <option key={o.projectId} value={o.projectId}>{o.name}</option>)}
+            </select>
+            {projectOptions.length === 0 && (
+              <p className="text-[11px] text-amber-400 mt-1">Žádný projekt nemá zahájenou realizaci — poptávka se váže na zakázku (Realizace).</p>
+            )}
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className={labelCls}>Název poptávky *</label>
@@ -225,10 +272,12 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
           </div>
         </div>
 
-        <ProjectMiniGantt
-          projectId={projectId}
-          onPickRange={(from, to) => setForm(p => ({ ...p, date_from: from, date_to: to }))}
-        />
+        {selProjectId && (
+          <ProjectMiniGantt
+            projectId={selProjectId}
+            onPickRange={(from, to) => setForm(p => ({ ...p, date_from: from, date_to: to }))}
+          />
+        )}
 
         <div className="grid grid-cols-3 gap-3">
           <div>

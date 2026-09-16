@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   HardHat, LogOut, Loader2, MapPin, CalendarDays, Clock, FileSignature,
-  CheckCircle2, XCircle, Send, ArrowLeft, Paperclip, X,
+  CheckCircle2, XCircle, Send, ArrowLeft, Paperclip, X, Wrench, Package, Upload,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { supabase } from '../../lib/supabase';
@@ -27,6 +27,12 @@ export default function PartnerPortalPage() {
   const [jobs, setJobs] = useState<JobSubcontractor[]>([]);
   const [detail, setDetail] = useState<SubInquiryRecipient | null>(null);
   const [contractJob, setContractJob] = useState<JobSubcontractor | null>(null);
+  const [jobDetail, setJobDetail] = useState<JobSubcontractor | null>(null);
+  const [jobWork, setJobWork] = useState<{ id: string; started_at: string | null; duration_minutes: number; note: string; approval_status: string }[]>([]);
+  const [jobMaterials, setJobMaterials] = useState<{ id: string; material_name: string; unit: string; actual_qty: number; approval_status: string }[]>([]);
+  const [jobFiles, setJobFiles] = useState<{ id: string; file_name: string; file_url: string; by_sub: boolean; uploaded_by: string | null }[]>([]);
+  const [workForm, setWorkForm] = useState({ date: new Date().toISOString().split('T')[0], hours: '', note: '' });
+  const [matForm, setMatForm] = useState({ name: '', qty: '', unit: 'ks', note: '' });
   const [contractHtml, setContractHtml] = useState('');
   const [offerPrice, setOfferPrice] = useState('');
   const [offerNote, setOfferNote] = useState('');
@@ -106,6 +112,95 @@ export default function PartnerPortalPage() {
     if (detail) loadInqFiles(detail.inquiry_id);
   };
 
+  const loadJobDetail = async (job: JobSubcontractor) => {
+    const [workRes, matRes, filesRes] = await Promise.all([
+      supabase.from('job_worklogs')
+        .select('id, started_at, duration_minutes, note, approval_status')
+        .eq('job_id', job.job_id)
+        .order('started_at', { ascending: false }),
+      supabase.from('job_material_entries')
+        .select('id, material_name, unit, actual_qty, approval_status')
+        .eq('job_id', job.job_id)
+        .order('created_at', { ascending: false }),
+      supabase.from('sub_job_files')
+        .select('id, file_name, file_url, by_sub, uploaded_by')
+        .eq('job_subcontractor_id', job.id)
+        .order('created_at', { ascending: false }),
+    ]);
+    setJobWork((workRes.data || []) as typeof jobWork);
+    setJobMaterials((matRes.data || []) as typeof jobMaterials);
+    setJobFiles((filesRes.data || []) as typeof jobFiles);
+  };
+
+  const openJobDetail = (job: JobSubcontractor) => {
+    setJobDetail(job);
+    setError('');
+    setWorkForm({ date: new Date().toISOString().split('T')[0], hours: '', note: '' });
+    setMatForm({ name: '', qty: '', unit: 'ks', note: '' });
+    loadJobDetail(job);
+  };
+
+  const submitWork = async () => {
+    if (!jobDetail) return;
+    setBusy(true);
+    setError('');
+    const { error: err } = await supabase.rpc('sub_log_work', {
+      p_job_sub: jobDetail.id,
+      p_date: workForm.date,
+      p_hours: parseFloat(workForm.hours) || 0,
+      p_note: workForm.note,
+    });
+    setBusy(false);
+    if (err) { setError(err.message); return; }
+    setWorkForm({ date: new Date().toISOString().split('T')[0], hours: '', note: '' });
+    loadJobDetail(jobDetail);
+  };
+
+  const submitMaterial = async () => {
+    if (!jobDetail) return;
+    setBusy(true);
+    setError('');
+    const { error: err } = await supabase.rpc('sub_log_material', {
+      p_job_sub: jobDetail.id,
+      p_name: matForm.name,
+      p_qty: parseFloat(matForm.qty) || 0,
+      p_unit: matForm.unit,
+      p_note: matForm.note,
+    });
+    setBusy(false);
+    if (err) { setError(err.message); return; }
+    setMatForm({ name: '', qty: '', unit: 'ks', note: '' });
+    loadJobDetail(jobDetail);
+  };
+
+  const uploadJobFile = async (file: File) => {
+    if (!jobDetail) return;
+    setUploadingFile(true);
+    try {
+      const path = `subjob/${jobDetail.id}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
+      const { error: upErr } = await supabase.storage.from('uploads').upload(path, file);
+      if (upErr) { setError('Soubor se nepodařilo nahrát.'); return; }
+      const { data: urlData } = supabase.storage.from('uploads').getPublicUrl(path);
+      const { data: session } = await supabase.auth.getSession();
+      const { error: insErr } = await supabase.from('sub_job_files').insert({
+        job_subcontractor_id: jobDetail.id,
+        file_name: file.name,
+        file_url: urlData.publicUrl,
+        by_sub: true,
+        uploaded_by: session.session?.user.id,
+      });
+      if (insErr) { setError('Soubor se nepodařilo uložit.'); return; }
+      loadJobDetail(jobDetail);
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
+  const removeJobFile = async (fileId: string) => {
+    await supabase.from('sub_job_files').delete().eq('id', fileId);
+    if (jobDetail) loadJobDetail(jobDetail);
+  };
+
   const respond = async (action: 'accept' | 'offer' | 'decline') => {
     if (!detail) return;
     setBusy(true);
@@ -160,6 +255,133 @@ export default function PartnerPortalPage() {
 
   const openInquiries = recipients.filter(r => r.sub_inquiries?.status === 'sent');
   const pastInquiries = recipients.filter(r => r.sub_inquiries?.status !== 'sent');
+
+  // -------------------------------------------------- detail zakázky (výkazy + soubory)
+  if (jobDetail) {
+    const APPROVAL: Record<string, { label: string; cls: string }> = {
+      pending: { label: 'Čeká na schválení', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
+      approved: { label: 'Schváleno', cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+      rejected: { label: 'Zamítnuto', cls: 'text-red-400 bg-red-500/10 border-red-500/20' },
+    };
+    const jmeta = JOB_SUB_STATUS_LABELS[jobDetail.status];
+    const closed = jobDetail.status === 'cancelled' || jobDetail.status === 'completed';
+    return (
+      <div className="min-h-screen bg-navy-900">
+        <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+          <button onClick={() => { setJobDetail(null); loadData(); }} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition">
+            <ArrowLeft className="w-4 h-4" /> Zpět na zakázky
+          </button>
+
+          <div className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-5 space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-lg font-extrabold text-white">{jobDetail.scope || SUB_TRADE_LABELS[jobDetail.trade] || 'Zakázka'}</h1>
+              <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border ${jmeta.cls}`}>{jmeta.label}</span>
+            </div>
+            <div className="text-xs text-slate-400">
+              {jobDetail.agreed_price > 0 && `${jobDetail.agreed_price.toLocaleString('cs-CZ')} Kč`}
+              {jobDetail.date_from ? ` · od ${fmtDate(jobDetail.date_from)}` : ''}
+              {jobDetail.date_to ? ` do ${fmtDate(jobDetail.date_to)}` : ''}
+            </div>
+          </div>
+
+          {error && <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</p>}
+
+          <div className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-5 space-y-3">
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <Wrench className="w-4 h-4 text-blue-400" /> Vykázat práci
+            </h2>
+            {!closed && (
+              <div className="grid grid-cols-1 sm:grid-cols-[130px_100px_1fr_auto] gap-2">
+                <input type="date" value={workForm.date} onChange={e => setWorkForm(f => ({ ...f, date: e.target.value }))} className={inputCls} />
+                <input type="number" min={0.5} step={0.5} value={workForm.hours} onChange={e => setWorkForm(f => ({ ...f, hours: e.target.value }))} placeholder="Hodin" className={inputCls} />
+                <input value={workForm.note} onChange={e => setWorkForm(f => ({ ...f, note: e.target.value }))} placeholder="Co se dělalo…" className={inputCls} />
+                <button onClick={submitWork} disabled={busy} className="px-4 py-2 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition disabled:opacity-50">Vykázat</button>
+              </div>
+            )}
+            {jobWork.length > 0 && (
+              <div className="space-y-1.5">
+                {jobWork.map(w => {
+                  const am = APPROVAL[w.approval_status] || APPROVAL.pending;
+                  return (
+                    <div key={w.id} className="flex items-center gap-2 text-xs bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2">
+                      <span className="font-bold text-white">{(w.duration_minutes / 60).toLocaleString('cs-CZ', { maximumFractionDigits: 1 })} h</span>
+                      <span className="text-slate-500">{w.started_at ? fmtDate(w.started_at) : ''}</span>
+                      <span className="text-slate-400 truncate flex-1">{w.note}</span>
+                      <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border shrink-0 ${am.cls}`}>{am.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-5 space-y-3">
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <Package className="w-4 h-4 text-emerald-400" /> Vykázat materiál
+            </h2>
+            {!closed && (
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_90px_80px_auto] gap-2">
+                <input value={matForm.name} onChange={e => setMatForm(f => ({ ...f, name: e.target.value }))} placeholder="Název materiálu" className={inputCls} />
+                <input type="number" min={0} value={matForm.qty} onChange={e => setMatForm(f => ({ ...f, qty: e.target.value }))} placeholder="Množ." className={inputCls} />
+                <input value={matForm.unit} onChange={e => setMatForm(f => ({ ...f, unit: e.target.value }))} placeholder="ks" className={inputCls} />
+                <button onClick={submitMaterial} disabled={busy} className="px-4 py-2 text-sm font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition disabled:opacity-50">Vykázat</button>
+              </div>
+            )}
+            {jobMaterials.length > 0 && (
+              <div className="space-y-1.5">
+                {jobMaterials.map(m => {
+                  const am = APPROVAL[m.approval_status] || APPROVAL.pending;
+                  return (
+                    <div key={m.id} className="flex items-center gap-2 text-xs bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2">
+                      <span className="font-bold text-white truncate flex-1">{m.material_name}</span>
+                      <span className="text-slate-400 shrink-0">{m.actual_qty} {m.unit}</span>
+                      <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border shrink-0 ${am.cls}`}>{am.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <Paperclip className="w-4 h-4 text-amber-400" /> Soubory zakázky
+              </h2>
+              {!closed && (
+                <label className={`inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg px-3 py-1.5 cursor-pointer transition ${uploadingFile ? 'opacity-50 pointer-events-none' : ''}`}>
+                  <Upload className="w-3 h-3" /> {uploadingFile ? 'Nahrávám…' : 'Nahrát soubor'}
+                  <input type="file" className="hidden" onChange={e => {
+                    const f = e.target.files?.[0];
+                    if (f) uploadJobFile(f);
+                    e.target.value = '';
+                  }} />
+                </label>
+              )}
+            </div>
+            {jobFiles.length === 0 ? (
+              <p className="text-xs text-slate-500">Zatím žádné soubory. Objednatel sem sdílí podklady, vy můžete nahrát fotky nebo revizní zprávy.</p>
+            ) : (
+              <div className="space-y-1.5">
+                {jobFiles.map(f => (
+                  <div key={f.id} className="flex items-center gap-2 text-xs bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2">
+                    <Paperclip className={`w-3.5 h-3.5 shrink-0 ${f.by_sub ? 'text-amber-400' : 'text-blue-400'}`} />
+                    <a href={f.file_url} target="_blank" rel="noreferrer" className="font-semibold text-slate-200 hover:text-blue-300 truncate flex-1">{f.file_name}</a>
+                    <span className="text-[10px] text-slate-500 shrink-0">{f.by_sub ? 'nahráli jste' : 'od objednatele'}</span>
+                    {f.by_sub && !closed && (
+                      <button onClick={() => removeJobFile(f.id)} className="p-0.5 rounded text-slate-500 hover:text-red-400 shrink-0">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // -------------------------------------------------- detail smlouvy
   if (contractJob) {
@@ -428,6 +650,12 @@ export default function PartnerPortalPage() {
                       {job.date_to ? ` do ${fmtDate(job.date_to)}` : ''}
                     </div>
                   </div>
+                  <button
+                    onClick={() => openJobDetail(job)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold text-slate-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg transition"
+                  >
+                    Výkazy a soubory
+                  </button>
                   {job.contract_document_id && (
                     <button
                       onClick={() => openContract(job)}

@@ -8,6 +8,7 @@ import Modal from '../ui/Modal';
 import { logAudit } from '../../lib/auditLog';
 import ProjectMiniGantt from './ProjectMiniGantt';
 import SubInquiryModal from '../subcontractors/SubInquiryModal';
+import SubWorkFilesModal from '../subcontractors/SubWorkFilesModal';
 import { renderTemplate } from '../../lib/placeholderEngine';
 import type { DocumentTemplate } from '../../types/database';
 import {
@@ -32,6 +33,7 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
   const [expiredSubIds, setExpiredSubIds] = useState<Set<string>>(new Set());
   const [showAdd, setShowAdd] = useState(false);
   const [showInquiry, setShowInquiry] = useState(false);
+  const [workFilesRow, setWorkFilesRow] = useState<JobSubcontractor | null>(null);
   const [saving, setSaving] = useState(false);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [templatePicker, setTemplatePicker] = useState<{ row: JobSubcontractor; templates: DocumentTemplate[] } | null>(null);
@@ -258,6 +260,12 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
                   ))}
                 </select>
                 <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => setWorkFilesRow(row)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold text-slate-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg transition"
+                  >
+                    Výkazy a soubory
+                  </button>
                   {row.contract_document_id ? (
                     <button
                       onClick={() => navigate(`/projekty/${projectId}/dokument/${row.contract_document_id}`)}
@@ -355,6 +363,10 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
           <div><label className={labelCls}>Poznámka</label><input value={form.note} onChange={e => setForm(p => ({ ...p, note: e.target.value }))} className={inputCls} /></div>
         </div>
       </Modal>
+
+      {workFilesRow && (
+        <SubWorkFilesModal row={workFilesRow} onClose={() => setWorkFilesRow(null)} />
+      )}
 
       <SubInquiryModal
         open={showInquiry}

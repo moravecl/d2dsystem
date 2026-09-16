@@ -96,12 +96,22 @@ export default function ReceivedInvoiceModal({ open, onClose, invoice, onSaved }
   const [form, setForm] = useState({
     supplier_id: '', supplier_name: '', invoice_number: '', invoice_date: '',
     due_date: '', total_amount: 0, tax_amount: 0,
-    status: 'draft', project_id: '', note: '', payment_method: 'bank_transfer',
+    status: 'draft', project_id: '', job_subcontractor_id: '', note: '', payment_method: 'bank_transfer',
   });
 
   const [items, setItems] = useState<InvoiceItemForm[]>([]);
 
+  const [subOptions, setSubOptions] = useState<{ id: string; label: string; project_id: string }[]>([]);
+
   const loadRefs = useCallback(async () => {
+    const { data: jsData } = await supabase.from('job_subcontractors')
+      .select('id, subcontractors(name), jobs(project_id, projects(project_name))')
+      .order('created_at', { ascending: false });
+    setSubOptions(((jsData || []) as { id: string; subcontractors?: { name?: string }; jobs?: { project_id?: string; projects?: { project_name?: string } } }[]).map(r => ({
+      id: r.id,
+      label: `${r.subcontractors?.name || '—'} · ${r.jobs?.projects?.project_name || ''}`,
+      project_id: r.jobs?.project_id || '',
+    })));
     const [projRes, whRes, supRes] = await Promise.all([
       supabase.from('projects').select('id, project_name').neq('status', 'cancelled'),
       supabase.from('warehouse_items').select('id, name, unit, quantity').eq('is_active', true).order('name'),
@@ -137,6 +147,7 @@ export default function ReceivedInvoiceModal({ open, onClose, invoice, onSaved }
         total_price: (d.total_price as number) || 0,
         vat_rate: (d.vat_rate as number) ?? 21,
         project_id: (d.project_id as string) || '',
+        job_subcontractor_id: (d.job_subcontractor_id as string) || '',
         warehouse_item_id: (d.warehouse_item_id as string) || '',
         create_receipt: (d.create_receipt as boolean) || false,
         note: (d.note as string) || '',
@@ -158,6 +169,7 @@ export default function ReceivedInvoiceModal({ open, onClose, invoice, onSaved }
         tax_amount: invoice.tax_amount,
         status: invoice.status,
         project_id: invoice.project_id || '',
+        job_subcontractor_id: (invoice as unknown as { job_subcontractor_id?: string }).job_subcontractor_id || '',
         note: invoice.note,
         payment_method: 'bank_transfer',
       });
@@ -168,7 +180,7 @@ export default function ReceivedInvoiceModal({ open, onClose, invoice, onSaved }
       setForm({
         supplier_id: '', supplier_name: '', invoice_number: '', invoice_date: today,
         due_date: addDays(today, 14), total_amount: 0, tax_amount: 0,
-        status: 'draft', project_id: '', note: '', payment_method: 'bank_transfer',
+        status: 'draft', project_id: '', job_subcontractor_id: '', note: '', payment_method: 'bank_transfer',
       });
       setItems([]);
       setAttachments([]);
@@ -284,6 +296,7 @@ export default function ReceivedInvoiceModal({ open, onClose, invoice, onSaved }
         tax_amount: form.tax_amount,
         status: form.status,
         project_id: form.project_id || null,
+        job_subcontractor_id: form.job_subcontractor_id || null,
         note: form.note,
       };
 
@@ -557,6 +570,19 @@ export default function ReceivedInvoiceModal({ open, onClose, invoice, onSaved }
             >
               <option value="">-- bez přiřazení --</option>
               {projects.map(p => <option key={p.id} value={p.id}>{p.project_name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5">Subdodávka (párování nákladů)</label>
+            <select
+              value={form.job_subcontractor_id}
+              onChange={e => setForm(prev => ({ ...prev, job_subcontractor_id: e.target.value }))}
+              className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option value="">-- bez párování --</option>
+              {subOptions
+                .filter(o => !form.project_id || o.project_id === form.project_id)
+                .map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
             </select>
           </div>
           <div>
