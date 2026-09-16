@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AlertTriangle, Send, Users } from 'lucide-react';
+import { AlertTriangle, Send, Users, Paperclip, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../ui/Toast';
@@ -29,6 +29,7 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
   const [expiredSubIds, setExpiredSubIds] = useState<Set<string>>(new Set());
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [sending, setSending] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
   const [form, setForm] = useState({
     title: '', scope: '', trade: '', mode: 'bid' as 'bid' | 'fixed_price',
     fixed_price: 0, people_needed: 1, reveal_client: false, place: '',
@@ -38,6 +39,7 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
   useEffect(() => {
     if (!open) return;
     setSelectedIds(new Set());
+    setFiles([]);
     const load = async () => {
       const [subsRes, docsRes, projRes] = await Promise.all([
         supabase.from('subcontractors').select('*').eq('is_active', true).order('name'),
@@ -106,6 +108,20 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
       if (recError) { toast('Chyba při přidávání příjemců', 'error'); return; }
 
       await logAudit('sub_inquiry', inquiry.id, 'created', { title: form.title, recipients: recipients.length });
+
+      // prilohy poptavky (vykresy, vykaz vymer...) - uvidi vsichni osloveni
+      for (const file of files) {
+        const path = `subinq/${inquiry.id}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
+        const { error: upErr } = await supabase.storage.from('uploads').upload(path, file);
+        if (upErr) { toast(`Soubor ${file.name} se nepodařilo nahrát`, 'error'); continue; }
+        const { data: urlData } = supabase.storage.from('uploads').getPublicUrl(path);
+        await supabase.from('sub_inquiry_files').insert({
+          inquiry_id: inquiry.id,
+          file_name: file.name,
+          file_url: urlData.publicUrl,
+          uploaded_by: user!.id,
+        });
+      }
 
       // portalova pozvanka: zajistit subcontractor_users zaznam pro e-mail
       // subky, aby se ji ucet po registraci privazal automaticky
@@ -184,6 +200,29 @@ export default function SubInquiryModal({ open, onClose, onCreated, jobId, proje
         <div>
           <label className={labelCls}>Rozsah prací (uvidí subdodavatel)</label>
           <textarea rows={3} value={form.scope} onChange={e => setForm(p => ({ ...p, scope: e.target.value }))} placeholder="Popište co nejpřesněji, co poptáváte…" className={inputCls} />
+        </div>
+
+        <div>
+          <label className={labelCls}>Přílohy (výkresy, výkaz výměr…)</label>
+          <div className="flex flex-wrap items-center gap-2">
+            {files.map((f, i) => (
+              <span key={i} className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-300 bg-white/[0.06] border border-white/[0.08] rounded-lg px-2.5 py-1.5">
+                <Paperclip className="w-3 h-3 text-blue-400" />
+                <span className="max-w-40 truncate">{f.name}</span>
+                <button type="button" onClick={() => setFiles(prev => prev.filter((_, x) => x !== i))} className="text-slate-500 hover:text-red-400">
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+            <label className="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg px-3 py-1.5 cursor-pointer transition">
+              <Paperclip className="w-3 h-3" /> Přidat soubor
+              <input type="file" multiple className="hidden" onChange={e => {
+                const list = Array.from(e.target.files || []);
+                if (list.length) setFiles(prev => [...prev, ...list]);
+                e.target.value = '';
+              }} />
+            </label>
+          </div>
         </div>
 
         <ProjectMiniGantt

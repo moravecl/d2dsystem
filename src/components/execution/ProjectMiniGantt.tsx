@@ -19,8 +19,8 @@ interface Props {
 }
 
 const DAY = 24 * 60 * 60 * 1000;
-const PX_PER_DAY = 4;
-const LABEL_COL = 116;
+const PX_PER_DAY = 5;
+const LABEL_COL = 140;
 
 /**
  * Kompaktní read-only Gantt projektu (project_milestones). Názvy fází jsou
@@ -86,11 +86,12 @@ export default function ProjectMiniGantt({ projectId, onPickRange }: Props) {
       <div className="flex">
         {/* pevný sloupec s názvy fází */}
         <div className="shrink-0 pr-2" style={{ width: LABEL_COL }}>
-          <div className="h-5" />
-          <div className="space-y-1 pt-1">
+          <div className="h-6" />
+          <div className="space-y-1.5 pt-1">
             {milestones.map(m => (
-              <div key={m.id} className="h-6 flex items-center">
-                <span className="text-[11px] font-semibold text-slate-300 truncate" title={m.name}>{m.name}</span>
+              <div key={m.id} className="h-7 flex items-center gap-1.5 min-w-0">
+                <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: m.color || '#3b82f6' }} />
+                <span className="text-xs font-semibold text-slate-200 truncate" title={m.name}>{m.name}</span>
               </div>
             ))}
           </div>
@@ -99,38 +100,40 @@ export default function ProjectMiniGantt({ projectId, onPickRange }: Props) {
         {/* posuvná časová osa */}
         <div className="flex-1 overflow-x-auto">
           <div className="relative" style={{ width: innerWidth }}>
-            <div className="relative h-5 border-b border-white/[0.08]">
+            <div className="relative h-6 border-b border-white/[0.1]">
               {monthTicks.map((tick, i) => (
-                <span key={i} className="absolute top-0.5 text-[9px] text-slate-500" style={{ left: tick.px + 2 }}>
+                <span key={i} className="absolute top-1 text-[10px] font-semibold text-slate-400" style={{ left: tick.px + 3 }}>
                   {tick.label}
                 </span>
               ))}
               {monthTicks.map((tick, i) => (
-                <span key={`l${i}`} className="absolute top-0 bottom-0 w-px bg-white/[0.06]" style={{ left: tick.px }} />
+                <span key={`l${i}`} className="absolute top-0 bottom-0 w-px bg-white/[0.08]" style={{ left: tick.px }} />
               ))}
             </div>
 
-            <div className="relative space-y-1 pt-1">
+            <div className="relative space-y-1.5 pt-1">
               {todayPx !== null && (
-                <div className="absolute top-0 bottom-0 w-px bg-red-400/70 z-10" style={{ left: todayPx }} title="Dnes" />
+                <div className="absolute top-0 bottom-0 w-0.5 bg-red-400 z-10 rounded-full" style={{ left: todayPx }} title="Dnes" />
               )}
               {milestones.map(m => {
                 const left = pos(new Date(m.start_date).getTime());
-                const width = Math.max(pos(new Date(m.end_date).getTime() + DAY) - left, 6);
+                const width = Math.max(pos(new Date(m.end_date).getTime() + DAY) - left, 10);
                 const range = `${new Date(m.start_date).toLocaleDateString('cs-CZ')} – ${new Date(m.end_date).toLocaleDateString('cs-CZ')}`;
                 return (
-                  <div key={m.id} className="relative h-6">
+                  <div key={m.id} className="relative h-7">
                     <button
                       type="button"
                       disabled={!onPickRange}
                       onClick={() => onPickRange?.(m.start_date, m.end_date)}
                       title={`${m.name} · ${range}`}
-                      className={`absolute top-0 h-6 rounded-md overflow-hidden border border-black/20 ${onPickRange ? 'cursor-pointer hover:ring-2 hover:ring-white/40' : 'cursor-default'}`}
-                      style={{ left, width, backgroundColor: `${m.color || '#3b82f6'}55` }}
+                      className={`absolute top-0 h-7 rounded-lg overflow-hidden shadow-md ${onPickRange ? 'cursor-pointer hover:ring-2 hover:ring-white/60' : 'cursor-default'}`}
+                      style={{ left, width, backgroundColor: m.color || '#3b82f6' }}
                     >
-                      <div className="absolute inset-y-0 left-0" style={{ width: `${m.progress || 0}%`, backgroundColor: m.color || '#3b82f6' }} />
-                      {width > 90 && (
-                        <span className="relative z-10 px-1.5 text-[9px] font-bold text-white/90 whitespace-nowrap leading-6 drop-shadow">
+                      {(m.progress || 0) < 100 && (
+                        <div className="absolute inset-y-0 right-0 bg-black/35" style={{ width: `${100 - (m.progress || 0)}%` }} />
+                      )}
+                      {width > 120 && (
+                        <span className="relative z-10 px-2 text-[10px] font-extrabold text-white whitespace-nowrap leading-7 drop-shadow-md">
                           {range}
                         </span>
                       )}
