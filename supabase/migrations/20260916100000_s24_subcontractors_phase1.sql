@@ -157,7 +157,14 @@ CREATE POLICY "Org members can delete job subcontractors"
 
 -- ============================================================ typy šablon
 -- Původní CHECK nezná 'smlouva' a 'objednavka' (TS typ je už používá).
+-- V datech mohou být i starší/neznámé typy — před přidáním kontroly je
+-- znormalizujeme (legacy 'smlouva_o_dilo' → 'smlouva', ostatní → 'obecny'),
+-- jinak ADD CONSTRAINT selže na existujících řádcích (23514).
 ALTER TABLE document_templates DROP CONSTRAINT IF EXISTS valid_template_type;
+UPDATE document_templates SET template_type = 'smlouva'
+  WHERE template_type IN ('smlouva_o_dilo', 'sod', 'contract');
+UPDATE document_templates SET template_type = 'obecny'
+  WHERE template_type NOT IN ('zapis_stavba', 'predavaci_protokol', 'servisni_protokol', 'checklist', 'obecny', 'smlouva', 'objednavka');
 ALTER TABLE document_templates ADD CONSTRAINT valid_template_type
   CHECK (template_type IN ('zapis_stavba', 'predavaci_protokol', 'servisni_protokol', 'checklist', 'obecny', 'smlouva', 'objednavka'));
 
