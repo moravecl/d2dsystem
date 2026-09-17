@@ -79,8 +79,8 @@ export function useExecutionProjects() {
 
       const [worklogsRes, materialsRes, diaryRes] = jobIds.length > 0
         ? await Promise.all([
-            supabase.from('job_worklogs').select('id, job_id, duration_minutes, is_running').in('job_id', jobIds),
-            supabase.from('job_material_entries').select('id, job_id, planned_qty, actual_qty, unit_price, is_unplanned').in('job_id', jobIds),
+            supabase.from('job_worklogs').select('id, job_id, duration_minutes, is_running').in('job_id', jobIds).eq('approval_status', 'approved'),
+            supabase.from('job_material_entries').select('id, job_id, planned_qty, actual_qty, unit_price, is_unplanned').in('job_id', jobIds).eq('approval_status', 'approved'),
             supabase.from('job_diary_entries').select('id, job_id, entry_date').in('job_id', jobIds),
           ])
         : [{ data: [] }, { data: [] }, { data: [] }];

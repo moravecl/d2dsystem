@@ -69,6 +69,7 @@ export default function DeliveryNotesModule({ projectId, jobId, onChanged }: Pro
       .from('job_material_entries')
       .select('id, material_name, unit, actual_qty')
       .eq('job_id', jobId)
+      .eq('approval_status', 'approved')
       .gt('actual_qty', 0)
       .is('delivery_note_id', null)
       .order('created_at');

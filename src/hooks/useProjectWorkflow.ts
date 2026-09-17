@@ -119,10 +119,10 @@ export function useProjectWorkflow(projectId: string | undefined): ProjectWorkfl
           .select('id', { count: 'exact', head: true }).eq('job_id', job.id),
         supabase.from('job_worklogs')
           .select('duration_minutes, hourly_rate')
-          .eq('job_id', job.id).is('billed_invoice_id', null).eq('is_running', false),
+          .eq('job_id', job.id).is('billed_invoice_id', null).eq('is_running', false).eq('approval_status', 'approved'),
         supabase.from('job_material_entries')
           .select('actual_qty, unit_price')
-          .eq('job_id', job.id).is('billed_invoice_id', null).gt('actual_qty', 0),
+          .eq('job_id', job.id).is('billed_invoice_id', null).gt('actual_qty', 0).eq('approval_status', 'approved'),
       ]);
       diaryCount = diaryRes.count ?? 0;
       for (const w of (workRes.data ?? []) as { duration_minutes: number; hourly_rate: number }[]) {

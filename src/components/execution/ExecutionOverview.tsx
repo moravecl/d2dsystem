@@ -132,12 +132,12 @@ export default function ExecutionOverview({
       const quoteIdsToFetch = includedIdsKey.split(',').filter(Boolean);
 
       const queries: PromiseLike<{ data: unknown; error: unknown }>[] = [
-        supabase.from('job_worklogs').select('duration_minutes, started_at, workers').eq('job_id', jobId),
-        supabase.from('job_material_entries').select('id, material_name, actual_qty').eq('job_id', jobId),
+        supabase.from('job_worklogs').select('duration_minutes, started_at, workers').eq('job_id', jobId).eq('approval_status', 'approved'),
+        supabase.from('job_material_entries').select('id, material_name, actual_qty').eq('job_id', jobId).eq('approval_status', 'approved'),
         supabase.from('job_diary_entries').select('id, entry_date, people_on_site').eq('job_id', jobId).order('entry_date', { ascending: false }),
         supabase.from('project_defects').select('id, status, severity').eq('project_id', projectId),
-        supabase.from('job_worklogs').select('id, activity, duration_minutes, started_at, workers').eq('job_id', jobId).eq('is_running', false).order('created_at', { ascending: false }).limit(5),
-        supabase.from('job_material_entries').select('id, material_name, actual_qty, unit, created_at').eq('job_id', jobId).order('created_at', { ascending: false }).limit(5),
+        supabase.from('job_worklogs').select('id, activity, duration_minutes, started_at, workers').eq('job_id', jobId).eq('is_running', false).eq('approval_status', 'approved').order('created_at', { ascending: false }).limit(5),
+        supabase.from('job_material_entries').select('id, material_name, actual_qty, unit, created_at').eq('job_id', jobId).eq('approval_status', 'approved').order('created_at', { ascending: false }).limit(5),
         supabase.from('job_diary_entries').select('id, entry_date, content, created_at').eq('job_id', jobId).order('created_at', { ascending: false }).limit(3),
       ];
       if (quoteIdsToFetch.length > 0) {

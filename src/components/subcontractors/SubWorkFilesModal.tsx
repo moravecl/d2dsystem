@@ -6,6 +6,7 @@ import { useToast } from '../ui/Toast';
 import { logAudit } from '../../lib/auditLog';
 import Modal from '../ui/Modal';
 import SubJobChat from './SubJobChat';
+import { loadJobPlannedItems, matchPlannedItem, type PlannedQuoteItem } from '../../lib/quoteMaterials';
 import type { JobSubcontractor } from '../../types/subcontractors';
 
 interface Props {
@@ -37,6 +38,7 @@ export default function SubWorkFilesModal({ row, onClose }: Props) {
   const [savingEdit, setSavingEdit] = useState(false);
   const [diaryBusy, setDiaryBusy] = useState<string | null>(null);
   const [diaryWritten, setDiaryWritten] = useState<Set<string>>(new Set());
+  const [plannedItems, setPlannedItems] = useState<PlannedQuoteItem[]>([]);
 
   const loadData = useCallback(async () => {
     if (!row) return;
@@ -57,6 +59,7 @@ export default function SubWorkFilesModal({ row, onClose }: Props) {
     setWork((workRes.data || []) as WorkRow[]);
     setMaterials((matRes.data || []) as MatRow[]);
     setFiles((filesRes.data || []) as FileRow[]);
+    setPlannedItems(await loadJobPlannedItems(row.job_id));
   }, [row]);
 
   useEffect(() => { loadData(); }, [loadData]);
@@ -68,9 +71,27 @@ export default function SubWorkFilesModal({ row, onClose }: Props) {
     if (error) { toast('Chyba při změně stavu', 'error'); return; }
     loadData();
   };
-  const setMatStatus = async (id: string, approval_status: 'approved' | 'rejected') => {
-    const { error } = await supabase.from('job_material_entries').update({ approval_status }).eq('id', id);
+  const setMatStatus = async (m: MatRow, approval_status: 'approved' | 'rejected') => {
+    const updates: Record<string, unknown> = { approval_status };
+    if (approval_status === 'approved') {
+      const planned = matchPlannedItem(plannedItems, m.material_name);
+      if (planned) {
+        updates.material_name = planned.name;
+        updates.is_unplanned = false;
+        updates.unit_price = planned.sellingPrice;
+        updates.source_quote_id = planned.quoteId;
+        updates.trade = planned.trade;
+      } else {
+        updates.is_unplanned = true;
+      }
+    }
+    const { error } = await supabase.from('job_material_entries').update(updates).eq('id', m.id);
     if (error) { toast('Chyba při změně stavu', 'error'); return; }
+    if (approval_status === 'approved') {
+      toast(matchPlannedItem(plannedItems, m.material_name)
+        ? 'Schváleno a spárováno s rozpočtem'
+        : 'Schváleno jako vícepráce');
+    }
     loadData();
   };
 
@@ -230,15 +251,22 @@ export default function SubWorkFilesModal({ row, onClose }: Props) {
                       <span className="font-bold text-white truncate">{m.material_name}</span>
                       <span className="text-slate-400 text-xs">{m.actual_qty} {m.unit}</span>
                       {approvalBadge(m.approval_status)}
+                      {m.approval_status === 'pending' && (
+                        matchPlannedItem(plannedItems, m.material_name) ? (
+                          <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border text-sky-400 bg-sky-500/10 border-sky-500/20">V rozpočtu</span>
+                        ) : (
+                          <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border text-amber-400 bg-amber-500/10 border-amber-500/20">Bude vícepráce</span>
+                        )
+                      )}
                     </div>
                     {m.note && <p className="text-[11px] text-slate-400 mt-0.5">{m.note}</p>}
                   </div>
                   {m.approval_status === 'pending' && (
                     <div className="flex items-center gap-1.5">
-                      <button onClick={() => setMatStatus(m.id, 'approved')} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-extrabold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition">
+                      <button onClick={() => setMatStatus(m, 'approved')} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-extrabold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition">
                         <CheckCircle2 className="w-3 h-3" /> Schválit
                       </button>
-                      <button onClick={() => setMatStatus(m.id, 'rejected')} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-extrabold text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition">
+                      <button onClick={() => setMatStatus(m, 'rejected')} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-extrabold text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition">
                         <XCircle className="w-3 h-3" /> Zamítnout
                       </button>
                     </div>

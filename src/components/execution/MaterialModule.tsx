@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../ui/Toast';
 import { logAudit } from '../../lib/auditLog';
+import { extractPlannedQuoteItems } from '../../lib/quoteMaterials';
 import Modal from '../ui/Modal';
 import BulkMaterialModal from './BulkMaterialModal';
 
@@ -116,7 +117,7 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
     try {
       const ids = quoteIdsKey.split(',').filter(v => v && v !== 'null' && v !== 'undefined');
       const queries: PromiseLike<{ data: unknown; error: unknown }>[] = [
-        supabase.from('job_material_entries').select('*').eq('job_id', jobId).order('created_at', { ascending: false }),
+        supabase.from('job_material_entries').select('*').eq('job_id', jobId).eq('approval_status', 'approved').order('created_at', { ascending: false }),
         supabase.from('products').select('id, name, code, brand, price, purchase_price').eq('is_active', true).order('name'),
         supabase.from('warehouse_items').select('id, name, unit, quantity, product_id').eq('is_active', true),
       ];
@@ -141,27 +142,7 @@ export default function MaterialModule({ jobId, quoteIds, projectId, allQuotes }
       if (quotesRes?.error) {
         console.error('Failed to load quote sections:', quotesRes.error);
       }
-      const items: QuoteItem[] = [];
-      for (const quote of quoteRows) {
-        const quoteId = (quote as any)?.id;
-        const raw = (quote as any)?.sections_data;
-        if (!raw) continue;
-        const sections = Array.isArray(raw) ? raw : (Array.isArray(raw?.sections) ? raw.sections : []);
-        for (const sec of sections) {
-          if (!sec || !Array.isArray(sec.items)) continue;
-          const sectionTrade = sec.trade || 'electric';
-          const sectionName = sec.name || TRADE_META[sectionTrade]?.label || sectionTrade;
-          for (const item of sec.items) {
-            if (!item?.name) continue;
-            items.push({
-              name: item.name, unit: item.unit || 'ks', quantity: item.quantity || 0,
-              sellingPrice: item.sellingPrice || 0, productId: item.productId,
-              trade: sectionTrade, sectionName, quoteId,
-            });
-          }
-        }
-      }
-      setPlannedItems(items);
+      setPlannedItems(extractPlannedQuoteItems(quoteRows) as QuoteItem[]);
     } catch (err) {
       console.error('MaterialModule loadData error:', err);
     } finally {

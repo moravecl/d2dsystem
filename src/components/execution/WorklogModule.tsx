@@ -108,7 +108,7 @@ export default function WorklogModule({ jobId, isMobile, onTimerChange }: { jobI
 
   const loadWorklogs = useCallback(async () => {
     const [wlRes, actRes] = await Promise.all([
-      supabase.from('job_worklogs').select('*').eq('job_id', jobId).order('created_at', { ascending: false }),
+      supabase.from('job_worklogs').select('*').eq('job_id', jobId).eq('approval_status', 'approved').order('created_at', { ascending: false }),
       supabase.from('work_activities').select('name, color').eq('is_active', true).order('sort_order'),
     ]);
     const logs = (wlRes.data || []) as Worklog[];
