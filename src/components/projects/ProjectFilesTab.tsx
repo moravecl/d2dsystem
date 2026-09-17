@@ -233,21 +233,37 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
     }
   };
 
+  const cascadeSubsVisibility = async (folderId: string) => {
+    const childFolderIds = getAllDescendantFolderIds(folderId);
+    if (childFolderIds.length > 0) {
+      await supabase.from('project_folders')
+        .update({ subs_visible: true })
+        .in('id', childFolderIds);
+    }
+  };
+
   const handleCreateFolder = async () => {
     if (!folderName.trim()) return;
     if (editingFolder) {
-      await supabase.from('project_folders').update({
+      const { error } = await supabase.from('project_folders').update({
         name: folderName.trim(),
         portal_visible: folderPortalVisible,
         subs_visible: folderSubsVisible,
         visible_to_roles: folderRoles,
       }).eq('id', editingFolder.id);
+      if (error) {
+        toast(`Složku se nepodařilo uložit: ${error.message}`, 'error');
+        return;
+      }
       if (folderPortalVisible && !editingFolder.portal_visible) {
         await cascadePortalVisibility(editingFolder.id, true);
       }
+      if (folderSubsVisible && !editingFolder.subs_visible) {
+        await cascadeSubsVisibility(editingFolder.id);
+      }
       toast('Složka aktualizována');
     } else {
-      const { data: inserted } = await supabase.from('project_folders').insert({
+      const { data: inserted, error } = await supabase.from('project_folders').insert({
         project_id: projectId,
         parent_id: currentFolderId,
         name: folderName.trim(),
@@ -256,6 +272,10 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
         subs_visible: folderSubsVisible,
         visible_to_roles: folderRoles,
       }).select('id').maybeSingle();
+      if (error) {
+        toast(`Složku se nepodařilo vytvořit: ${error.message}`, 'error');
+        return;
+      }
       if (inserted && folderPortalVisible) {
         await cascadePortalVisibility(inserted.id, true);
       }

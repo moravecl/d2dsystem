@@ -417,10 +417,12 @@ export default function PartnerPortalPage() {
               <div className="space-y-2 mb-3">
                 {sharedFolders.map(folder => {
                   const filesIn = sharedFiles.filter(f => f.folder_id === folder.id);
-                  if (filesIn.length === 0) return null;
                   return (
                     <div key={folder.id}>
                       <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">{folder.name}</div>
+                      {filesIn.length === 0 && (
+                        <p className="text-[11px] text-slate-600 px-1">Složka je zatím prázdná.</p>
+                      )}
                       <div className="space-y-1">
                         {filesIn.map(f => (
                           <a key={f.id} href={f.file_url} target="_blank" rel="noreferrer"
@@ -438,7 +440,7 @@ export default function PartnerPortalPage() {
             {jobFiles.length > 0 && (
               <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Vaše soubory</div>
             )}
-            {jobFiles.length === 0 && sharedFolders.every(fo => sharedFiles.filter(f => f.folder_id === fo.id).length === 0) ? (
+            {jobFiles.length === 0 && sharedFolders.length === 0 ? (
               <p className="text-xs text-slate-500">Zatím žádné soubory. Objednatel sem sdílí podklady, vy můžete nahrát fotky nebo revizní zprávy.</p>
             ) : jobFiles.length === 0 ? null : (
               <div className="space-y-1.5">

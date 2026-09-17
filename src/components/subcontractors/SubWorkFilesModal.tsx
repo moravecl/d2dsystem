@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import { CheckCircle2, XCircle, Paperclip, Clock, Wrench, Package } from 'lucide-react';
+import { CheckCircle2, XCircle, Paperclip, Clock, Wrench, Package, Pencil, BookOpen, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../ui/Toast';
+import { logAudit } from '../../lib/auditLog';
 import Modal from '../ui/Modal';
 import type { JobSubcontractor } from '../../types/subcontractors';
 
@@ -20,12 +22,20 @@ const APPROVAL_META: Record<string, { label: string; cls: string }> = {
   rejected: { label: 'Zamítnuto', cls: 'text-red-400 bg-red-500/10 border-red-500/20' },
 };
 
+const pad2 = (n: number) => String(n).padStart(2, '0');
+const toTimeStr = (d: Date) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+
 /** Org pohled: výkazy subdodavatele ke schválení + sdílené soubory zakázky. */
 export default function SubWorkFilesModal({ row, onClose }: Props) {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [work, setWork] = useState<WorkRow[]>([]);
   const [materials, setMaterials] = useState<MatRow[]>([]);
   const [files, setFiles] = useState<FileRow[]>([]);
+  const [editWork, setEditWork] = useState<{ id: string; date: string; from: string; to: string; note: string } | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [diaryBusy, setDiaryBusy] = useState<string | null>(null);
+  const [diaryWritten, setDiaryWritten] = useState<Set<string>>(new Set());
 
   const loadData = useCallback(async () => {
     if (!row) return;
@@ -68,6 +78,69 @@ export default function SubWorkFilesModal({ row, onClose }: Props) {
     loadData();
   };
 
+  const startEditWork = (w: WorkRow) => {
+    const start = w.started_at ? new Date(w.started_at) : new Date();
+    const end = w.ended_at
+      ? new Date(w.ended_at)
+      : new Date(start.getTime() + (w.duration_minutes || 0) * 60000);
+    setEditWork({
+      id: w.id,
+      date: `${start.getFullYear()}-${pad2(start.getMonth() + 1)}-${pad2(start.getDate())}`,
+      from: toTimeStr(start),
+      to: toTimeStr(end),
+      note: w.note || '',
+    });
+  };
+
+  const saveEditWork = async () => {
+    if (!editWork) return;
+    if (!editWork.date || !editWork.from || !editWork.to || editWork.to <= editWork.from) {
+      toast('Čas „do" musí být později než čas „od"', 'error');
+      return;
+    }
+    setSavingEdit(true);
+    const startedAt = new Date(`${editWork.date}T${editWork.from}:00`);
+    const endedAt = new Date(`${editWork.date}T${editWork.to}:00`);
+    const minutes = Math.round((endedAt.getTime() - startedAt.getTime()) / 60000);
+    const { error } = await supabase.from('job_worklogs').update({
+      started_at: startedAt.toISOString(),
+      ended_at: endedAt.toISOString(),
+      duration_minutes: minutes,
+      note: editWork.note,
+    }).eq('id', editWork.id);
+    setSavingEdit(false);
+    if (error) { toast(`Výkaz se nepodařilo uložit: ${error.message}`, 'error'); return; }
+    toast('Výkaz upraven');
+    setEditWork(null);
+    loadData();
+  };
+
+  const writeToDiary = async (w: WorkRow) => {
+    if (!row || !user) return;
+    setDiaryBusy(w.id);
+    const subName = row.subcontractors?.name || 'Subdodavatel';
+    const start = w.started_at ? new Date(w.started_at) : null;
+    const end = w.ended_at ? new Date(w.ended_at) : null;
+    const entryDate = start
+      ? `${start.getFullYear()}-${pad2(start.getMonth() + 1)}-${pad2(start.getDate())}`
+      : new Date().toISOString().slice(0, 10);
+    const hours = (w.duration_minutes / 60).toLocaleString('cs-CZ', { maximumFractionDigits: 1 });
+    const { error } = await supabase.from('job_diary_entries').insert({
+      job_id: row.job_id,
+      entry_date: entryDate,
+      time_from: start ? toTimeStr(start) : null,
+      time_to: end ? toTimeStr(end) : null,
+      content: `Subdodávka — ${subName} (${hours} h)${w.note ? `: ${w.note}` : ''}`,
+      people_on_site: [`temp:${subName}`],
+      created_by: user.id,
+    });
+    setDiaryBusy(null);
+    if (error) { toast(`Zápis do deníku se nepodařil: ${error.message}`, 'error'); return; }
+    await logAudit('job_diary', row.job_id, 'diary_entry_added', { date: entryDate, source: 'sub_worklog' });
+    setDiaryWritten(prev => new Set(prev).add(w.id));
+    toast('Zapsáno do stavebního deníku');
+  };
+
   const approvalBadge = (status: string) => {
     const m = APPROVAL_META[status] || APPROVAL_META.pending;
     return <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border ${m.cls}`}>{m.label}</span>;
@@ -82,7 +155,22 @@ export default function SubWorkFilesModal({ row, onClose }: Props) {
           </h3>
           {work.length === 0 ? <p className="text-xs text-slate-500">Žádné výkazy práce.</p> : (
             <div className="space-y-1.5">
-              {work.map(w => (
+              {work.map(w => editWork?.id === w.id ? (
+                <div key={w.id} className="bg-white/[0.04] border border-blue-400/30 rounded-lg px-3 py-2.5 space-y-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-[130px_95px_95px_1fr] gap-2">
+                    <input type="date" value={editWork.date} onChange={e => setEditWork(f => f && ({ ...f, date: e.target.value }))} className="px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.06] text-xs text-slate-200 focus:outline-none focus:border-blue-400" />
+                    <input type="time" value={editWork.from} onChange={e => setEditWork(f => f && ({ ...f, from: e.target.value }))} title="Od" className="px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.06] text-xs text-slate-200 focus:outline-none focus:border-blue-400" />
+                    <input type="time" value={editWork.to} onChange={e => setEditWork(f => f && ({ ...f, to: e.target.value }))} title="Do" className="px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.06] text-xs text-slate-200 focus:outline-none focus:border-blue-400" />
+                    <input value={editWork.note} onChange={e => setEditWork(f => f && ({ ...f, note: e.target.value }))} placeholder="Poznámka" className="px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.06] text-xs text-slate-200 focus:outline-none focus:border-blue-400 col-span-2 sm:col-span-1" />
+                  </div>
+                  <div className="flex items-center gap-1.5 justify-end">
+                    <button onClick={() => setEditWork(null)} className="px-2.5 py-1.5 text-[11px] font-bold text-slate-400 hover:text-white transition">Zrušit</button>
+                    <button onClick={saveEditWork} disabled={savingEdit} className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-extrabold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50">
+                      {savingEdit && <Loader2 className="w-3 h-3 animate-spin" />} Uložit
+                    </button>
+                  </div>
+                </div>
+              ) : (
                 <div key={w.id} className="flex flex-wrap items-center gap-3 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 text-sm">
@@ -96,16 +184,30 @@ export default function SubWorkFilesModal({ row, onClose }: Props) {
                     </div>
                     {w.note && <p className="text-[11px] text-slate-400 mt-0.5">{w.note}</p>}
                   </div>
-                  {w.approval_status === 'pending' && (
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setWorkStatus(w.id, 'approved')} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-extrabold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition">
-                        <CheckCircle2 className="w-3 h-3" /> Schválit
-                      </button>
-                      <button onClick={() => setWorkStatus(w.id, 'rejected')} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-extrabold text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition">
-                        <XCircle className="w-3 h-3" /> Zamítnout
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    {w.approval_status === 'pending' && (
+                      <>
+                        <button onClick={() => setWorkStatus(w.id, 'approved')} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-extrabold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition">
+                          <CheckCircle2 className="w-3 h-3" /> Schválit
+                        </button>
+                        <button onClick={() => setWorkStatus(w.id, 'rejected')} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-extrabold text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition">
+                          <XCircle className="w-3 h-3" /> Zamítnout
+                        </button>
+                      </>
+                    )}
+                    <button onClick={() => startEditWork(w)} title="Upravit výkaz" className="p-1.5 rounded-lg text-slate-500 hover:text-blue-300 hover:bg-blue-500/10 transition">
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => writeToDiary(w)}
+                      disabled={diaryBusy === w.id || diaryWritten.has(w.id)}
+                      title={diaryWritten.has(w.id) ? 'Zapsáno do deníku' : 'Zapsat do stavebního deníku'}
+                      className={`flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-extrabold rounded-lg transition disabled:opacity-60 ${diaryWritten.has(w.id) ? 'text-emerald-400 bg-emerald-500/10' : 'text-amber-300 bg-amber-500/10 hover:bg-amber-500/20'}`}
+                    >
+                      {diaryBusy === w.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <BookOpen className="w-3 h-3" />}
+                      {diaryWritten.has(w.id) ? 'V deníku' : 'Do deníku'}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
