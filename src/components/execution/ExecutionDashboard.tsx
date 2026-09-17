@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, Package, BookOpen, CheckSquare, Map, BarChart3, ClipboardCheck, Wrench, FileText, Plus, BookOpen as DiaryIcon, Timer } from 'lucide-react';
+import { Clock, Package, BookOpen, CheckSquare, Map, BarChart3, ClipboardCheck, Wrench, FileText, Plus, BookOpen as DiaryIcon, Timer, Handshake } from 'lucide-react';
 import ProtocolFormModal from '../protocols/ProtocolFormModal';
 import DeliveryNotesModule from './DeliveryNotesModule';
 import type { ProjectProtocol } from '../protocols/protocolTypes';
@@ -13,6 +13,7 @@ import WorklogModule from './WorklogModule';
 import MaterialModule from './MaterialModule';
 import DiaryModule from './DiaryModule';
 import DefectsModule from './DefectsModule';
+import JobSubcontractorsSection from './JobSubcontractorsSection';
 
 interface ProjectQuote {
   id: string;
@@ -45,6 +46,7 @@ const execTabs = [
   { key: 'material', label: 'Materiál', icon: Package },
   { key: 'time', label: 'Čas', icon: Clock },
   { key: 'diary', label: 'Deník', icon: BookOpen },
+  { key: 'subs', label: 'Subdodavatelé', icon: Handshake },
   { key: 'tasks', label: 'Úkoly', icon: CheckSquare },
   { key: 'floorplan', label: 'Půdorys', icon: Map },
   { key: 'predani', label: 'Předání', icon: ClipboardCheck },
@@ -270,6 +272,10 @@ export default function ExecutionDashboard({ job, allQuotes, onStatusChange, onR
 
         {activeTab === 'diary' && (
           <DiaryModule jobId={job.id} projectName={projectName} projectAddress={projectAddress} projectLat={projectLat} projectLon={projectLon} />
+        )}
+
+        {activeTab === 'subs' && (
+          <JobSubcontractorsSection jobId={job.id} projectId={job.project_id} />
         )}
 
         {activeTab === 'tasks' && (

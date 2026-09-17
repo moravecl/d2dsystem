@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   HardHat, LogOut, Loader2, MapPin, CalendarDays, Clock, FileSignature,
   CheckCircle2, XCircle, Send, ArrowLeft, Paperclip, X, Wrench, Package, Upload,
-  Inbox, ChevronRight, GanttChart,
+  Inbox, ChevronRight, GanttChart, MessageSquare,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { supabase } from '../../lib/supabase';
@@ -76,8 +76,8 @@ export default function PartnerPortalPage() {
   const [jobFiles, setJobFiles] = useState<{ id: string; file_name: string; file_url: string; by_sub: boolean; uploaded_by: string | null }[]>([]);
   const [workForm, setWorkForm] = useState({ date: new Date().toISOString().split('T')[0], from: '07:00', to: '15:30', note: '' });
   const [matForm, setMatForm] = useState({ name: '', qty: '', unit: 'ks', note: '' });
-  const [matOptions, setMatOptions] = useState<{ name: string; unit: string }[]>([]);
-  const [matSearch, setMatSearch] = useState('');
+  const [matOptions, setMatOptions] = useState<{ name: string; unit: string; trade?: string }[]>([]);
+  const [jobTab, setJobTab] = useState('work');
   const [sharedFolders, setSharedFolders] = useState<{ id: string; name: string }[]>([]);
   const [sharedFiles, setSharedFiles] = useState<{ id: string; folder_id: string | null; name: string; file_url: string }[]>([]);
   const [contractHtml, setContractHtml] = useState('');
@@ -187,7 +187,7 @@ export default function PartnerPortalPage() {
     setJobFiles((filesRes.data || []) as typeof jobFiles);
     setSharedFolders((foldersRes.data || []) as { id: string; name: string }[]);
     setSharedFiles((pfilesRes.data || []) as { id: string; folder_id: string | null; name: string; file_url: string }[]);
-    setMatOptions((matListRes.data || []) as { name: string; unit: string }[]);
+    setMatOptions((matListRes.data || []) as { name: string; unit: string; trade?: string }[]);
   };
 
   const openJobDetail = (job: JobSubcontractor) => {
@@ -195,7 +195,7 @@ export default function PartnerPortalPage() {
     setError('');
     setWorkForm({ date: new Date().toISOString().split('T')[0], from: '07:00', to: '15:30', note: '' });
     setMatForm({ name: '', qty: '', unit: 'ks', note: '' });
-    setMatSearch('');
+    setJobTab('work');
     loadJobDetail(job);
   };
 
@@ -350,11 +350,35 @@ export default function PartnerPortalPage() {
 
           {error && <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</p>}
 
-          <div className="glass-card p-5">
-            <SubJobChat jobSubId={jobDetail.id} viewer="sub" />
-          </div>
+          <div className="glass-card overflow-hidden">
+            <div className="border-b border-white/[0.06] px-2 py-2">
+              <nav className="flex gap-1 overflow-x-auto">
+                {([
+                  ['work', 'Výkaz práce', Wrench],
+                  ['material', 'Materiál', Package],
+                  ['files', 'Soubory', Paperclip],
+                  ['chat', 'Komunikace', MessageSquare],
+                  ['gantt', 'Harmonogram', GanttChart],
+                ] as const).map(([k, label, Icon]) => (
+                  <button
+                    key={k}
+                    onClick={() => setJobTab(k)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                      jobTab === k
+                        ? 'bg-blue-600/20 text-blue-400 border border-blue-500/20'
+                        : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04] border border-transparent'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {label}
+                  </button>
+                ))}
+              </nav>
+            </div>
+            <div className="p-5">
 
-          <div className="glass-card p-5 space-y-3">
+          {jobTab === 'work' && (
+          <div className="space-y-3">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Wrench className="w-4 h-4 text-blue-400" /> Vykázat práci
             </h2>
@@ -386,47 +410,55 @@ export default function PartnerPortalPage() {
               </div>
             )}
           </div>
+          )}
 
-          <div className="glass-card p-5 space-y-3">
+          {jobTab === 'material' && (
+          <div className="space-y-3">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Package className="w-4 h-4 text-emerald-400" /> Vykázat materiál
             </h2>
             {!closed && (
               <div className="space-y-2">
-                <div className="relative">
-                  <input
-                    value={matForm.name || matSearch}
-                    onChange={e => { setMatSearch(e.target.value); setMatForm(f => ({ ...f, name: '' })); }}
-                    placeholder="Vyhledat materiál ze seznamu…"
-                    className={inputCls}
-                  />
-                  {matSearch && !matForm.name && (
-                    <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-navy-800 border border-white/[0.1] rounded-xl shadow-xl max-h-48 overflow-y-auto">
-                      {matOptions.filter(o => o.name.toLowerCase().includes(matSearch.toLowerCase())).slice(0, 30).map(o => (
-                        <button
-                          key={o.name}
-                          type="button"
-                          onClick={() => { setMatForm(f => ({ ...f, name: o.name, unit: o.unit || 'ks' })); setMatSearch(''); }}
-                          className="w-full text-left px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.06] flex items-center justify-between"
-                        >
-                          <span className="truncate">{o.name}</span>
-                          <span className="text-[10px] text-slate-500 shrink-0 ml-2">{o.unit}</span>
-                        </button>
-                      ))}
-                      {matOptions.filter(o => o.name.toLowerCase().includes(matSearch.toLowerCase())).length === 0 && (
-                        <div className="px-3 py-2 text-xs text-slate-500">Nic nenalezeno v seznamu materiálů.</div>
-                      )}
-                    </div>
-                  )}
+                <div className="border border-white/[0.08] rounded-xl overflow-hidden">
+                  <div className="max-h-72 overflow-y-auto divide-y divide-white/[0.04]">
+                    {matOptions.length === 0 && (
+                      <p className="text-xs text-slate-500 px-3 py-3">Organizace zatím nemá seznam materiálů.</p>
+                    )}
+                    {matOptions.map((o, i) => {
+                      const tradeLabel = ({ electric: 'Elektro', water: 'Voda', heating: 'Topení', recuperation: 'Rekuperace' } as Record<string, string>)[o.trade || ''] || 'Materiál';
+                      const showHeader = i === 0 || (matOptions[i - 1].trade || '') !== (o.trade || '');
+                      const selected = matForm.name === o.name;
+                      return (
+                        <div key={`${o.trade}-${o.name}`}>
+                          {showHeader && (
+                            <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 bg-white/[0.04]">{tradeLabel}</div>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => setMatForm(f => ({ ...f, name: selected ? '' : o.name, unit: o.unit || 'ks' }))}
+                            className={`w-full text-left px-3 py-2 text-sm flex items-center justify-between gap-2 transition ${
+                              selected ? 'bg-emerald-500/15 text-emerald-300' : 'text-slate-200 hover:bg-white/[0.05]'
+                            }`}
+                          >
+                            <span className="truncate flex items-center gap-2">
+                              {selected && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                              {o.name}
+                            </span>
+                            <span className="text-[10px] text-slate-500 shrink-0">{o.unit}</span>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
                 {matForm.name && (
-                  <div className="grid grid-cols-[1fr_90px_70px_auto] gap-2 items-center">
-                    <span className="text-sm font-semibold text-white truncate px-1">{matForm.name}</span>
+                  <div className="grid grid-cols-[1fr_90px_70px_auto] gap-2 items-center bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2">
+                    <span className="text-sm font-semibold text-white truncate">{matForm.name}</span>
                     <input type="number" min={0} value={matForm.qty} onChange={e => setMatForm(f => ({ ...f, qty: e.target.value }))} placeholder="Množ." className={inputCls} />
                     <span className="text-sm text-slate-400 text-center">{matForm.unit}</span>
                     <div className="flex items-center gap-1.5">
                       <button onClick={submitMaterial} disabled={busy} className="px-4 py-2 text-sm font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition disabled:opacity-50">Vykázat</button>
-                      <button onClick={() => { setMatForm(f => ({ ...f, name: '', qty: '' })); setMatSearch(''); }} className="p-2 text-slate-500 hover:text-red-400 transition"><X className="w-4 h-4" /></button>
+                      <button onClick={() => setMatForm(f => ({ ...f, name: '', qty: '' }))} className="p-2 text-slate-500 hover:text-red-400 transition"><X className="w-4 h-4" /></button>
                     </div>
                   </div>
                 )}
@@ -447,8 +479,10 @@ export default function PartnerPortalPage() {
               </div>
             )}
           </div>
+          )}
 
-          <div className="glass-card p-5 space-y-3">
+          {jobTab === 'files' && (
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <Paperclip className="w-4 h-4 text-amber-400" /> Soubory zakázky
@@ -510,15 +544,20 @@ export default function PartnerPortalPage() {
               </div>
             )}
           </div>
-
-          {jdProjectId && (
-            <div className="glass-card p-5 space-y-3">
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <GanttChart className="w-4 h-4 text-purple-400" /> Harmonogram projektu
-              </h2>
-              <ProjectMiniGantt projectId={jdProjectId} />
-            </div>
           )}
+
+          {jobTab === 'chat' && (
+            <SubJobChat jobSubId={jobDetail.id} viewer="sub" />
+          )}
+
+          {jobTab === 'gantt' && (
+            jdProjectId
+              ? <ProjectMiniGantt projectId={jdProjectId} />
+              : <p className="text-xs text-slate-500">Harmonogram není k dispozici.</p>
+          )}
+
+            </div>
+          </div>
         </div>
       </PortalShell>
     );

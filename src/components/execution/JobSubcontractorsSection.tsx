@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HardHat, Plus, FileSignature, ExternalLink, Trash2, AlertTriangle } from 'lucide-react';
+import { HardHat, Plus, FileSignature, ExternalLink, Trash2, AlertTriangle, ChevronRight } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../ui/Toast';
@@ -228,7 +228,11 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
           {rows.map(row => {
             const meta = JOB_SUB_STATUS_LABELS[row.status];
             return (
-              <div key={row.id} className="flex flex-wrap items-center gap-3 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5">
+              <div
+                key={row.id}
+                onClick={() => setWorkFilesRow(row)}
+                className="flex flex-wrap items-center gap-3 bg-white/[0.04] border border-white/[0.08] hover:border-blue-400/40 rounded-lg px-3 py-2.5 cursor-pointer transition group"
+              >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-extrabold text-white truncate">{row.subcontractors?.name || '—'}</span>
@@ -252,6 +256,7 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
                 </div>
                 <select
                   value={row.status}
+                  onClick={e => e.stopPropagation()}
                   onChange={e => handleStatusChange(row, e.target.value as JobSubStatus)}
                   className={`text-[11px] font-bold px-2 py-1 rounded-lg border bg-transparent ${meta.cls}`}
                 >
@@ -260,15 +265,9 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
                   ))}
                 </select>
                 <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    onClick={() => setWorkFilesRow(row)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold text-slate-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg transition"
-                  >
-                    Výkazy a soubory
-                  </button>
                   {row.contract_document_id ? (
                     <button
-                      onClick={() => navigate(`/projekty/${projectId}/dokument/${row.contract_document_id}`)}
+                      onClick={e => { e.stopPropagation(); navigate(`/projekty/${projectId}/dokument/${row.contract_document_id}`); }}
                       title="Otevřít smlouvu"
                       className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition"
                     >
@@ -276,7 +275,7 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
                     </button>
                   ) : (
                     <button
-                      onClick={() => handleGenerateContract(row)}
+                      onClick={e => { e.stopPropagation(); handleGenerateContract(row); }}
                       disabled={generatingId === row.id}
                       className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition disabled:opacity-50"
                     >
@@ -284,9 +283,12 @@ export default function JobSubcontractorsSection({ jobId, projectId }: Props) {
                       {generatingId === row.id ? 'Generuji…' : 'Vygenerovat SoD'}
                     </button>
                   )}
-                  <button onClick={() => handleRemove(row)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-white/[0.08] transition">
+                  <button onClick={e => { e.stopPropagation(); handleRemove(row); }} className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-white/[0.08] transition">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
+                  <span className="flex items-center gap-0.5 px-2.5 py-1.5 text-[11px] font-extrabold text-blue-300 bg-blue-500/10 group-hover:bg-blue-500/20 rounded-lg transition">
+                    Otevřít <ChevronRight className="w-3 h-3" />
+                  </span>
                 </div>
               </div>
             );

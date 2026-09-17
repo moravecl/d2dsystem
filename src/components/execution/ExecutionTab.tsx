@@ -6,7 +6,6 @@ import { useToast } from '../ui/Toast';
 import { logAudit } from '../../lib/auditLog';
 import Modal from '../ui/Modal';
 import ExecutionDashboard from './ExecutionDashboard';
-import JobSubcontractorsSection from './JobSubcontractorsSection';
 
 interface ProjectQuote {
   id: string;
@@ -315,7 +314,6 @@ export default function ExecutionTab({ projectId }: Props) {
         onStatusChange={handleStatusChange}
         onRefresh={loadData}
       />
-      <JobSubcontractorsSection jobId={job.id} projectId={projectId} />
     </div>
   );
 }
