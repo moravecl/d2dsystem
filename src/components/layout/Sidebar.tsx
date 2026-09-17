@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Users, Settings, LogOut, ChevronLeft, ChevronDown, X, Car, Cpu, Building2, CalendarClock, ClipboardList, Box as BoxIcon, DollarSign, FileInput, Wallet, Repeat as RepeatIcon, TrendingUp, Landmark } from 'lucide-react';
+import { Users, Settings, LogOut, ChevronLeft, ChevronDown, X, Car, Cpu, Building2, CalendarClock, ClipboardList, Box as BoxIcon, DollarSign, FileInput, Wallet, Repeat as RepeatIcon, TrendingUp, Landmark, HardHat, Handshake } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSidebarSettings } from '../../hooks/useSidebarSettings';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -23,6 +23,11 @@ const assetSubItems = [
   { to: '/majetek/historie', label: 'Servisní historie', icon: ClipboardList },
 ];
 
+const realizaceSubItems = [
+  { to: '/realizace', label: 'Přehled', icon: HardHat, end: true },
+  { to: '/subdodavatele', label: 'Subdodavatelé', icon: Handshake },
+];
+
 const financeSubItems = [
   { to: '/finance', label: 'Vydáné faktury', icon: DollarSign, end: true },
   { to: '/finance/prijate', label: 'Přijaté faktury', icon: FileInput },
@@ -43,6 +48,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
   const { groupedItems } = useSidebarSettings();
   const { hasModule, loading: permissionsLoading } = usePermissions();
   const [assetExpanded, setAssetExpanded] = useState(location.pathname.startsWith('/majetek'));
+const [realizaceExpanded, setRealizaceExpanded] = useState(location.pathname.startsWith('/realizace'));
   const [financeExpanded, setFinanceExpanded] = useState(location.pathname.startsWith('/finance'));
   const unreadEmails = useUnreadEmailCount(!permissionsLoading && hasModule('posta'));
 
@@ -114,6 +120,9 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
   const renderItem = (item: typeof groupedItems[number]['items'][number]) => {
     if (item.key === 'majetek') {
       return renderExpandable('majetek', item.label, item.icon, '/majetek', assetExpanded, setAssetExpanded, assetSubItems);
+    }
+    if (item.key === 'realizace') {
+      return renderExpandable('realizace', item.label, item.icon, '/realizace', realizaceExpanded, setRealizaceExpanded, realizaceSubItems);
     }
     if (item.key === 'finance') {
       return renderExpandable('finance', item.label, item.icon, '/finance', financeExpanded, setFinanceExpanded, financeSubItems);

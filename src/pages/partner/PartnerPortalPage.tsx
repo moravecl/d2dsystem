@@ -31,8 +31,12 @@ export default function PartnerPortalPage() {
   const [jobWork, setJobWork] = useState<{ id: string; started_at: string | null; duration_minutes: number; note: string; approval_status: string }[]>([]);
   const [jobMaterials, setJobMaterials] = useState<{ id: string; material_name: string; unit: string; actual_qty: number; approval_status: string }[]>([]);
   const [jobFiles, setJobFiles] = useState<{ id: string; file_name: string; file_url: string; by_sub: boolean; uploaded_by: string | null }[]>([]);
-  const [workForm, setWorkForm] = useState({ date: new Date().toISOString().split('T')[0], hours: '', note: '' });
+  const [workForm, setWorkForm] = useState({ date: new Date().toISOString().split('T')[0], from: '07:00', to: '15:30', note: '' });
   const [matForm, setMatForm] = useState({ name: '', qty: '', unit: 'ks', note: '' });
+  const [matOptions, setMatOptions] = useState<{ name: string; unit: string }[]>([]);
+  const [matSearch, setMatSearch] = useState('');
+  const [sharedFolders, setSharedFolders] = useState<{ id: string; name: string }[]>([]);
+  const [sharedFiles, setSharedFiles] = useState<{ id: string; folder_id: string | null; name: string; file_url: string }[]>([]);
   const [contractHtml, setContractHtml] = useState('');
   const [offerPrice, setOfferPrice] = useState('');
   const [offerNote, setOfferNote] = useState('');
@@ -113,9 +117,10 @@ export default function PartnerPortalPage() {
   };
 
   const loadJobDetail = async (job: JobSubcontractor) => {
-    const [workRes, matRes, filesRes] = await Promise.all([
+    const projectId = (job as JobSubcontractor & { project_id?: string | null }).project_id;
+    const [workRes, matRes, filesRes, foldersRes, pfilesRes, matListRes] = await Promise.all([
       supabase.from('job_worklogs')
-        .select('id, started_at, duration_minutes, note, approval_status')
+        .select('id, started_at, ended_at, duration_minutes, note, approval_status')
         .eq('job_id', job.job_id)
         .order('started_at', { ascending: false }),
       supabase.from('job_material_entries')
@@ -126,17 +131,28 @@ export default function PartnerPortalPage() {
         .select('id, file_name, file_url, by_sub, uploaded_by')
         .eq('job_subcontractor_id', job.id)
         .order('created_at', { ascending: false }),
+      projectId
+        ? supabase.from('project_folders').select('id, name').eq('project_id', projectId).order('name')
+        : Promise.resolve({ data: [] }),
+      projectId
+        ? supabase.from('project_files').select('id, folder_id, name, file_url').eq('project_id', projectId).order('name')
+        : Promise.resolve({ data: [] }),
+      supabase.rpc('sub_list_materials', { p_job_sub: job.id }),
     ]);
     setJobWork((workRes.data || []) as typeof jobWork);
     setJobMaterials((matRes.data || []) as typeof jobMaterials);
     setJobFiles((filesRes.data || []) as typeof jobFiles);
+    setSharedFolders((foldersRes.data || []) as { id: string; name: string }[]);
+    setSharedFiles((pfilesRes.data || []) as { id: string; folder_id: string | null; name: string; file_url: string }[]);
+    setMatOptions((matListRes.data || []) as { name: string; unit: string }[]);
   };
 
   const openJobDetail = (job: JobSubcontractor) => {
     setJobDetail(job);
     setError('');
-    setWorkForm({ date: new Date().toISOString().split('T')[0], hours: '', note: '' });
+    setWorkForm({ date: new Date().toISOString().split('T')[0], from: '07:00', to: '15:30', note: '' });
     setMatForm({ name: '', qty: '', unit: 'ks', note: '' });
+    setMatSearch('');
     loadJobDetail(job);
   };
 
@@ -147,12 +163,13 @@ export default function PartnerPortalPage() {
     const { error: err } = await supabase.rpc('sub_log_work', {
       p_job_sub: jobDetail.id,
       p_date: workForm.date,
-      p_hours: parseFloat(workForm.hours) || 0,
+      p_from: workForm.from,
+      p_to: workForm.to,
       p_note: workForm.note,
     });
     setBusy(false);
     if (err) { setError(err.message); return; }
-    setWorkForm({ date: new Date().toISOString().split('T')[0], hours: '', note: '' });
+    setWorkForm({ date: new Date().toISOString().split('T')[0], from: workForm.from, to: workForm.to, note: '' });
     loadJobDetail(jobDetail);
   };
 
@@ -291,11 +308,12 @@ export default function PartnerPortalPage() {
               <Wrench className="w-4 h-4 text-blue-400" /> Vykázat práci
             </h2>
             {!closed && (
-              <div className="grid grid-cols-1 sm:grid-cols-[130px_100px_1fr_auto] gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-[130px_95px_95px_1fr_auto] gap-2">
                 <input type="date" value={workForm.date} onChange={e => setWorkForm(f => ({ ...f, date: e.target.value }))} className={inputCls} />
-                <input type="number" min={0.5} step={0.5} value={workForm.hours} onChange={e => setWorkForm(f => ({ ...f, hours: e.target.value }))} placeholder="Hodin" className={inputCls} />
-                <input value={workForm.note} onChange={e => setWorkForm(f => ({ ...f, note: e.target.value }))} placeholder="Co se dělalo…" className={inputCls} />
-                <button onClick={submitWork} disabled={busy} className="px-4 py-2 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition disabled:opacity-50">Vykázat</button>
+                <input type="time" value={workForm.from} onChange={e => setWorkForm(f => ({ ...f, from: e.target.value }))} title="Od" className={inputCls} />
+                <input type="time" value={workForm.to} onChange={e => setWorkForm(f => ({ ...f, to: e.target.value }))} title="Do" className={inputCls} />
+                <input value={workForm.note} onChange={e => setWorkForm(f => ({ ...f, note: e.target.value }))} placeholder="Co se dělalo…" className={`${inputCls} col-span-2 sm:col-span-1`} />
+                <button onClick={submitWork} disabled={busy} className="px-4 py-2 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition disabled:opacity-50 col-span-2 sm:col-span-1">Vykázat</button>
               </div>
             )}
             {jobWork.length > 0 && (
@@ -305,7 +323,10 @@ export default function PartnerPortalPage() {
                   return (
                     <div key={w.id} className="flex items-center gap-2 text-xs bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2">
                       <span className="font-bold text-white">{(w.duration_minutes / 60).toLocaleString('cs-CZ', { maximumFractionDigits: 1 })} h</span>
-                      <span className="text-slate-500">{w.started_at ? fmtDate(w.started_at) : ''}</span>
+                      <span className="text-slate-500">
+                        {w.started_at ? `${fmtDate(w.started_at)} ${new Date(w.started_at).toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                        {(w as typeof w & { ended_at?: string | null }).ended_at ? `–${new Date((w as typeof w & { ended_at?: string | null }).ended_at!).toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                      </span>
                       <span className="text-slate-400 truncate flex-1">{w.note}</span>
                       <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border shrink-0 ${am.cls}`}>{am.label}</span>
                     </div>
@@ -320,11 +341,44 @@ export default function PartnerPortalPage() {
               <Package className="w-4 h-4 text-emerald-400" /> Vykázat materiál
             </h2>
             {!closed && (
-              <div className="grid grid-cols-1 sm:grid-cols-[1fr_90px_80px_auto] gap-2">
-                <input value={matForm.name} onChange={e => setMatForm(f => ({ ...f, name: e.target.value }))} placeholder="Název materiálu" className={inputCls} />
-                <input type="number" min={0} value={matForm.qty} onChange={e => setMatForm(f => ({ ...f, qty: e.target.value }))} placeholder="Množ." className={inputCls} />
-                <input value={matForm.unit} onChange={e => setMatForm(f => ({ ...f, unit: e.target.value }))} placeholder="ks" className={inputCls} />
-                <button onClick={submitMaterial} disabled={busy} className="px-4 py-2 text-sm font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition disabled:opacity-50">Vykázat</button>
+              <div className="space-y-2">
+                <div className="relative">
+                  <input
+                    value={matForm.name || matSearch}
+                    onChange={e => { setMatSearch(e.target.value); setMatForm(f => ({ ...f, name: '' })); }}
+                    placeholder="Vyhledat materiál ze seznamu…"
+                    className={inputCls}
+                  />
+                  {matSearch && !matForm.name && (
+                    <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-navy-800 border border-white/[0.1] rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                      {matOptions.filter(o => o.name.toLowerCase().includes(matSearch.toLowerCase())).slice(0, 30).map(o => (
+                        <button
+                          key={o.name}
+                          type="button"
+                          onClick={() => { setMatForm(f => ({ ...f, name: o.name, unit: o.unit || 'ks' })); setMatSearch(''); }}
+                          className="w-full text-left px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.06] flex items-center justify-between"
+                        >
+                          <span className="truncate">{o.name}</span>
+                          <span className="text-[10px] text-slate-500 shrink-0 ml-2">{o.unit}</span>
+                        </button>
+                      ))}
+                      {matOptions.filter(o => o.name.toLowerCase().includes(matSearch.toLowerCase())).length === 0 && (
+                        <div className="px-3 py-2 text-xs text-slate-500">Nic nenalezeno v seznamu materiálů.</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {matForm.name && (
+                  <div className="grid grid-cols-[1fr_90px_70px_auto] gap-2 items-center">
+                    <span className="text-sm font-semibold text-white truncate px-1">{matForm.name}</span>
+                    <input type="number" min={0} value={matForm.qty} onChange={e => setMatForm(f => ({ ...f, qty: e.target.value }))} placeholder="Množ." className={inputCls} />
+                    <span className="text-sm text-slate-400 text-center">{matForm.unit}</span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={submitMaterial} disabled={busy} className="px-4 py-2 text-sm font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition disabled:opacity-50">Vykázat</button>
+                      <button onClick={() => { setMatForm(f => ({ ...f, name: '', qty: '' })); setMatSearch(''); }} className="p-2 text-slate-500 hover:text-red-400 transition"><X className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {jobMaterials.length > 0 && (
@@ -359,9 +413,34 @@ export default function PartnerPortalPage() {
                 </label>
               )}
             </div>
-            {jobFiles.length === 0 ? (
+            {sharedFolders.length > 0 && (
+              <div className="space-y-2 mb-3">
+                {sharedFolders.map(folder => {
+                  const filesIn = sharedFiles.filter(f => f.folder_id === folder.id);
+                  if (filesIn.length === 0) return null;
+                  return (
+                    <div key={folder.id}>
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">{folder.name}</div>
+                      <div className="space-y-1">
+                        {filesIn.map(f => (
+                          <a key={f.id} href={f.file_url} target="_blank" rel="noreferrer"
+                            className="flex items-center gap-2 text-xs bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2 hover:border-blue-400/40 transition">
+                            <Paperclip className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                            <span className="font-semibold text-slate-200 truncate">{f.name}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {jobFiles.length > 0 && (
+              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Vaše soubory</div>
+            )}
+            {jobFiles.length === 0 && sharedFolders.every(fo => sharedFiles.filter(f => f.folder_id === fo.id).length === 0) ? (
               <p className="text-xs text-slate-500">Zatím žádné soubory. Objednatel sem sdílí podklady, vy můžete nahrát fotky nebo revizní zprávy.</p>
-            ) : (
+            ) : jobFiles.length === 0 ? null : (
               <div className="space-y-1.5">
                 {jobFiles.map(f => (
                   <div key={f.id} className="flex items-center gap-2 text-xs bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2">

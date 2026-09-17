@@ -14,6 +14,7 @@ interface ProjectFolder {
   created_by: string | null;
   created_at: string;
   portal_visible: boolean;
+  subs_visible: boolean;
   visible_to_roles: string[];
 }
 
@@ -108,6 +109,7 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [folderName, setFolderName] = useState('');
   const [folderPortalVisible, setFolderPortalVisible] = useState(false);
+  const [folderSubsVisible, setFolderSubsVisible] = useState(false);
   const [folderRoles, setFolderRoles] = useState<string[]>(['admin', 'manager', 'employee', 'user']);
   const [editingFolder, setEditingFolder] = useState<ProjectFolder | null>(null);
 
@@ -198,11 +200,13 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
       setEditingFolder(folder);
       setFolderName(folder.name);
       setFolderPortalVisible(folder.portal_visible ?? false);
+      setFolderSubsVisible(folder.subs_visible ?? false);
       setFolderRoles(folder.visible_to_roles ?? ['admin', 'manager', 'employee', 'user']);
     } else {
       setEditingFolder(null);
       setFolderName('');
       setFolderPortalVisible(false);
+      setFolderSubsVisible(false);
       setFolderRoles(['admin', 'manager', 'employee', 'user']);
     }
     setShowFolderModal(true);
@@ -235,6 +239,7 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
       await supabase.from('project_folders').update({
         name: folderName.trim(),
         portal_visible: folderPortalVisible,
+        subs_visible: folderSubsVisible,
         visible_to_roles: folderRoles,
       }).eq('id', editingFolder.id);
       if (folderPortalVisible && !editingFolder.portal_visible) {
@@ -248,6 +253,7 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
         name: folderName.trim(),
         created_by: user?.id,
         portal_visible: folderPortalVisible,
+        subs_visible: folderSubsVisible,
         visible_to_roles: folderRoles,
       }).select('id').maybeSingle();
       if (inserted && folderPortalVisible) {
@@ -808,6 +814,17 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
               <div>
                 <span className="text-sm font-medium text-white">Zobrazit v klientském portálu</span>
                 <p className="text-[10px] text-slate-500">Klient uvidí tuto složku a její soubory v portálu</p>
+              </div>
+            </button>
+            <button type="button" onClick={() => setFolderSubsVisible(!folderSubsVisible)} className="flex items-center gap-3 cursor-pointer group w-full text-left mt-3">
+              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0 ${
+ folderSubsVisible ? 'bg-orange-600 border-orange-600' : 'border-white/20 group-hover:border-white/30'
+ }`}>
+                {folderSubsVisible && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
+              </div>
+              <div>
+                <span className="text-sm font-medium text-white">Zobrazit v partnerské sekci</span>
+                <p className="text-[10px] text-slate-500">Subdodavatelé přiřazení k zakázce uvidí tuto složku a její soubory</p>
               </div>
             </button>
           </div>
