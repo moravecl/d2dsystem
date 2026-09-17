@@ -1,12 +1,14 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   HardHat, LogOut, Loader2, MapPin, CalendarDays, Clock, FileSignature,
   CheckCircle2, XCircle, Send, ArrowLeft, Paperclip, X, Wrench, Package, Upload,
+  Inbox, ChevronRight, GanttChart,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { supabase } from '../../lib/supabase';
 import ProjectMiniGantt from '../../components/execution/ProjectMiniGantt';
+import SubJobChat from '../../components/subcontractors/SubJobChat';
 import {
   type Subcontractor, type SubInquiryRecipient, type JobSubcontractor,
   SUB_TRADE_LABELS, SUB_RECIPIENT_STATUS_LABELS, JOB_SUB_STATUS_LABELS,
@@ -16,6 +18,47 @@ const inputCls = 'w-full px-3 py-2 rounded-xl border border-white/10 bg-white/[0
 
 function fmtDate(d?: string | null) {
   return d ? new Date(d).toLocaleDateString('cs-CZ') : '';
+}
+
+function PortalShell({ name, onLogout, children }: { name: string; onLogout: () => void; children: ReactNode }) {
+  return (
+    <div className="min-h-screen flex flex-col deep-bg">
+      <header className="glass-header sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8">
+          <div className="h-16 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                <HardHat className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-white leading-tight">Partnerský portál</div>
+                <div className="text-[10px] font-medium text-slate-400 leading-tight">{name}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 items-center justify-center text-xs font-bold text-white shadow-md">
+                {(name || '?').charAt(0).toUpperCase()}
+              </div>
+              <button
+                onClick={onLogout}
+                className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                title="Odhlásit se"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-8 py-8 animate-fade-in">{children}</main>
+      <footer className="border-t border-white/[0.08]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 py-5 flex items-center justify-between">
+          <span className="text-[11px] text-slate-500 font-medium">HouseSmart &copy; {new Date().getFullYear()}</span>
+          <span className="text-[11px] text-slate-500 font-medium">Partnerský portál</span>
+        </div>
+      </footer>
+    </div>
+  );
 }
 
 export default function PartnerPortalPage() {
@@ -264,8 +307,11 @@ export default function PartnerPortalPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy-900 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+      <div className="min-h-screen deep-bg flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+          <span className="text-sm text-slate-400 font-medium">Načítání...</span>
+        </div>
       </div>
     );
   }
@@ -282,14 +328,15 @@ export default function PartnerPortalPage() {
     };
     const jmeta = JOB_SUB_STATUS_LABELS[jobDetail.status];
     const closed = jobDetail.status === 'cancelled' || jobDetail.status === 'completed';
+    const jdProjectId = (jobDetail as JobSubcontractor & { project_id?: string | null }).project_id;
     return (
-      <div className="min-h-screen bg-navy-900">
-        <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+      <PortalShell name={me?.name || ''} onLogout={handleLogout}>
+        <div className="space-y-4">
           <button onClick={() => { setJobDetail(null); loadData(); }} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition">
             <ArrowLeft className="w-4 h-4" /> Zpět na zakázky
           </button>
 
-          <div className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-5 space-y-2">
+          <div className="glass-card p-5 space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-lg font-extrabold text-white">{jobDetail.scope || SUB_TRADE_LABELS[jobDetail.trade] || 'Zakázka'}</h1>
               <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border ${jmeta.cls}`}>{jmeta.label}</span>
@@ -303,7 +350,11 @@ export default function PartnerPortalPage() {
 
           {error && <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</p>}
 
-          <div className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-5 space-y-3">
+          <div className="glass-card p-5">
+            <SubJobChat jobSubId={jobDetail.id} viewer="sub" />
+          </div>
+
+          <div className="glass-card p-5 space-y-3">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Wrench className="w-4 h-4 text-blue-400" /> Vykázat práci
             </h2>
@@ -336,7 +387,7 @@ export default function PartnerPortalPage() {
             )}
           </div>
 
-          <div className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-5 space-y-3">
+          <div className="glass-card p-5 space-y-3">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Package className="w-4 h-4 text-emerald-400" /> Vykázat materiál
             </h2>
@@ -397,7 +448,7 @@ export default function PartnerPortalPage() {
             )}
           </div>
 
-          <div className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-5 space-y-3">
+          <div className="glass-card p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <Paperclip className="w-4 h-4 text-amber-400" /> Soubory zakázky
@@ -459,16 +510,25 @@ export default function PartnerPortalPage() {
               </div>
             )}
           </div>
+
+          {jdProjectId && (
+            <div className="glass-card p-5 space-y-3">
+              <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <GanttChart className="w-4 h-4 text-purple-400" /> Harmonogram projektu
+              </h2>
+              <ProjectMiniGantt projectId={jdProjectId} />
+            </div>
+          )}
         </div>
-      </div>
+      </PortalShell>
     );
   }
 
   // -------------------------------------------------- detail smlouvy
   if (contractJob) {
     return (
-      <div className="min-h-screen bg-navy-900">
-        <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+      <PortalShell name={me?.name || ''} onLogout={handleLogout}>
+        <div className="space-y-4 max-w-3xl mx-auto">
           <button onClick={() => setContractJob(null)} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition">
             <ArrowLeft className="w-4 h-4" /> Zpět
           </button>
@@ -491,7 +551,7 @@ export default function PartnerPortalPage() {
             </p>
           )}
         </div>
-      </div>
+      </PortalShell>
     );
   }
 
@@ -503,13 +563,13 @@ export default function PartnerPortalPage() {
     const deadlinePassed = inq.response_deadline ? new Date(inq.response_deadline) < new Date(new Date().toDateString()) : false;
     const canRespond = !deadlinePassed && !['accepted', 'offered', 'declined'].includes(detail.status);
     return (
-      <div className="min-h-screen bg-navy-900">
-        <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+      <PortalShell name={me?.name || ''} onLogout={handleLogout}>
+        <div className="space-y-4">
           <button onClick={() => { setDetail(null); loadData(); }} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition">
             <ArrowLeft className="w-4 h-4" /> Zpět na poptávky
           </button>
 
-          <div className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-5 space-y-4">
+          <div className="glass-card p-5 space-y-4">
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-lg font-extrabold text-white">{inq.title}</h1>
@@ -627,43 +687,39 @@ export default function PartnerPortalPage() {
             </div>
           </div>
         </div>
-      </div>
+      </PortalShell>
     );
   }
 
   // -------------------------------------------------- přehled
   return (
-    <div className="min-h-screen bg-navy-900">
-      <header className="border-b border-white/[0.08] bg-navy-800/60">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center">
-              <HardHat className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-sm font-extrabold text-white">Portál subdodavatele</div>
-              <div className="text-[11px] text-slate-500">{me?.name}</div>
-            </div>
-          </div>
-          <button onClick={handleLogout} className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition">
-            <LogOut className="w-3.5 h-3.5" /> Odhlásit
-          </button>
+    <PortalShell name={me?.name || ''} onLogout={handleLogout}>
+      <div className="space-y-5">
+        <div>
+          <h1 className="text-xl font-extrabold text-white tracking-tight">Vítejte, {me?.name}</h1>
+          <p className="text-xs text-slate-400 mt-1">Poptávky, zakázky a komunikace s objednatelem na jednom místě.</p>
         </div>
-      </header>
 
-      <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
-        <div className="flex items-center gap-2">
-          {([['inquiries', `Poptávky (${openInquiries.length})`], ['jobs', `Moje zakázky (${jobs.length})`]] as const).map(([k, label]) => (
-            <button
-              key={k}
-              onClick={() => setTab(k)}
-              className={`px-4 py-2 rounded-xl text-sm font-extrabold transition ${
-                tab === k ? 'bg-blue-600 text-white' : 'bg-white/[0.06] text-slate-400 hover:text-white'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="glass-card px-2 py-2">
+          <nav className="flex gap-1 overflow-x-auto">
+            {([
+              ['inquiries', `Poptávky (${openInquiries.length})`, Inbox],
+              ['jobs', `Moje zakázky (${jobs.length})`, HardHat],
+            ] as const).map(([k, label, Icon]) => (
+              <button
+                key={k}
+                onClick={() => setTab(k)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  tab === k
+                    ? 'bg-blue-600/20 text-blue-400 border border-blue-500/20'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04] border border-transparent'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {label}
+              </button>
+            ))}
+          </nav>
         </div>
 
         {tab === 'inquiries' && (
@@ -678,7 +734,7 @@ export default function PartnerPortalPage() {
                 <button
                   key={rec.id}
                   onClick={() => openDetail(rec)}
-                  className="w-full text-left bg-navy-800/60 border border-white/[0.08] hover:border-blue-400/40 rounded-xl px-4 py-3 transition"
+                  className="w-full text-left glass-card hover:border-blue-400/40 px-4 py-3 transition"
                 >
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-extrabold text-white">{inq.title}</span>
@@ -719,27 +775,25 @@ export default function PartnerPortalPage() {
             {jobs.map(job => {
               const meta = JOB_SUB_STATUS_LABELS[job.status];
               return (
-                <div key={job.id} className="bg-navy-800/60 border border-white/[0.08] rounded-xl px-4 py-3 flex flex-wrap items-center gap-3">
+                <div
+                  key={job.id}
+                  onClick={() => openJobDetail(job)}
+                  className="glass-card hover:border-blue-400/40 px-4 py-3.5 flex flex-wrap items-center gap-3 cursor-pointer transition group"
+                >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-extrabold text-white">{job.scope || (SUB_TRADE_LABELS[job.trade] || 'Zakázka')}</span>
+                      <span className="text-sm font-extrabold text-white group-hover:text-blue-300 transition-colors">{job.scope || (SUB_TRADE_LABELS[job.trade] || 'Zakázka')}</span>
                       <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border ${meta.cls}`}>{meta.label}</span>
                     </div>
-                    <div className="text-[11px] text-slate-500">
+                    <div className="text-[11px] text-slate-500 mt-0.5">
                       {job.agreed_price > 0 && `${job.agreed_price.toLocaleString('cs-CZ')} Kč`}
                       {job.date_from ? ` · od ${fmtDate(job.date_from)}` : ''}
                       {job.date_to ? ` do ${fmtDate(job.date_to)}` : ''}
                     </div>
                   </div>
-                  <button
-                    onClick={() => openJobDetail(job)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold text-slate-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg transition"
-                  >
-                    Výkazy a soubory
-                  </button>
                   {job.contract_document_id && (
                     <button
-                      onClick={() => openContract(job)}
+                      onClick={e => { e.stopPropagation(); openContract(job); }}
                       className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold rounded-lg transition ${
                         job.status === 'contract_signed'
                           ? 'text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
@@ -747,15 +801,18 @@ export default function PartnerPortalPage() {
                       }`}
                     >
                       <FileSignature className="w-3.5 h-3.5" />
-                      {job.status === 'contract_signed' ? 'Zobrazit smlouvu' : 'Smlouva k potvrzení'}
+                      {job.status === 'contract_signed' ? 'Smlouva' : 'Smlouva k potvrzení'}
                     </button>
                   )}
+                  <span className="flex items-center gap-1 px-3 py-1.5 text-xs font-extrabold text-blue-300 bg-blue-500/10 group-hover:bg-blue-500/20 rounded-lg transition">
+                    Otevřít <ChevronRight className="w-3.5 h-3.5" />
+                  </span>
                 </div>
               );
             })}
           </div>
         )}
       </div>
-    </div>
+    </PortalShell>
   );
 }

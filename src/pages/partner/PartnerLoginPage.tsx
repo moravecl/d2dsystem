@@ -56,7 +56,7 @@ export default function PartnerLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-navy-900 flex items-center justify-center px-4">
+    <div className="min-h-screen deep-bg flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center mx-auto mb-3">
@@ -66,7 +66,7 @@ export default function PartnerLoginPage() {
           <p className="text-xs text-slate-500 mt-1">Poptávky, termíny a smlouvy na jednom místě</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-navy-800/60 border border-white/[0.08] rounded-2xl p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="glass-card p-6 space-y-4">
           <div className="grid grid-cols-2 gap-2">
             {([['login', 'Přihlášení'], ['register', 'Registrace']] as const).map(([k, label]) => (
               <button

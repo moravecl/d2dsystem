@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../ui/Toast';
 import { logAudit } from '../../lib/auditLog';
 import Modal from '../ui/Modal';
+import SubJobChat from './SubJobChat';
 import type { JobSubcontractor } from '../../types/subcontractors';
 
 interface Props {
@@ -147,8 +148,10 @@ export default function SubWorkFilesModal({ row, onClose }: Props) {
   };
 
   return (
-    <Modal open onClose={onClose} title={`Výkazy a soubory — ${row.subcontractors?.name || ''}`} size="xl">
+    <Modal open onClose={onClose} title={`Zakázka — ${row.subcontractors?.name || ''}`} size="xl">
       <div className="space-y-6">
+        <SubJobChat jobSubId={row.id} viewer="org" counterpartyName={row.subcontractors?.name || 'Subdodavatel'} />
+
         <div>
           <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2 flex items-center gap-2">
             <Wrench className="w-4 h-4 text-blue-400" /> Vykázaná práce
