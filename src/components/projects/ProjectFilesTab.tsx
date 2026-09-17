@@ -258,7 +258,7 @@ export default function ProjectFilesTab({ projectId }: { projectId: string }) {
       if (folderPortalVisible && !editingFolder.portal_visible) {
         await cascadePortalVisibility(editingFolder.id, true);
       }
-      if (folderSubsVisible && !editingFolder.subs_visible) {
+      if (folderSubsVisible) {
         await cascadeSubsVisibility(editingFolder.id);
       }
       toast('Složka aktualizována');
