@@ -734,7 +734,8 @@ class Ctx {
       seen.add(ref);
       manual.push({
         org_id: orgId, created_by: userId, import_ref: ref,
-        date: date || '1970-01-01', type: isIncome ? 'in' : 'out', amount_gross: amount,
+        // živá DB má CHECK (type IN ('inflow','outflow')) — migrace v repu s 'in'/'out' je zastaralá
+        date: date || '1970-01-01', type: isIncome ? 'inflow' : 'outflow', amount_gross: amount,
         title: purpose || str(r['Kategorie']) || (isIncome ? 'Příjem' : 'Výdaj'),
         note: [str(r['Kategorie']), str(r['Podkategorie']), str(r['Partner']), str(r['Poznámka']), str(r['Firma']) ? `(${str(r['Firma'])})` : ''].filter(Boolean).join(' · ') || null,
         project_id: this.projectFor(r['Číslo zakázky'], r['Zakázka']),
