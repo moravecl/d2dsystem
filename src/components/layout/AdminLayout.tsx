@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, Package, Puzzle, Settings, ArrowLeft, LogOut, Users, Lightbulb, Cable, Flame, Menu, X, FileText, Building2, Sliders, Receipt, Mail, FileCode, CreditCard, Shield, ClipboardList, Tags, Sun, Zap, Settings2, FolderOpen, PanelLeft, Camera, FileCheck, ShieldAlert, Shapes, PenTool, Link2, GitMerge, ChevronDown, Layers, FormInput, Boxes, BellRing, Calculator } from 'lucide-react';
+import { LayoutGrid, Package, Puzzle, Settings, ArrowLeft, LogOut, Users, Lightbulb, Cable, Flame, Menu, X, FileText, Building2, Sliders, Receipt, Mail, FileCode, CreditCard, Shield, ClipboardList, Tags, Sun, Zap, Settings2, FolderOpen, PanelLeft, Camera, FileCheck, ShieldAlert, Shapes, PenTool, Link2, GitMerge, ChevronDown, Layers, FormInput, Boxes, BellRing, Calculator, DatabaseBackup } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const overviewItem = { to: '/admin', icon: LayoutGrid, label: 'Přehled' };
@@ -56,6 +56,7 @@ const NAV_GROUPS = [
       { to: '/admin/firma', icon: Building2, label: 'Informace o firmě' },
       { to: '/admin/licence', icon: CreditCard, label: 'Licence a limity' },
       { to: '/admin/gdpr', icon: Shield, label: 'GDPR & Export dat' },
+      { to: '/admin/import', icon: DatabaseBackup, label: 'Import dat' },
     ],
   },
   {

@@ -128,6 +128,7 @@ const PublicConfiguratorPage = lazyPage(() => import('./pages/public/configurato
 const ConfiguratorPricesPage = lazyPage(() => import('./pages/admin/ConfiguratorPricesPage'));
 const SmtpAccountsPage = lazyPage(() => import('./pages/admin/SmtpAccountsPage'));
 const NotificationSettingsPage = lazyPage(() => import('./pages/admin/NotificationSettingsPage'));
+const DataImportPage = lazyPage(() => import('./pages/admin/DataImportPage'));
 const EmailTemplatesPage = lazyPage(() => import('./pages/admin/EmailTemplatesPage'));
 const LicencePage = lazyPage(() => import('./pages/admin/LicencePage'));
 const GdprPage = lazyPage(() => import('./pages/admin/GdprPage'));
@@ -317,6 +318,7 @@ export default function App() {
               <Route path="email-sablony" element={<EmailTemplatesPage />} />
               <Route path="licence" element={<LicencePage />} />
               <Route path="gdpr" element={<GdprPage />} />
+              <Route path="import" element={<DataImportPage />} />
               <Route path="automatizace" element={<AutomationsPage />} />
               <Route path="notifikace" element={<NotificationSettingsPage />} />
               <Route path="audit" element={<AuditLogPage />} />
