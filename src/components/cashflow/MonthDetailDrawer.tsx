@@ -4,7 +4,8 @@ import type { MonthRow, CashflowItem } from '../../types/cashflow';
 
 const SOURCE_LABELS: Record<string, string> = {
   project_forecast: 'Projekty (forecast)',
-  sales_invoice: 'Vystavené faktury',
+  invoice: 'Vystavené faktury (fakturace)',
+  sales_invoice: 'Vystavené faktury (ručně)',
   purchase_invoice: 'Přijaté faktury',
   recurring: 'Stálé náklady',
   manual: 'Ruční záznamy',
@@ -13,6 +14,7 @@ const SOURCE_LABELS: Record<string, string> = {
 
 const SOURCE_ICONS: Record<string, ReactNode> = {
   project_forecast: <Building2 className="w-4 h-4" />,
+  invoice: <FileText className="w-4 h-4" />,
   sales_invoice: <FileText className="w-4 h-4" />,
   purchase_invoice: <ReceiptText className="w-4 h-4" />,
   recurring: <RefreshCw className="w-4 h-4" />,
@@ -22,7 +24,8 @@ const SOURCE_ICONS: Record<string, ReactNode> = {
 
 const SOURCE_COLORS: Record<string, string> = {
   project_forecast: 'text-sky-400 bg-sky-500/10',
-  sales_invoice: 'text-emerald-400 bg-emerald-500/10',
+  invoice: 'text-emerald-400 bg-emerald-500/10',
+  sales_invoice: 'text-emerald-300 bg-emerald-500/10',
   purchase_invoice: 'text-red-400 bg-red-500/10',
   recurring: 'text-orange-400 bg-orange-500/10',
   manual: 'text-slate-300 bg-white/[0.06]',

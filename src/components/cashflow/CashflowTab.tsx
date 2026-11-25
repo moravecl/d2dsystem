@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { TrendingUp, TrendingDown, Plus, FileText, RefreshCw, ReceiptText, Wallet, ChevronRight, CreditCard as Edit2, Trash2, BarChart3, List, Receipt, Banknote, Building2, Settings2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { TrendingUp, TrendingDown, Plus, FileText, RefreshCw, ReceiptText, Wallet, ChevronRight, CreditCard as Edit2, Trash2, BarChart3, List, Receipt, Banknote, Building2, Settings2, ExternalLink } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
 import { useCashflowData } from '../../hooks/useCashflowData';
@@ -178,7 +179,8 @@ function CumulativeChart({ months }: { months: MonthRow[] }) {
 
 export default function CashflowTab() {
   const { toast } = useToast();
-  const { months, salesInvoices, manualEntries, vatRefunds, cashBalance, bankBalance: bankTxBalance, settings, loading, reload } = useCashflowData();
+  const navigate = useNavigate();
+  const { months, salesInvoices, moduleInvoices, manualEntries, vatRefunds, cashBalance, bankBalance: bankTxBalance, settings, loading, reload } = useCashflowData();
   const [view, setView] = useState<View>('dashboard');
   const [selectedMonth, setSelectedMonth] = useState<MonthRow | null>(null);
   const [showSalesModal, setShowSalesModal] = useState(false);
@@ -464,6 +466,24 @@ export default function CashflowTab() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.06]">
+                {moduleInvoices.map(inv => (
+                  <tr key={`m_${inv.id}`} onClick={() => navigate(`/finance/faktura/${inv.id}`)} className="hover:bg-white/[0.04] transition cursor-pointer">
+                    <td className="py-3 px-5">
+                      <div className="font-semibold text-white">{inv.client_name}</div>
+                      <div className="text-xs text-slate-500">{inv.invoice_number} · z fakturace</div>
+                    </td>
+                    <td className="py-3 pr-4 text-slate-400 text-xs">{inv.project_id ? 'ano' : '—'}</td>
+                    <td className="py-3 pr-4">
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded ${inv.status === 'paid' ? 'bg-emerald-500/15 text-emerald-400' : inv.status === 'partial' ? 'bg-amber-500/15 text-amber-400' : 'bg-blue-500/15 text-blue-400'}`}>
+                        {inv.status === 'paid' ? 'Zaplaceno' : inv.status === 'partial' ? 'Částečně' : 'Vystaveno'}
+                      </span>
+                    </td>
+                    <td className="py-3 pr-4 text-right font-bold text-white">{fmt(inv.total)}</td>
+                    <td className="py-3 pr-4 text-right text-xs text-slate-500">{inv.project_id ? fmt(inv.total) : '—'}</td>
+                    <td className="py-3 pr-4 text-slate-400 text-xs">{new Date(inv.due_date).toLocaleDateString('cs-CZ')}</td>
+                    <td className="py-3 pr-2"><ExternalLink className="w-3.5 h-3.5 text-slate-500" /></td>
+                  </tr>
+                ))}
                 {salesInvoices.map(inv => (
                   <tr key={inv.id} className="hover:bg-white/[0.04] transition">
                     <td className="py-3 px-5">
@@ -504,7 +524,7 @@ export default function CashflowTab() {
                 ))}
               </tbody>
             </table>
-            {salesInvoices.length === 0 && (
+            {salesInvoices.length === 0 && moduleInvoices.length === 0 && (
               <div className="text-center py-12">
                 <FileText className="w-10 h-10 text-slate-600 mx-auto mb-3" />
                 <p className="text-sm text-slate-400">Žádné vystavené faktury</p>

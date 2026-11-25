@@ -4,6 +4,7 @@ import type {
   CashflowItem,
   MonthRow,
   SalesInvoice,
+  ModuleInvoice,
   CashflowManualEntry,
   VatRefund,
   CashflowSettings,
@@ -22,6 +23,7 @@ export function useCashflowData() {
   const [months, setMonths] = useState<MonthRow[]>([]);
   const [settings, setSettings] = useState<CashflowSettings | null>(null);
   const [salesInvoices, setSalesInvoices] = useState<SalesInvoice[]>([]);
+  const [moduleInvoices, setModuleInvoices] = useState<ModuleInvoice[]>([]);
   const [manualEntries, setManualEntries] = useState<CashflowManualEntry[]>([]);
   const [vatRefunds, setVatRefunds] = useState<VatRefund[]>([]);
   const [cashBalance, setCashBalance] = useState(0);
@@ -37,6 +39,7 @@ export function useCashflowData() {
       approvedQuotesRes,
       allocRes,
       salesRes,
+      invoicesRes,
       purchaseRes,
       fixedRes,
       manualRes,
@@ -50,6 +53,9 @@ export function useCashflowData() {
       supabase.from('project_quotes').select('id, project_id, total_selling, status').eq('status', 'approved'),
       supabase.from('invoice_project_allocations').select('*'),
       supabase.from('sales_invoices').select('*').neq('status', 'canceled').order('due_date', { ascending: true }),
+      // modul fakturace: daňový doklad k přijaté záloze není pohyb peněz (záloha už je v zálohové faktuře)
+      supabase.from('invoices').select('id, invoice_number, client_name, project_id, invoice_date, due_date, paid_at, paid_amount, total, status, invoice_type')
+        .in('status', ['sent', 'partial', 'paid']).neq('invoice_type', 'tax_document').order('due_date', { ascending: true }),
       supabase.from('received_invoices').select('id, supplier_name, due_date, paid_date, total_amount, status').neq('status', 'draft'),
       supabase.from('fixed_costs').select('*').eq('is_active', true),
       supabase.from('cashflow_manual_entries').select('*').order('date', { ascending: true }),
@@ -63,7 +69,10 @@ export function useCashflowData() {
     const budgets: { id: string; project_id: string; total_gross: number; status: string; created_at: string }[] = budgetsRes.data || [];
     const approvedQuotes: { id: string; project_id: string; total_selling: number }[] = (approvedQuotesRes.data || []) as { id: string; project_id: string; total_selling: number }[];
     const allocations: { sales_invoice_id: string; project_id: string; allocated_amount_gross: number }[] = allocRes.data || [];
-    const sInvoices: SalesInvoice[] = (salesRes.data || []) as SalesInvoice[];
+    const mInvoices: ModuleInvoice[] = (invoicesRes.data || []) as ModuleInvoice[];
+    // ručně zadaná faktura v cashflow se stejným číslem jako doklad z fakturace by se počítala dvakrát
+    const moduleNumbers = new Set(mInvoices.map(i => i.invoice_number).filter(Boolean));
+    const sInvoices: SalesInvoice[] = ((salesRes.data || []) as SalesInvoice[]).filter(i => !i.invoice_number || !moduleNumbers.has(i.invoice_number));
     const pInvoices: { id: string; supplier_name: string; due_date: string; paid_date?: string; total_amount: number; status: string }[] = purchaseRes.data || [];
     const fixedCosts: { id: string; name: string; amount: number; interval_type: string; interval_day?: number; start_date: string; end_date?: string }[] = fixedRes.data || [];
     const manual: CashflowManualEntry[] = (manualRes.data || []) as CashflowManualEntry[];
@@ -87,6 +96,7 @@ export function useCashflowData() {
         .reduce((s, a) => s + Number(a.allocated_amount_gross), 0);
       return { ...inv, allocated_amount: allocated };
     }));
+    setModuleInvoices(mInvoices);
     setManualEntries(manual);
     setVatRefunds(vat);
     setSettings(settingsRes.data ? (settingsRes.data as CashflowSettings) : null);
@@ -114,6 +124,12 @@ export function useCashflowData() {
       projectAllocated.set(a.project_id, cur + Number(a.allocated_amount_gross));
     });
 
+    mInvoices.forEach(inv => {
+      if (!inv.project_id) return;
+      const cur = projectAllocated.get(inv.project_id) || 0;
+      projectAllocated.set(inv.project_id, cur + Number(inv.total));
+    });
+
     projects.forEach(p => {
       const budgetGross = latestApprovedBudget.get(p.id);
       if (!budgetGross) return;
@@ -136,6 +152,22 @@ export function useCashflowData() {
         budget_approved: budgetGross,
         invoiced_allocated: invoiced,
         remaining_forecast: remaining,
+      });
+    });
+
+    mInvoices.forEach(inv => {
+      const dateStr = inv.status === 'paid' && inv.paid_at ? inv.paid_at.slice(0, 10) : inv.due_date;
+      if (!dateStr) return;
+      allItems.push({
+        id: `invoice_${inv.id}`,
+        date: dateStr,
+        type: 'inflow',
+        source: 'invoice',
+        project_id: inv.project_id || undefined,
+        title: `${inv.invoice_number || 'Faktura'} – ${inv.client_name}`,
+        amount_gross: Number(inv.total),
+        status: inv.status,
+        source_ref_id: inv.id,
       });
     });
 
@@ -291,5 +323,5 @@ export function useCashflowData() {
 
   useEffect(() => { load(); }, [load]);
 
-  return { items, months, settings, salesInvoices, manualEntries, vatRefunds, cashBalance, bankBalance, loading, reload: load };
+  return { items, months, settings, salesInvoices, moduleInvoices, manualEntries, vatRefunds, cashBalance, bankBalance, loading, reload: load };
 }

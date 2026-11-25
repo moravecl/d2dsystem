@@ -80,11 +80,27 @@ export interface CashflowSettings {
 
 export type CashflowSource =
   | 'project_forecast'
+  | 'invoice'
   | 'sales_invoice'
   | 'purchase_invoice'
   | 'recurring'
   | 'manual'
   | 'vat_refund';
+
+/** Faktura z modulu fakturace (tabulka invoices) promítnutá do cashflow. */
+export interface ModuleInvoice {
+  id: string;
+  invoice_number: string;
+  client_name: string;
+  project_id: string | null;
+  invoice_date: string;
+  due_date: string;
+  paid_at: string | null;
+  paid_amount: number;
+  total: number;
+  status: string;
+  invoice_type: string;
+}
 
 export interface CashflowItem {
   id: string;
