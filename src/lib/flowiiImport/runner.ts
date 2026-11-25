@@ -89,6 +89,7 @@ class Ctx {
   openJobNumbers = new Set<string>();
   invoiceByNumber = new Map<string, { id: string; total: number }>();
   receivedByNumber = new Map<string, { id: string; total: number }>();
+  receivedByKey = new Map<string, { id: string; total: number }>();
 
   constructor(private files: Files, private opt: ImportOptions, private cb: ImportCallbacks) {}
 
@@ -114,6 +115,15 @@ class Ctx {
   /** Upsert po dávkách; vrací mapu import_ref → id. */
   private async upsert(table: string, rows: Record<string, unknown>[], conflict: string, step: string): Promise<Map<string, string>> {
     const ids = new Map<string, string>();
+    // stejný import_ref dvakrát v jednom příkazu Postgres odmítne — odliš duplicity příponou
+    const seenRefs = new Set<string>();
+    let dupes = 0;
+    for (const row of rows) {
+      let ref = String(row.import_ref);
+      if (seenRefs.has(ref)) { dupes++; while (seenRefs.has(ref)) ref += '+'; row.import_ref = ref; }
+      seenRefs.add(ref);
+    }
+    if (dupes) this.log('warn', `${table}: ${dupes} řádků mělo stejný klíč jako jiný řádek — odlišeny příponou, zkontroluj duplicity ve zdroji.`);
     for (let i = 0; i < rows.length; i += BATCH) {
       const batch = rows.slice(i, i + BATCH);
       const { data, error } = await supabase.from(table).upsert(batch, { onConflict: conflict }).select('id, import_ref');
@@ -573,7 +583,7 @@ class Ctx {
         if (!this.opt.scope.received) continue;
         if (partner && !this.supplierByName.has(norm(partner)) && !neededSuppliers.has(norm(partner))) neededSuppliers.set(norm(partner), r);
         received.push({
-          organization_id: orgId, created_by: userId, import_ref: `flowii:doklad:prijata:${number}:${norm(firma)}`,
+          organization_id: orgId, created_by: userId, import_ref: `flowii:prijata:${number}:${norm(partner)}:${norm(firma)}`,
           supplier_name: partner, invoice_number: number,
           invoice_date: isoDate(r['Datum vystavení']) || isoDate(r['DUZP']) || '1970-01-01',
           due_date: isoDate(r['Datum splatnosti']) || isoDate(r['Datum vystavení']) || '1970-01-01',
@@ -663,10 +673,19 @@ class Ctx {
       counts.invoice_items = items.length;
     }
     if (received.length) {
+      const { count: legacy } = await supabase.from('received_invoices').select('id', { count: 'exact', head: true })
+        .eq('organization_id', orgId).like('import_ref', 'flowii:doklad:prijata:%');
+      if (legacy) {
+        await supabase.from('received_invoices').delete().eq('organization_id', orgId).like('import_ref', 'flowii:doklad:prijata:%');
+        this.log('warn', `Přijaté faktury: odstraněno ${legacy} řádků z dřívějšího běhu se starým klíčem (bez dodavatele) — nahradí je správné záznamy.`);
+      }
       const ids = await this.upsert('received_invoices', received, 'organization_id,import_ref', 'Přijaté faktury');
       counts.received_invoices = ids.size;
       for (const r of received) {
-        const id = ids.get(String(r.import_ref)); if (id) this.receivedByNumber.set(String(r.invoice_number), { id, total: Number(r.total_amount) });
+        const id = ids.get(String(r.import_ref)); if (!id) continue;
+        const entry = { id, total: Number(r.total_amount) };
+        this.receivedByKey.set(`${String(r.invoice_number)}|${norm(String(r.supplier_name))}`, entry);
+        if (!this.receivedByNumber.has(String(r.invoice_number))) this.receivedByNumber.set(String(r.invoice_number), entry);
       }
     }
     this.log('info', `Doklady: ${counts.invoices || 0} vydaných, ${counts.received_invoices || 0} přijatých faktur; ${skippedTypes} dokladů jiného typu (nabídky, objednávky, dodací listy) přeskočeno.`);
@@ -679,8 +698,8 @@ class Ctx {
     const { orgId, userId } = this.opt;
     const PAY_RE = /^Úhrada (přijaté |zálohové )?faktury č\.\s*(.+)$/i;
 
-    const issuedPay = new Map<string, { sum: number; last: string | null }>();
-    const receivedPay = new Map<string, { sum: number; last: string | null }>();
+    const issuedPay = new Map<string, { sum: number; last: string | null; inv: { id: string; total: number } }>();
+    const receivedPay = new Map<string, { sum: number; last: string | null; inv: { id: string; total: number } }>();
     const manual: Record<string, unknown>[] = [];
     const seen = new Set<string>();
     let matched = 0;
@@ -696,13 +715,16 @@ class Ctx {
       const m = purpose.match(PAY_RE);
       if (m) {
         const number = m[2].trim();
-        const target = isIncome ? this.invoiceByNumber : this.receivedByNumber;
-        if (target.has(number)) {
+        const key = isIncome ? number : `${number}|${norm(r['Partner'])}`;
+        const found = isIncome ? this.invoiceByNumber.get(number)
+          : (this.receivedByKey.get(key) || this.receivedByNumber.get(number));
+        if (found) {
           const bucket = isIncome ? issuedPay : receivedPay;
-          const cur = bucket.get(number) || { sum: 0, last: null };
+          const bucketKey = isIncome ? number : found.id;
+          const cur = bucket.get(bucketKey) || { sum: 0, last: null, inv: found };
           cur.sum += amount;
           if (date && (!cur.last || date > cur.last)) cur.last = date;
-          bucket.set(number, cur);
+          bucket.set(bucketKey, cur);
           matched++;
           continue;
         }
@@ -720,8 +742,8 @@ class Ctx {
     }
 
     let i = 0;
-    for (const [number, p] of issuedPay) {
-      const inv = this.invoiceByNumber.get(number)!;
+    for (const p of issuedPay.values()) {
+      const inv = p.inv;
       const full = p.sum >= inv.total - 1;
       await supabase.from('invoices').update({
         status: full ? 'paid' : 'partial', paid_amount: Math.min(p.sum, inv.total),
@@ -730,8 +752,8 @@ class Ctx {
       this.progress('Úhrady vydaných faktur', ++i, issuedPay.size);
     }
     i = 0;
-    for (const [number, p] of receivedPay) {
-      const inv = this.receivedByNumber.get(number)!;
+    for (const p of receivedPay.values()) {
+      const inv = p.inv;
       await supabase.from('received_invoices').update({
         status: p.sum >= inv.total - 1 ? 'paid' : 'approved', paid_amount: Math.min(p.sum, inv.total), paid_date: p.last,
       }).eq('id', inv.id);
